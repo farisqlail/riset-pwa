@@ -61,7 +61,7 @@
           >
             <div>
               <img :src="item.image" :alt="item.name" class="cart-item-image" />
-              {{ item.name }} - {{ formatPrice(item.price)  }} ({{
+              {{ item.name }} - {{ formatPrice(item.price) }} ({{
                 item.quantity
               }}
               pcs)
@@ -77,6 +77,9 @@
           </div>
           <p>Total Harga: {{ formatPrice(totalPrice) }}</p>
         </div>
+        <template #modal-footer>
+          <b-button @click="openCheckout" variant="primary">Checkout</b-button>
+        </template>
       </b-modal>
     </main>
   </div>
@@ -108,7 +111,8 @@ export default {
   methods: {
     addToCart(product) {
       const existingItem = this.cart.find((item) => item.name === product.name);
-
+      this.$store.commit("addToCart", product);
+      
       if (existingItem) {
         // Jika produk sudah ada, tingkatkan jumlahnya
         existingItem.quantity++;
@@ -124,6 +128,9 @@ export default {
 
       this.calculateTotalPrice();
       this.showToast = true;
+    },
+    openCheckout() {
+      this.$router.push("/checkout");
     },
     openCartModal() {
       this.showCartModal = true;
