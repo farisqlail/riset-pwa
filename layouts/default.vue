@@ -1,22 +1,27 @@
 <template>
   <div class="main">
     <Navbar />
-    <nuxt />
+    <div class="container">
+      <nuxt />
+    </div>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script
+    <!-- <script
       id="snipcart"
       src="https://cdn.snipcart.com/themes/v3.3.0/default/snipcart.js"
-      data-api-key="ST_YmQ1NjVmZjAtODRlYy00MzJkLWEwOTUtYmY4NTVjNDc3ZjUyNjM4NDAyODU1MjMyOTQ5MDIy" 
-    ></script>
+      data-api-key="ODQ1Y2E1MmItOGVkNi00NzliLWIyMGItNWZlYjIzOTBkZGEwNjM4NDAyODU0MTUzODUwNzkw"
+      data-currency="idr"
+    ></script> -->
+
+  
   </div>
 </template>
 
 <script>
-import Navbar from '~/components/Navbar.vue'
+import Navbar from "~/components/Navbar.vue";
 
 export default {
   components: {
     Navbar,
   },
-}
+};
 </script>

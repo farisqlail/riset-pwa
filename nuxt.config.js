@@ -45,14 +45,21 @@ export default {
 
   // Modules for dev and build (recommended): https://go.nuxtjs.dev/config-modules
   buildModules: [
+    // '@nuxtjs/tailwindcss'
     "@nuxtjs/pwa",
+    'bootstrap-vue/nuxt',
   ],
+
+  snipcart: {
+    publicApiKey: "ODQ1Y2E1MmItOGVkNi00NzliLWIyMGItNWZlYjIzOTBkZGEwNjM4NDAyODU0MTUzODUwNzkw"
+  },
 
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: [
     // https://go.nuxtjs.dev/bootstrap
     'bootstrap-vue/nuxt',
     "@nuxtjs/pwa",
+    '@nuxtjs/snipcart',
   ],
 
   pwa: {
@@ -79,7 +86,10 @@ export default {
         loader: 'frontmatter-markdown-loader',
         include: path.resolve(__dirname, 'contents'),
       })
-    }
+    },
+    loaders: {
+      mie: 'raw-loader', // Adjust the loader based on the file type
+    },
   },
 
   workbox: {
@@ -113,5 +123,9 @@ export default {
   generate: {
     fallback: true,
     routes: [].concat(guides.map(guide => `guides/${guide}`))
+  },
+
+  router: {
+    middleware: 'index', // Nama file tanpa ekstensi
   },
 }
