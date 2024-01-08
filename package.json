@@ -12,12 +12,14 @@
     "bootstrap": "^4.6.2",
     "bootstrap-vue": "^2.22.0",
     "core-js": "^3.25.3",
+    "mkcert": "^3.2.0",
     "nuxt": "^2.15.8",
     "vue": "^2.7.10",
-    "vue-server-renderer": "^2.7.10",
+    "vue-server-renderer": "^2.7.16",
     "vue-template-compiler": "^2.7.10"
   },
   "devDependencies": {
-    "@nuxtjs/pwa": "^3.3.5"
+    "@nuxtjs/pwa": "^3.3.5",
+    "frontmatter-markdown-loader": "^3.7.0"
   }
 }

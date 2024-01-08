@@ -1,6 +1,20 @@
+import path from 'path'
+import fs from 'fs'
+import guides from "./contents/guides/guides.js"
+const certPath = path.resolve(__dirname, 'server.crt');
+const keyPath = path.resolve(__dirname, 'server.key');
+
 export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
   target: "static",
+
+  server: {
+    https: {
+      key: fs.readFileSync(keyPath),
+      cert: fs.readFileSync(certPath)
+    }
+  },
+
   head: {
     title: 'riset-pwa',
     htmlAttrs: {
@@ -13,8 +27,9 @@ export default {
       { name: 'format-detection', content: 'telephone=no' }
     ],
     link: [
-      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
-    ]
+      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+      { rel: 'stylesheet', href: 'https://cdn.snipcart.com/themes/v3.2.1/default/snipcart.css' },
+    ],
   },
 
   // Global CSS: https://go.nuxtjs.dev/config-css
@@ -47,26 +62,56 @@ export default {
       name: "RisetPWA",
       short_name: "RPWA",
       description: "Riset for PWA",
-      theme_color: "#6a5acd",
       lang: "en",
-      background_color: "#6a5acd",
+      display: 'standalone',
     },
-    // https://pwa.nuxtjs.org/icon
-    icon: false,
-    // https://pwa.nuxtjs.org/meta
-    // Meta easily adds common meta tags into your project with zero-config needed. 
-    meta: {
-      name: "Riset PWA",
-      description: "Riset for PWA",
-      author: "faris",
-      theme_color: "#6a5acd",
-      nativeUi: true,
-      appleStatusBarStyle: "black",
-      mobileAppIOS: true,
+    icon: {
+      source: "static/icons",  // Path to the folder containing your icon files
+      fileName: "icon.png",   // The main icon file to be used
     },
   },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
-  }
+    extend(config, ctx) {
+      config.module.rules.push({
+        test: /\.md$/,
+        loader: 'frontmatter-markdown-loader',
+        include: path.resolve(__dirname, 'contents'),
+      })
+    }
+  },
+
+  workbox: {
+    runtimeCaching: [
+      {
+        urlPattern: 'https://fonts.googleapis.com/.*',
+        handler: 'cacheFirst',
+        method: 'GET',
+        strategyOptions: { cacheableResponse: { statuses: [0, 200] } }
+      },
+      {
+        urlPattern: 'https://fonts.gstatic.com/.*',
+        handler: 'cacheFirst',
+        method: 'GET',
+        strategyOptions: { cacheableResponse: { statuses: [0, 200] } }
+      },
+      {
+        urlPattern: 'https://cdn.snipcart.com/.*',
+        method: 'GET',
+        strategyOptions: { cacheableResponse: { statuses: [0, 200] } }
+      },
+      {
+        urlPattern: 'https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js',
+        handler: 'cacheFirst',
+        method: 'GET',
+        strategyOptions: { cacheableResponse: { statuses: [0, 200] } }
+      }
+    ]
+  },
+  // generates dynamic routes
+  generate: {
+    fallback: true,
+    routes: [].concat(guides.map(guide => `guides/${guide}`))
+  },
 }
