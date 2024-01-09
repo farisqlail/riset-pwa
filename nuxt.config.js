@@ -38,6 +38,7 @@ export default {
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
+    '~/store/plugins/cache.js',
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -95,19 +96,14 @@ export default {
   workbox: {
     runtimeCaching: [
       {
-        urlPattern: 'https://fonts.googleapis.com/.*',
-        handler: 'cacheFirst',
+        urlPattern: 'https://localhost:3000/.*',
+        handler: 'staleWhileRevalidate',
         method: 'GET',
         strategyOptions: { cacheableResponse: { statuses: [0, 200] } }
       },
       {
-        urlPattern: 'https://fonts.gstatic.com/.*',
-        handler: 'cacheFirst',
-        method: 'GET',
-        strategyOptions: { cacheableResponse: { statuses: [0, 200] } }
-      },
-      {
-        urlPattern: 'https://cdn.snipcart.com/.*',
+        urlPattern: 'https://localhost:3000/.*',
+        handler: 'networkFirst',
         method: 'GET',
         strategyOptions: { cacheableResponse: { statuses: [0, 200] } }
       },
@@ -126,6 +122,9 @@ export default {
   },
 
   router: {
-    middleware: 'index', // Nama file tanpa ekstensi
+    middleware: [
+      'index',
+      'loadCart',
+    ]
   },
 }

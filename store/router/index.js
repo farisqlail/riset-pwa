@@ -2,7 +2,7 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 import Home from "../../pages/index.vue";
-import Checkout from "../../pages/checkouts/index.vue";
+import Checkout from "../../pages/checkout/index.vue";
 
 Vue.use(VueRouter);
 

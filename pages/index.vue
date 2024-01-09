@@ -70,6 +70,9 @@
               <b-button @click="decreaseQuantity(index)" variant="info"
                 >Kurangi</b-button
               >
+              <b-button @click="increaseQuantity(index)" variant="success"
+                >Tambah</b-button
+              >
               <b-button @click="removeFromCart(index)" variant="danger"
                 >Hapus</b-button
               >
@@ -91,28 +94,47 @@ import guides from "~/contents/guides/guides.js";
 export default {
   data() {
     return {
-      cart: [],
+      // cart: [],
       showToast: false,
       showCartModal: false,
       totalPrice: 0,
     };
   },
   async asyncData({ route }) {
+    let cart = [];
+
+    // Check if running on the client side
+    if (process.client) {
+      // Load cart data from localStorage if available
+      const cartData = localStorage.getItem("cart");
+      if (cartData) {
+        cart = JSON.parse(cartData);
+      }
+    }
+
     const promises = guides.map((guide) =>
       import(`~/contents/guides/${guide}.md`)
     );
-    return { guides: await Promise.all(promises) };
+
+    return { guides: await Promise.all(promises), cart };
+  },
+  async someFunction() {
+    await this.calculateTotalPrice();
   },
   head() {
     return {
       title: "Riset PWA",
     };
   },
+  mounted() {
+    this.$store.dispatch("fetchCartData");
+    this.calculateTotalPrice();
+  },
   methods: {
     addToCart(product) {
       const existingItem = this.cart.find((item) => item.name === product.name);
       this.$store.commit("addToCart", product);
-      
+
       if (existingItem) {
         // Jika produk sudah ada, tingkatkan jumlahnya
         existingItem.quantity++;
@@ -122,31 +144,54 @@ export default {
           name: product.name,
           price: product.price,
           image: product.image,
-          quantity: 1, // Tambahkan properti quantity
+          quantity: 1,
         });
       }
 
+      // Save directly to localStorage after modifying the cart
+      if (process.client) {
+        localStorage.setItem("cart", JSON.stringify(this.$store.state.cart));
+      }
       this.calculateTotalPrice();
       this.showToast = true;
     },
+
     openCheckout() {
+      console.log("Data sent to checkout:", {
+        customerName: this.customerName,
+        cart: this.cart,
+        totalPrice: this.totalPrice,
+      });
       this.$router.push("/checkout");
     },
+
     openCartModal() {
       this.showCartModal = true;
     },
+
     removeFromCart(index) {
       this.cart.splice(index, 1);
+
+      localStorage.setItem("cart", JSON.stringify(this.cart));
     },
+
     onToastHidden() {
       this.showToast = false; // Menyembunyikan toast setelah ditutup
     },
+
     calculateTotalPrice() {
-      this.totalPrice = this.cart.reduce(
-        (total, item) => total + item.price * item.quantity,
-        0
-      );
+      return new Promise((resolve) => {
+        // Simulate an asynchronous operation (e.g., fetching data)
+        setTimeout(() => {
+          this.totalPrice = this.cart.reduce(
+            (total, item) => total + item.price * item.quantity,
+            0
+          );
+          resolve();
+        }, 0); // Adjust the timeout as needed
+      });
     },
+
     formatPrice(value) {
       const price = parseInt(value);
       return price.toLocaleString("id-ID", {
@@ -155,11 +200,21 @@ export default {
         minimumFractionDigits: 0,
       });
     },
+
     decreaseQuantity(index) {
       if (this.cart[index].quantity > 1) {
         this.cart[index].quantity--;
         this.calculateTotalPrice();
+
+        localStorage.setItem("cart", JSON.stringify(this.cart));
       }
+    },
+
+    increaseQuantity(index) {
+      this.cart[index].quantity++;
+      this.calculateTotalPrice();
+
+      localStorage.setItem("cart", JSON.stringify(this.cart));
     },
   },
 };
