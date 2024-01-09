@@ -10,6 +10,10 @@
                     "package.json"
                 ]
             }
+        },
+        {
+          "src": "pages/index.vue",
+          "use": "@vercel/node"
         }
     ],
     "routes": [
