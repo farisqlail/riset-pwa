@@ -20,7 +20,10 @@
                 "Cache-Control": "public, max-age=0, must-revalidate",
                 "Service-Worker-Allowed": "/"
             },
-            "dest": "pages/index.vue"
+        },
+        {
+          "src": "/(.*)",
+         "dest": "pages/index.vue"
         }
     ]
 }
