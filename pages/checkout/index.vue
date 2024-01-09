@@ -100,8 +100,8 @@ export default {
       });
 
       // Setelah submit, Anda dapat mereset state keranjang atau melakukan navigasi ke halaman lain
-      this.$store.commit("resetCart");
-      this.$router.push("/");
+      // this.$store.commit("resetCart");
+      this.$router.push("/payments");
     },
 
     calculateTotalPrice() {
