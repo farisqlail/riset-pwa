@@ -46,6 +46,18 @@ export default {
       }, []);
 
       this.cart = mergedCart;
+
+      // Check if there is checkoutData in localStorage
+      const checkoutData = localStorage.getItem("checkoutData");
+      if (checkoutData) {
+        const parsedCheckoutData = JSON.parse(checkoutData);
+        // Merge checkoutData with the current cart
+        this.cart = this.cart.concat(parsedCheckoutData.items);
+        this.customerName = parsedCheckoutData.customerName;
+      }
+
+      console.log(checkoutData);
+
       this.calculateTotalPrice();
     },
 
@@ -66,7 +78,6 @@ export default {
     },
 
     printReceipt() {
-      // Gather data for the receipt
       const receiptData = {
         customerName: this.customerName,
         items: this.cart,
@@ -74,21 +85,46 @@ export default {
       };
 
       // Convert the receipt data to a printable format
-      const printableContent = this.preparePrintableContent(receiptData);
+      const printableContent = `
+    <html>
+        <head>
+            <title>Receipt</title>
+            <!-- Include any styles or additional head content here -->
+        </head>
+        <body>
+            <h2>Receipt</h2>
+            <p>Customer Name: ${receiptData.customerName}</p>
+            <ul>
+            ${receiptData.items
+              .map(
+                (item) =>
+                  `<li>${item.name} - ${item.quantity} pcs - ${item.price} </li>`
+              )
+              .join("")}
+            </ul>
+            <p>Total Price: ${receiptData.totalPrice}</p>
+            <!-- Include any additional content here -->
+        </body>
+        </html>
+    `;
 
-      // Create a new window and write the printable content
-      const printWindow = window.open("", "_blank");
-      printWindow.document.write(printableContent);
+      // Set the current window's document content
+      window.document.write(printableContent);
 
-      // Trigger the print dialog
-      printWindow.print();
+      // Print the document
+      window.print();
 
-      // Close the new window
-      printWindow.close();
+      // Close the new window after a short delay
+      setTimeout(() => {
+        window.reload();
+      }, 1000); // Adjust the delay as needed
+
+      this.$store.commit("resetCart");
     },
 
     preparePrintableContent(receiptData) {
       // Create a string with the printable content
+      console.log("terprint");
       const content = `
         <html>
             <head>
@@ -100,11 +136,11 @@ export default {
                 <p>Customer Name: ${receiptData.customerName}</p>
                 <ul>
                 ${receiptData.items
-                    .map(
+                  .map(
                     (item) =>
-                        `<li>${item.name} - ${item.quantity} pcs - ${item.price} </li>`
-                    )
-                    .join("")}
+                      `<li>${item.name} - ${item.quantity} pcs - ${item.price} </li>`
+                  )
+                  .join("")}
                 </ul>
                 <p>Total Price: ${receiptData.totalPrice}</p>
                 <!-- Include any additional content here -->

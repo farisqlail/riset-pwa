@@ -115,6 +115,13 @@ export const mutations = {
       }
     }
   },
+
+  saveCheckoutToCache(state, checkoutData) {
+    // Simpan data ke cache jika berada di sisi klien
+    if (process.client) {
+      localStorage.setItem("checkoutData", JSON.stringify(checkoutData));
+    }
+  },
 };
 
 export const actions = {

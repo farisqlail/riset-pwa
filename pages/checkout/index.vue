@@ -98,8 +98,11 @@ export default {
         customerName: this.customerName,
         items: this.cart,
       });
+      this.$store.commit("saveCheckoutToCache", {
+        customerName: this.customerName,
+        items: this.cart,
+      });
 
-      // Setelah submit, Anda dapat mereset state keranjang atau melakukan navigasi ke halaman lain
       // this.$store.commit("resetCart");
       this.$router.push("/payments");
     },
