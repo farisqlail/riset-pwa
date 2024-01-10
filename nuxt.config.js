@@ -39,6 +39,8 @@ export default {
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
     '~/store/plugins/cache.js',
+     { src: '~/store/plugins/vue-html-to-paper.js', ssr: false },
+     { src: '~/store/plugins/workbox-sync.js', ssr: false },
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -91,6 +93,7 @@ export default {
     loaders: {
       mie: 'raw-loader', // Adjust the loader based on the file type
     },
+    transpile: ['axios'],
   },
 
   workbox: {
@@ -113,7 +116,8 @@ export default {
         method: 'GET',
         strategyOptions: { cacheableResponse: { statuses: [0, 200] } }
       }
-    ]
+    ],
+    cachingExtensions: '@/store/plugins/workbox-sync.js'
   },
   // generates dynamic routes
   generate: {

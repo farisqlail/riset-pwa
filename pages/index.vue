@@ -6,21 +6,17 @@
           >Lihat Keranjang</b-button
         >
       </div>
-      <div class="row mt-3" v-for="(guide, index) in guides" :key="index">
-        <div
-          class="col-md-4"
-          v-for="(product, index) in guide.attributes.products"
-          :key="index"
-        >
+      <div class="row mt-3">
+        <div class="col-md-4" v-for="(product, index) in guides" :key="index">
           <b-card
-            :title="product.name"
-            :img-src="product.image"
-            :img-alt="product.name"
+            :title="product.strMeal"
+            :img-src="product.strMealThumb"
+            :img-alt="product.strMeal"
             img-top
             tag="article"
             class="mb-2"
           >
-            <b-card-text> {{ formatPrice(product.price) }} </b-card-text>
+            <b-card-text> {{ formatPrice(10000) }} </b-card-text>
 
             <b-button
               href="#"
@@ -89,7 +85,7 @@
 </template>
 
 <script>
-import guides from "~/contents/guides/guides.js";
+import axios from "axios";
 
 export default {
   data() {
@@ -100,23 +96,58 @@ export default {
       totalPrice: 0,
     };
   },
-  async asyncData({ route }) {
+  async asyncData({ store }) {
+    store.dispatch("fetchCartData");
+
+    // Initialize data
     let cart = [];
+    let guides = [];
 
     // Check if running on the client side
     if (process.client) {
-      // Load cart data from localStorage if available
+      // Retrieve cart data from local storage
       const cartData = localStorage.getItem("cart");
       if (cartData) {
         cart = JSON.parse(cartData);
       }
+
+      // Retrieve guides data from local storage or fetch from API
+      const cachedGuides = localStorage.getItem("guides");
+
+      if (cachedGuides) {
+        guides = JSON.parse(cachedGuides);
+      } else {
+        try {
+          // Fetch data from the API
+          const response = await axios.get(
+            "https://www.themealdb.com/api/json/v1/1/search.php?f=a"
+          );
+
+          guides = response.data.meals; // Ensure that guides is an array
+
+          // Save the guides data to localStorage
+          localStorage.setItem("guides", JSON.stringify(guides));
+        } catch (error) {
+          console.error("Error fetching guides:", error);
+        }
+      }
+    } else {
+      try {
+        // Fetch data from the API
+        const response = await axios.get(
+          "https://www.themealdb.com/api/json/v1/1/search.php?f=a"
+        );
+
+        guides = response.data.meals; // Ensure that guides is an array
+
+        // Save the data to Vuex store
+        store.commit("setGuides", guides);
+
+        return { guides, cart };
+      } catch (error) {
+        console.error("Error fetching guides:", error);
+      }
     }
-
-    const promises = guides.map((guide) =>
-      import(`~/contents/guides/${guide}.md`)
-    );
-
-    return { guides: await Promise.all(promises), cart };
   },
   async someFunction() {
     await this.calculateTotalPrice();
@@ -132,25 +163,25 @@ export default {
   },
   methods: {
     addToCart(product) {
-      const existingItem = this.cart.find((item) => item.name === product.name);
+      const existingItem = this.cart.find(
+        (item) => item.name === product.strMeal
+      );
       this.$store.commit("addToCart", product);
 
       if (existingItem) {
-        // Jika produk sudah ada, tingkatkan jumlahnya
         existingItem.quantity++;
       } else {
-        // Jika produk belum ada, tambahkan ke keranjang
         this.cart.push({
-          name: product.name,
-          price: product.price,
-          image: product.image,
+          name: product.strMeal,
+          price: 10000,
+          image: product.strMealThumb,
           quantity: 1,
         });
       }
 
       // Save directly to localStorage after modifying the cart
       if (process.client) {
-        localStorage.setItem("cart", JSON.stringify(this.$store.state.cart));
+        localStorage.setItem("cart", JSON.stringify(this.cart));
       }
       this.calculateTotalPrice();
       this.showToast = true;

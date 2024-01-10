@@ -77,7 +77,7 @@ export default {
       });
     },
 
-    printReceipt() {
+    async printReceipt() {
       const receiptData = {
         customerName: this.customerName,
         items: this.cart,
@@ -91,6 +91,11 @@ export default {
             <title>Receipt</title>
             <!-- Include any styles or additional head content here -->
         </head>
+        <style>
+            body {
+              font-family: tahoma;
+            }
+        </style>
         <body>
             <h2>Receipt</h2>
             <p>Customer Name: ${receiptData.customerName}</p>
@@ -113,41 +118,11 @@ export default {
 
       // Print the document
       window.print();
-
-      // Close the new window after a short delay
-      setTimeout(() => {
-        window.reload();
-      }, 1000); // Adjust the delay as needed
+      
+      //reload setelah print
+      location.reload();
 
       this.$store.commit("resetCart");
-    },
-
-    preparePrintableContent(receiptData) {
-      // Create a string with the printable content
-      console.log("terprint");
-      const content = `
-        <html>
-            <head>
-                <title>Receipt</title>
-                <!-- Include any styles or additional head content here -->
-            </head>
-            <body>
-                <h2>Receipt</h2>
-                <p>Customer Name: ${receiptData.customerName}</p>
-                <ul>
-                ${receiptData.items
-                  .map(
-                    (item) =>
-                      `<li>${item.name} - ${item.quantity} pcs - ${item.price} </li>`
-                  )
-                  .join("")}
-                </ul>
-                <p>Total Price: ${receiptData.totalPrice}</p>
-                <!-- Include any additional content here -->
-            </body>
-            </html>
-        `;
-      return content;
     },
   },
 };

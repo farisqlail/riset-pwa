@@ -1,15 +1,21 @@
 // store/index.js
+import axios from "axios";
 
 export const state = () => ({
   // Contoh state untuk PWA
   isOffline: false,
   isInstallPromptVisible: false,
   cart: [],
+  guides: [],
 });
 
 export const mutations = {
   setOffline(state, value) {
     state.isOffline = value;
+  },
+
+  setGuides(state, guides) {
+    state.guides = guides;
   },
 
   // addToCart(state, product) {
@@ -21,18 +27,20 @@ export const mutations = {
   // },
 
   addToCart(state, product) {
-    const existingItem = state.cart.find(item => item.name === product.name);
+    console.log("store", state);
+    const existingItem = state.cart.find(item => item.name === product.strMeal);
 
     if (existingItem) {
       existingItem.quantity++;
     } else {
       state.cart.push({
-        name: product.name,
-        price: product.price,
-        image: product.image,
+        name: product.strMeal,
+        price: 10000,
+        image: product.strMealThumb,
         quantity: 1,
       });
     }
+
     // Update state first, then save to cache
     this.commit("saveCartToCache");
   },
@@ -129,7 +137,7 @@ export const actions = {
     if (process.client) {
       const cartData = localStorage.getItem("cart");
       if (cartData) {
-        const cart = JSON.parse(cartData);
+        const cart = cartData ? JSON.parse(cartData) : [];
         commit("setCart", cart);
       }
     }
@@ -151,7 +159,26 @@ export const actions = {
     commit('setInstallPromptVisibility', isVisible);
   },
 
-  nuxtServerInit({ commit }) {
-    commit("loadCartFromLocalStorage");
+  // nuxtServerInit({ commit }) {
+  //   if (process.client) {
+  //     const guidesData = localStorage.getItem("guides");
+  //     if (guidesData) {
+  //       const guides = JSON.parse(guidesData);
+  //       commit("setGuides", guides);
+  //     }
+  //   }
+  // },
+  async nuxtServerInit({ commit }, { req }) {
+    try {
+      // Import axios specifically for server-side rendering
+      const axios = require("axios").default;
+      const response = await axios.get(
+        "https://www.themealdb.com/api/json/v1/1/search.php?f=a"
+      );
+      const guides = response.data.meals;
+      commit("setGuides", guides);
+    } catch (error) {
+      console.error("Error fetching guides during SSR:", error);
+    }
   },
 };
