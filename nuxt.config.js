@@ -1,19 +1,19 @@
 import path from 'path'
 import fs from 'fs'
 import guides from "./contents/guides/guides.js"
-const certPath = path.resolve(__dirname, 'server.crt');
-const keyPath = path.resolve(__dirname, 'server.key');
+// const certPath = path.resolve(__dirname, 'server.crt');
+// const keyPath = path.resolve(__dirname, 'server.key');
 
 export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
   target: "static",
 
-  server: {
-    https: {
-      key: fs.readFileSync(keyPath),
-      cert: fs.readFileSync(certPath)
-    }
-  },
+  // server: {
+  //   https: {
+  //     key: fs.readFileSync(keyPath),
+  //     cert: fs.readFileSync(certPath)
+  //   }
+  // },
 
   head: {
     title: 'riset-pwa',

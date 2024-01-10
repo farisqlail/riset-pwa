@@ -89,6 +89,7 @@ export default {
       this.cart = mergedCart;
       this.calculateTotalPrice();
     },
+    
     addMore() {
       this.$router.push("/");
     },
@@ -98,12 +99,12 @@ export default {
         customerName: this.customerName,
         items: this.cart,
       });
+
       this.$store.commit("saveCheckoutToCache", {
         customerName: this.customerName,
         items: this.cart,
       });
 
-      // this.$store.commit("resetCart");
       this.$router.push("/payments");
     },
 

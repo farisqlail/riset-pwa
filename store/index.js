@@ -110,6 +110,14 @@ export const mutations = {
     }
   },
 
+  resetCheckout(state) {
+    state.cart = [];
+
+    if (process.client) {
+      localStorage.removeItem("checkoutData");
+    }
+  },
+
   setInstallPromptVisibility(state, value) {
     state.isInstallPromptVisible = value;
   },
