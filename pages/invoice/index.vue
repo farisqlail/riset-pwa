@@ -78,6 +78,8 @@ export default {
       });
     },
 
+    // Your Nuxt.js component
+
     async printReceipt() {
       const receiptData = {
         customerName: this.customerName,
@@ -85,42 +87,34 @@ export default {
         totalPrice: this.totalPrice,
       };
 
-      const printableContent = `
-      <span align="center">invoice</span></br>
-      Customer Name: ${receiptData.customerName}
-      </br> -------------------------- </br>
-      Items:</br></br>
-      ${receiptData.items
-        .map((item) => `${item.name} - ${item.quantity} pcs - ${item.price}`)
-        .join("</br>")}
-      </br>
-      </br> -------------------------- </br> </br>
-      Total Price: ${receiptData.totalPrice}
-      </br></br>
-    `;
+      try {
+        const response = await this.$http.post(
+          "/api/print-receipt",
+          receiptData,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRF-TOKEN": window.csrf_token,
+            },
+          }
+        );
 
-      // Create a new window
-      // const printWindow = window.print();
-
-      // Set the content of the new window
-      // window.document.write(printableContent);
-
-      // Print the document
-      // window.document.close(); // Close the document to finalize the writing
-      window.print();
-
-      // Close the new window after printing
-      // window.onafterprint = function () {
-      //   window.close();
-      // };
+        if (response && response.data && response.data.success) {
+          console.log("Receipt printed successfully");
+        } else {
+          console.error(
+            "Error printing receipt:",
+            response && response.data ? response.data.message : "Unknown error"
+          );
+        }
+      } catch (error) {
+        console.error("Error sending receipt data:", error.message);
+      }
 
       // Reload after print (adjust the timing as needed)
-      // setTimeout(() => {
-      //   this.$store.commit("resetCart");
-      //   this.$store.commit("resetCheckout");
-      //   this.$router.push("/");
-      // }, 1000); // Wait for 1 second before reloading
-      // location.reload();
+      this.$store.commit("resetCart");
+      this.$store.commit("resetCheckout");
+      this.$router.push("/");
     },
   },
 };

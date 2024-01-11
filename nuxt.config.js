@@ -15,6 +15,8 @@ export default {
   //   }
   // },
 
+  ssr: true,
+
   head: {
     title: 'riset-pwa',
     htmlAttrs: {
@@ -64,7 +66,27 @@ export default {
     "@nuxtjs/pwa",
     '@nuxtjs/snipcart',
     '@nuxt/image',
+    '@nuxt/http',
+    '@nuxtjs/proxy'
   ],
+
+  axios: {
+    baseURL: 'http://127.0.0.1:8000', // Adjust the port if needed
+    debug: true,
+    proxy: true,
+  },
+
+  http: {
+    baseURL: 'http://127.0.0.1:8000', // Replace with your Laravel app's base URL
+  },
+
+  proxy: {
+    '/api/': {
+      target: 'http://localhost:8000',
+      pathRewrite: {'^/api/': ''},
+      changeOrigin: true,
+    },
+  },
 
   pwa: {
     // https://pwa.nuxtjs.org/manifest

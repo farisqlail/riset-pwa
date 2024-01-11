@@ -1,90 +1,44 @@
-<template>
-  <div class="invoice-container">
-    <div class="invoice-header">
-      <h2>Invoice</h2>
-      <p>Customer: {{ customerName }}</p>
-      {{}}
-    </div>
-    <div class="invoice-body">
-      <table>
-        <thead>
-          <tr>
-            <th>Item</th>
-            <th>Quantity</th>
-            <th>Price</th>
-            <th>Total</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(item, index) in cart" :key="index">
-            <td>{{ item.name }}</td>
-            <td>{{ item.quantity }}</td>
-            <td>{{ formatPrice(item.price) }}</td>
-            <td>{{ formatPrice(item.price * item.quantity) }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    <div class="invoice-footer">
-      <p>Total Price: {{ formatPrice(totalPrice) }}</p>
-    </div>
-  </div>
-</template>
-  
-<script>
-export default {
-  props: {
-    customerName: String,
-    cart: Array,
-    totalPrice: Number,
-  },
-  mounted() {
-    const receiptData = JSON.parse(this.$route.query.receiptData || "{}");
-    console.log(this.$route);
-    // Process the receiptData as needed
-  },
-  methods: {
-    formatPrice(value) {
-      const price = parseInt(value);
-      return price.toLocaleString("id-ID", {
-        style: "currency",
-        currency: "IDR",
-        minimumFractionDigits: 0,
-      });
-    },
-  },
-};
-</script>
-  
-<style scoped>
-.invoice-container {
-  max-width: 600px;
-  margin: auto;
-  padding: 20px;
-  border: 1px solid #ccc;
-}
+async printReceipt() {
+  const receiptData = {
+    customerName: this.customerName,
+    items: this.cart,
+    totalPrice: this.totalPrice,
+  };
 
-.invoice-header {
-  text-align: center;
-  margin-bottom: 20px;
-}
+  const printableContent = `
+  <span align="center">invoice</span></br>
+  Customer Name: ${receiptData.customerName}
+  </br> -------------------------- </br>
+  Items:</br></br>
+  ${receiptData.items
+    .map((item) => `${item.name} - ${item.quantity} pcs - ${item.price}`)
+    .join("</br>")}
+  </br>
+  </br> -------------------------- </br> </br>
+  Total Price: ${receiptData.totalPrice}
+  </br></br>
+`;
 
-.invoice-body table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-bottom: 20px;
-}
+  // Create a new window
+  // const printWindow = window.print();
 
-.invoice-body th,
-.invoice-body td {
-  border: 1px solid #ddd;
-  padding: 8px;
-  text-align: left;
-}
+  // Set the content of the new window
+  // window.document.write(printableContent);
 
-.invoice-footer {
-  text-align: right;
-  font-weight: bold;
-}
-</style>
-  
+  // Print the document
+  // window.document.close(); // Close the document to finalize the writing
+  window.print();
+
+  // Close the new window after printing
+  // window.onafterprint = function () {
+  //   window.close();
+  // };
+
+  // Reload after print (adjust the timing as needed)
+  // setTimeout(() => {
+  //   this.$store.commit("resetCart");
+  //   this.$store.commit("resetCheckout");
+  //   this.$router.push("/");
+  // }, 1000); // Wait for 1 second before reloading
+  // location.reload();
+},

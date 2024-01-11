@@ -11,11 +11,12 @@
       data-api-key="ODQ1Y2E1MmItOGVkNi00NzliLWIyMGItNWZlYjIzOTBkZGEwNjM4NDAyODU0MTUzODUwNzkw"
       data-currency="idr"
     ></script> -->
-
-  
   </div>
 </template>
 
+<script>
+window.csrf_token = "{{ csrf_token() }}";
+</script>
 <script>
 import Navbar from "~/components/Navbar.vue";
 
