@@ -56,7 +56,13 @@
             :key="index"
           >
             <div>
-              <img :src="item.image" :alt="item.name" class="cart-item-image" />
+              <nuxt-img
+                :src="item.image"
+                :alt="item.name"
+                width="50"
+                height="50"
+                class="cart-item-image"
+              />
               {{ item.name }} - {{ formatPrice(item.price) }} ({{
                 item.quantity
               }}
@@ -97,49 +103,43 @@ export default {
       totalPrice: 0,
     };
   },
-  // async asyncData({ store }) {
-  //   store.dispatch("fetchCartData");
+  async asyncData({ store, $axios }) {
+    store.dispatch("fetchCartData");
 
-  //   // Initialize data
-  //   let cart = [];
-  //   let guides = [];
+    let cart = [];
+    let guides = [];
 
-  //   // Check if running on the client side
-  //   if (process.client) {
-  //     // Retrieve cart data from local storage
-  //     const cartData = localStorage.getItem("cart");
-  //     if (cartData) {
-  //       cart = JSON.parse(cartData);
-  //     }
+    if (process.client) {
+      const cartData = localStorage.getItem("cart");
+      if (cartData) {
+        cart = JSON.parse(cartData);
+      }
 
-  //     // Retrieve guides data from local storage or fetch from API
-  //     const cachedGuides = localStorage.getItem("guides");
+      const cachedGuides = localStorage.getItem("guides");
 
-  //     // Check if cachedGuides is not null before parsing
-  //     if (cachedGuides) {
-  //       guides = JSON.parse(cachedGuides);
-  //     } else {
-  //       // Fetch data from the API if guides data doesn't exist in localStorage
-  //       try {
-  //         const response = await axios.get(
-  //           "https://www.themealdb.com/api/json/v1/1/search.php?f=a"
-  //         );
+      if (cachedGuides) {
+        guides = JSON.parse(cachedGuides);
+      } else {
+        try {
+          // Use $axios instance provided by Nuxt.js for API requests during SSR
+          const response = await $axios.get(
+            "https://www.themealdb.com/api/json/v1/1/search.php?f=a"
+          );
 
-  //         guides = response.data.meals; // Ensure that guides is an array
+          guides = response.data.meals;
 
-  //         // Save the guides data to localStorage
-  //         localStorage.setItem("guides", JSON.stringify(guides));
-  //       } catch (error) {
-  //         console.error("Error fetching guides:", error);
-  //       }
-  //     }
-  //   }
+          localStorage.setItem("guides", JSON.stringify(guides));
+        } catch (error) {
+          console.error("Error fetching guides:", error);
+        }
+      }
+    }
 
-  //   // Save the data to Vuex store
-  //   store.commit("setGuides", guides);
+    store.commit("setGuides", guides);
 
-  //   return { guides, cart };
-  // },
+    return { guides, cart };
+  },
+
   async someFunction() {
     await this.calculateTotalPrice();
   },
@@ -149,28 +149,32 @@ export default {
     };
   },
   mounted() {
-    this.getData();
     this.$store.dispatch("fetchCartData");
+    this.getData();
     this.calculateTotalPrice();
   },
   methods: {
     getData() {
       // Fetch data from the API
-      if (!process.client) {
+      if (process.client) {
         axios
           .get("https://www.themealdb.com/api/json/v1/1/search.php?f=a")
           .then((response) => {
-            this.guides = response.data.meals; // Ensure that guides is an array
-            store.commit("setGuides", this.guides); // Use this.$store.commit if not in the context of a function or method
+            this.guides = response.data.meals;
+
+            localStorage.setItem("guides", JSON.stringify(this.guides));
             return this.guides;
           })
           .catch((error) => {
             console.error("Error fetching guides:", error);
+            this.guides = JSON.parse(localStorage.getItem("guides") || "[]");
+
+            // Commit the data to Vuex store
+            this.$store.commit("setGuides", this.guides);
+
+            // Return the guides data
+            return this.guides;
           });
-      } else {
-        this.guides = JSON.parse(localStorage.getItem("guides") || "[]"); // Parse the stored string as JSON
-        this.$store.commit("setGuides", this.guides); // Use this.$store.commit if not in the context of a function or method
-        return this.guides;
       }
     },
     addToCart(product) {

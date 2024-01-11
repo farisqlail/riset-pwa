@@ -63,6 +63,7 @@ export default {
     'bootstrap-vue/nuxt',
     "@nuxtjs/pwa",
     '@nuxtjs/snipcart',
+    '@nuxt/image',
   ],
 
   pwa: {
