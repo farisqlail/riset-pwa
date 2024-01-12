@@ -7,14 +7,7 @@ import guides from "./contents/guides/guides.js"
 export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
   target: "static",
-
-  // server: {
-  //   https: {
-  //     key: fs.readFileSync(keyPath),
-  //     cert: fs.readFileSync(certPath)
-  //   }
-  // },
-
+  
   ssr: true,
 
   head: {
@@ -152,6 +145,7 @@ export default {
     middleware: [
       'index',
       'loadCart',
-    ]
+    ],
+    base: 'https://github.com/farisqlail/riset-pwa'
   },
 }

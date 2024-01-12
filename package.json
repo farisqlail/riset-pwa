@@ -30,6 +30,7 @@
     "@nuxtjs/pwa": "^3.3.5",
     "@nuxtjs/snipcart": "^2.0.2",
     "frontmatter-markdown-loader": "^3.7.0",
+    "push-dir": "^0.4.1",
     "raw-loader": "^4.0.2"
   }
 }
