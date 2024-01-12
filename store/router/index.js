@@ -4,7 +4,7 @@ import VueRouter from "vue-router";
 import Home from "../../pages/index.vue";
 import Checkout from "../../pages/checkout/index.vue";
 import Invoice from "../../pages/invoice/index.vue";
-import Nota from "../../pages/invoice/Nota.vue";
+import Nota from "../../pages/invoice/print-with-api.vue";
 import Payments from "../../pages/payments/index.vue";
 
 Vue.use(VueRouter);
