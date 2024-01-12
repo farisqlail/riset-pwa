@@ -146,6 +146,5 @@ export default {
       'index',
       'loadCart',
     ],
-    base: 'https://github.com/farisqlail/riset-pwa'
   },
 }
