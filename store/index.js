@@ -28,15 +28,15 @@ export const mutations = {
 
   addToCart(state, product) {
     console.log("store", state);
-    const existingItem = state.cart.find(item => item.name === product.strMeal);
+    const existingItem = state.cart.find(item => item.name === product.product_name);
 
     if (existingItem) {
       existingItem.quantity++;
     } else {
       state.cart.push({
-        name: product.strMeal,
-        price: 10000,
-        image: product.strMealThumb,
+        name: product.product_name,
+        price: product.product_pricenow,
+        image: product.product_images,
         quantity: 1,
       });
     }
@@ -138,17 +138,33 @@ export const mutations = {
       localStorage.setItem("checkoutData", JSON.stringify(checkoutData));
     }
   },
+
+  setCartData(state, cartData) {
+    state.cart = cartData;
+  },
 };
 
 export const actions = {
-  async fetchCartData({ commit }) {
-    if (process.client) {
-      const cartData = localStorage.getItem("cart");
-      if (cartData) {
-        const cart = cartData ? JSON.parse(cartData) : [];
-        commit("setCart", cart);
+  
+  fetchCartData({ commit }) {
+    try {
+      if (process.client) {
+        // Access localStorage only on the client side
+        const cartData = JSON.parse(localStorage.getItem("cart") || "[]");
+        commit("setCartData", cartData);
+        return cartData;
       }
+      // Handle the case where localStorage is not defined on the server side
+      return [];
+    } catch (error) {
+      console.error("Error fetching cart data:", error);
+      return [];
     }
+
+  },
+
+  setDataCart({ commit }, cartData) {
+    commit("setCartData", cartData);
   },
 
   async fetchData({ commit }) {

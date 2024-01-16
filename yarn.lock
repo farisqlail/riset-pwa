@@ -1547,25 +1547,25 @@
     node-fetch "^2.6.1"
     web-streams-polyfill "^3.0.1"
 
-"@nuxt/image@^1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@nuxt/image/-/image-1.1.0.tgz#71726a472e9c4f3332604b56107cff4fc271964c"
-  integrity sha512-+zZqsjVfR83UOrChGeaYuWZeLYMkFD0gNY0T6L4W1y4YaRbKNN5iynZJ71Bmg7lcOPRbf5OmSPBTSU0ieYJq4w==
+"@nuxt/image@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@nuxt/image/-/image-1.2.0.tgz#38b21cfba60c53c01da197b3d6a7d82ce17cf866"
+  integrity sha512-DxR1RVHZgVHVRHyZTFhAB5149Vbe3eyTLk32h8GLj/5Nt4WN1Du6VZs89fjbTP4sfjQTSYKBKgIJDdetf61heQ==
   dependencies:
-    "@nuxt/kit" "^3.8.2"
+    "@nuxt/kit" "^3.9.1"
     consola "^3.2.3"
-    defu "^6.1.3"
-    h3 "^1.9.0"
+    defu "^6.1.4"
+    h3 "^1.10.0"
     image-meta "^0.2.0"
-    node-fetch-native "^1.4.1"
+    node-fetch-native "^1.6.1"
     ohash "^1.1.3"
-    pathe "^1.1.1"
-    std-env "^3.5.0"
+    pathe "^1.1.2"
+    std-env "^3.7.0"
     ufo "^1.3.2"
   optionalDependencies:
     ipx "^2.0.2"
 
-"@nuxt/kit@^3.1.1", "@nuxt/kit@^3.8.2":
+"@nuxt/kit@^3.1.1", "@nuxt/kit@^3.9.1":
   version "3.9.1"
   resolved "https://registry.npmjs.org/@nuxt/kit/-/kit-3.9.1.tgz"
   integrity sha512-QvwZ4QmxmKEnGXXwhLapfogW8enIX30GD7nbmasAkcDIf4GdP2IWUwhd068mrXMbzdZupRLV1J5E74Dr516o5g==
@@ -4942,7 +4942,7 @@ gzip-size@^6.0.0:
   dependencies:
     duplexer "^0.1.2"
 
-h3@^1.10.0, h3@^1.8.2, h3@^1.9.0:
+h3@^1.10.0, h3@^1.8.2:
   version "1.10.0"
   resolved "https://registry.yarnpkg.com/h3/-/h3-1.10.0.tgz#55ac36deb6e250ada5ff1940b6324bc6acc4085f"
   integrity sha512-Tw1kcIC+AeimwRmviiObaD5EB430Yt+lTgOxLJxNr96Vd/fGRu04EF7aKfOAcpwKCI+U2JlbxOLhycD86p3Ciw==
@@ -7114,6 +7114,11 @@ pathe@^1.1.0, pathe@^1.1.1:
   version "1.1.1"
   resolved "https://registry.npmjs.org/pathe/-/pathe-1.1.1.tgz"
   integrity sha512-d+RQGp0MAYTIaDBIMmOfMwz3E+LOZnxx1HZd5R18mmCZY0QBlK0LDZfPc8FW8Ed2DlvsuE6PRjroDY+wg4+j/Q==
+
+pathe@^1.1.2:
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/pathe/-/pathe-1.1.2.tgz#6c4cb47a945692e48a1ddd6e4094d170516437ec"
+  integrity sha512-whLdWMYL2TwI08hn8/ZqAbrVemu0LNaNNJZX73O6qaIdCTfXutsLhMkjdENX0qhsQ9uIimo4/aQOmXkoon2nDQ==
 
 pbkdf2@^3.0.3:
   version "3.1.2"
