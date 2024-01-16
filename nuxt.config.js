@@ -34,8 +34,8 @@ export default {
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
     '~/store/plugins/cache.js',
-     { src: '~/store/plugins/vue-html-to-paper.js', ssr: false },
-     { src: '~/store/plugins/workbox-sync.js', ssr: false },
+    { src: '~/store/plugins/vue-html-to-paper.js', ssr: false },
+    { src: '~/store/plugins/workbox-sync.js', ssr: false },
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -44,7 +44,10 @@ export default {
   // Modules for dev and build (recommended): https://go.nuxtjs.dev/config-modules
   buildModules: [
     // '@nuxtjs/tailwindcss'
+    '@nuxt/image',
     "@nuxtjs/pwa",
+    '@nuxt/http',
+    '@nuxtjs/proxy',
     'bootstrap-vue/nuxt',
   ],
 
@@ -58,26 +61,34 @@ export default {
     'bootstrap-vue/nuxt',
     "@nuxtjs/pwa",
     '@nuxtjs/snipcart',
-    '@nuxt/image',
     '@nuxt/http',
-    '@nuxtjs/proxy'
+    '@nuxtjs/proxy',
+    '@nuxt/image',
   ],
 
   axios: {
-    baseURL: 'http://127.0.0.1:8000', // Adjust the port if needed
+    baseURL: 'https://cloud.interactive.co.id/myprofit', // Adjust the port if needed
     debug: true,
     proxy: true,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,PATCH,OPTIONS',
+    },
   },
 
   http: {
-    baseURL: 'http://127.0.0.1:8000', // Replace with your Laravel app's base URL
+    baseURL: 'https://cloud.interactive.co.id/myprofit', // Replace with your Laravel app's base URL
   },
 
   proxy: {
     '/api/': {
-      target: 'http://localhost:8000',
-      pathRewrite: {'^/api/': ''},
+      target: 'https://cloud.interactive.co.id/myprofit',
+      pathRewrite: { '^/api/': '' },
       changeOrigin: true,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,PATCH,OPTIONS',
+      },
     },
   },
 
@@ -99,17 +110,17 @@ export default {
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
-    extend(config, ctx) {
-      config.module.rules.push({
-        test: /\.md$/,
-        loader: 'frontmatter-markdown-loader',
-        include: path.resolve(__dirname, 'contents'),
-      })
-    },
-    loaders: {
-      mie: 'raw-loader', // Adjust the loader based on the file type
-    },
-    transpile: ['axios'],
+    // extend(config, ctx) {
+    //   config.module.rules.push({
+    //     test: /\.md$/,
+    //     loader: 'frontmatter-markdown-loader',
+    //     include: path.resolve(__dirname, 'contents'),
+    //   })
+    // },
+    // loaders: {
+    //   mie: 'raw-loader', // Adjust the loader based on the file type
+    // },
+    transpile: ['axios', '@nuxt/image'],
   },
 
   workbox: {

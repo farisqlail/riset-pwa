@@ -6,17 +6,20 @@
           >Lihat Keranjang</b-button
         >
       </div>
+
       <div class="row mt-3">
         <div class="col-md-4" v-for="(product, index) in guides" :key="index">
           <b-card
-            :title="product.strMeal"
-            :img-src="product.strMealThumb"
-            :img-alt="product.strMeal"
+            :title="product.product_name"
+            :img-src="product.product_images"
+            :img-alt="product.product_name"
             img-top
             tag="article"
             class="mb-2"
           >
-            <b-card-text> {{ formatPrice(10000) }} </b-card-text>
+            <b-card-text>
+              {{ formatPrice(product.product_pricenow) }}
+            </b-card-text>
 
             <b-button
               href="#"
@@ -56,12 +59,13 @@
             :key="index"
           >
             <div>
-              <nuxt-img
+              <img
                 :src="item.image"
                 :alt="item.name"
                 width="50"
                 height="50"
                 class="cart-item-image"
+                loading="lazy"
               />
               {{ item.name }} - {{ formatPrice(item.price) }} ({{
                 item.quantity
@@ -103,42 +107,6 @@ export default {
       totalPrice: 0,
     };
   },
-  async asyncData({ store, $axios }) {
-    store.dispatch("fetchCartData");
-
-    let cart = [];
-    let guides = [];
-
-    if (process.client) {
-      const cartData = localStorage.getItem("cart");
-      if (cartData) {
-        cart = JSON.parse(cartData);
-      }
-
-      const cachedGuides = localStorage.getItem("guides");
-
-      if (cachedGuides) {
-        guides = JSON.parse(cachedGuides);
-      } else {
-        try {
-          // Use $axios instance provided by Nuxt.js for API requests during SSR
-          const response = await $axios.get(
-            "https://www.themealdb.com/api/json/v1/1/search.php?f=a"
-          );
-
-          guides = response.data.meals;
-
-          localStorage.setItem("guides", JSON.stringify(guides));
-        } catch (error) {
-          console.error("Error fetching guides:", error);
-        }
-      }
-    }
-
-    store.commit("setGuides", guides);
-
-    return { guides, cart };
-  },
 
   async someFunction() {
     await this.calculateTotalPrice();
@@ -149,37 +117,61 @@ export default {
     };
   },
   mounted() {
-    this.$store.dispatch("fetchCartData");
+    this.asyncData();
     this.getData();
     this.calculateTotalPrice();
   },
   methods: {
-    getData() {
-      // Fetch data from the API
-      if (process.client) {
-        axios
-          .get("https://www.themealdb.com/api/json/v1/1/search.php?f=a")
-          .then((response) => {
-            this.guides = response.data.meals;
+    async asyncData({ store }) {
+      await store.dispatch("fetchCartData");
 
-            localStorage.setItem("guides", JSON.stringify(this.guides));
-            return this.guides;
-          })
-          .catch((error) => {
-            console.error("Error fetching guides:", error);
-            this.guides = JSON.parse(localStorage.getItem("guides") || "[]");
+      // Check if running on the client side
+      const cartData = process.client
+        ? JSON.parse(localStorage.getItem("cart") || "[]")
+        : [];
 
-            // Commit the data to Vuex store
-            this.$store.commit("setGuides", this.guides);
+      return { cart: cartData };
+    },
 
-            // Return the guides data
-            return this.guides;
-          });
+    async getData() {
+      try {
+        if (localStorage.getItem("guides")) {
+          this.guides = JSON.parse(localStorage.getItem("guides") || "[]");
+          this.$store.commit("setGuides", this.guides);
+
+          return this.guides;
+        }
+
+        // Fetch data from the API
+        if (process.client) {
+          const response = await axios.get(
+            "https://cloud.interactive.co.id/myprofit/api/get_product?salt=m4riyAdiH43hhaEh&appid=MP01M51463F20230206169&loc_id=51203"
+          );
+
+          this.guides = response.data.data;
+          localStorage.setItem("guides", JSON.stringify(this.guides));
+          this.$store.commit("setGuides", this.guides);
+
+          return this.guides;
+        } else {
+          console.error("Error fetching guides: Client not available");
+
+          return [];
+        }
+      } catch (error) {
+        console.error("Error fetching guides:", error);
+
+        return [];
       }
     },
+
+    async updateCartData(newCartData) {
+      this.$store.dispatch("setDataCart", newCartData);
+    },
+
     addToCart(product) {
       const existingItem = this.cart.find(
-        (item) => item.name === product.strMeal
+        (item) => item.name === product.product_name
       );
       this.$store.commit("addToCart", product);
 
@@ -187,9 +179,9 @@ export default {
         existingItem.quantity++;
       } else {
         this.cart.push({
-          name: product.strMeal,
-          price: 10000,
-          image: product.strMealThumb,
+          name: product.product_name,
+          price: product.product_pricenow,
+          image: product.product_images,
           quantity: 1,
         });
       }

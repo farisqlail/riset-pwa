@@ -86,39 +86,56 @@ export default {
         totalPrice: this.totalPrice,
       };
 
+      const uniqueItems = Array.from(
+        new Set(receiptData.items.map((item) => item.name))
+      );
+
       const printableContent = `
-        <span align="center">invoice</span></br>
-        Customer Name: ${receiptData.customerName}
-        </br> -------------------------- </br>
-        Items:</br></br>
-        ${receiptData.items
-          .map((item) => `${item.name} - ${item.quantity} pcs - ${item.price}`)
-          .join("</br>")}
-        </br>
-        </br> -------------------------- </br> </br>
-        Total Price: ${receiptData.totalPrice}
-        </br></br>
+          <span align="center">invoice</span></br>
+          Customer Name: ${receiptData.customerName}
+          </br> -------------------------- </br>
+          Items:</br></br>
+          ${uniqueItems
+            .map((item) => {
+              const matchedItem = receiptData.items.find(
+                (i) => i.name === item
+              );
+              return `${matchedItem.name} - ${
+                matchedItem.quantity
+              } pcs - ${this.formatRupiah(matchedItem.price)}`;
+            })
+            .join("</br>")}
+          </br>
+          </br> -------------------------- </br> </br>
+          Total Price: ${this.formatRupiah(receiptData.totalPrice)}
+          </br></br>
       `;
 
-      // Set the content of the new window
-      window.document.write(printableContent);
+      var newWindow = window.open("", "_blank");
+      newWindow.document.write(printableContent);
+      newWindow.document.close(); // Close the document to finalize the writing
 
-      // Print the document
-      window.document.close(); // Close the document to finalize the writing
-      window.print();
-
-      // Close the new window after printing
-      window.onafterprint = function () {
-        window.close();
+      newWindow.onafterprint = function () {
+        newWindow.close(); // Close the new window after printing
+        // Perform additional actions after printing if needed
       };
 
+      newWindow.print();
       // Reload after print (adjust the timing as needed)
       setTimeout(() => {
         this.$store.commit("resetCart");
         this.$store.commit("resetCheckout");
         this.$router.push("/");
       }, 1000); // Wait for 1 second before reloading
-      location.reload();
+    },
+
+    formatRupiah(amount) {
+      const formatter = new Intl.NumberFormat("id-ID", {
+        style: "currency",
+        currency: "IDR",
+        minimumFractionDigits: 0,
+      });
+      return formatter.format(amount);
     },
   },
 };
