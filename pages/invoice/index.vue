@@ -111,11 +111,6 @@ export default {
           </br></br>
       `;
 
-      // Set the content of the new window
-      // window.document.write(printableContent);
-
-      // Print the document
-      // window.document.close(); // Close the document to finalize the writing
       var newWindow = window.open("", "_blank");
       newWindow.document.write(printableContent);
       newWindow.document.close(); // Close the document to finalize the writing
@@ -126,10 +121,6 @@ export default {
       };
 
       newWindow.print();
-      // Close the new window after printing
-      // window.onafterprint = function () {
-      // };
-
       // Reload after print (adjust the timing as needed)
       setTimeout(() => {
         this.$store.commit("resetCart");
