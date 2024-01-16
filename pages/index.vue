@@ -20,8 +20,8 @@
             class="mb-2"
             loading="lazy"
           >
-            <img
-              :src="getOptimizedImage(product.product_images)"
+            <b-img
+              :src="product.product_images"   
               :alt="product.product_name"
               width="200"
               height="200"
