@@ -7,18 +7,25 @@
         >
       </div>
 
-      <div class="row mt-3">
-        <div class="col-md-4" v-for="(product, index) in guides" :key="index">
-          <b-card :title="product.product_name" tag="article" class="mb-2">
-            <nuxt-img
-              :src="product.product_images"
-              :alt="product.product_name"
-              img-top
-              loading="lazy"
-            />
-            <b-card-text>
+      <div class="row mt-3 mb-5">
+        <div
+          class="col-md-4"
+          v-for="(product, index) in paginatedGuides"
+          :key="index"
+        >
+          <b-card
+            :img-src="product.product_images"
+            :img-alt="product.product_name"
+            img-top
+            tag="article"
+            style="max-width: 20rem"
+            class="mb-2"
+            loading="lazy"
+          >
+            <h5>{{ product.product_name }}</h5>
+            <span>
               {{ formatPrice(product.product_pricenow) }}
-            </b-card-text>
+            </span>
 
             <b-button
               href="#"
@@ -39,6 +46,16 @@
             </b-button>
           </b-card>
         </div>
+      </div>
+
+      <div class="pagination d-flex justify-content-center mb-5">
+        <b-button class="mr-3" :disabled="currentPage === 1" @click="prevPage"
+          >Previous</b-button
+        >
+        <!-- <span>{{ currentPage }}</span> -->
+        <b-button variant="success" :disabled="endIndex >= guides.length" @click="nextPage"
+          >Next</b-button
+        >
       </div>
 
       <b-toast
@@ -112,6 +129,8 @@ export default {
       showToast: false,
       showCartModal: false,
       totalPrice: 0,
+      currentPage: 1,
+      perPage: 6,
     };
   },
 
@@ -122,6 +141,17 @@ export default {
     return {
       title: "Riset PWA",
     };
+  },
+  computed: {
+    startIndex() {
+      return (this.currentPage - 1) * this.perPage;
+    },
+    endIndex() {
+      return this.currentPage * this.perPage;
+    },
+    paginatedGuides() {
+      return this.guides.slice(this.startIndex, this.endIndex);
+    },
   },
   mounted() {
     this.asyncData();
@@ -174,6 +204,17 @@ export default {
 
     async updateCartData(newCartData) {
       this.$store.dispatch("setDataCart", newCartData);
+    },
+
+    prevPage() {
+      if (this.currentPage > 1) {
+        this.currentPage--;
+      }
+    },
+    nextPage() {
+      if (this.endIndex < this.guides.length) {
+        this.currentPage++;
+      }
     },
 
     addToCart(product) {
