@@ -10,12 +10,13 @@
   },
   "dependencies": {
     "@nuxt/http": "^0.6.4",
-    "@nuxt/image": "^1.2.0",
+    "@nuxt/image-edge": "^1.2.0-28417792.5fb7d0e",
     "axios": "^1.6.5",
     "bootstrap": "^4.6.2",
     "bootstrap-vue": "^2.22.0",
     "core-js": "^3.25.3",
     "escpos": "^3.0.0-alpha.6",
+    "ipx": "^3.0.0",
     "mkcert": "^3.2.0",
     "nuxt": "^2.15.8",
     "vue": "^2.7.10",
@@ -27,10 +28,10 @@
     "workbox-strategies": "^7.0.0"
   },
   "devDependencies": {
+    "@nuxt/image": "^0.7.1",
     "@nuxtjs/pwa": "^3.3.5",
     "@nuxtjs/snipcart": "^2.0.2",
     "frontmatter-markdown-loader": "^3.7.0",
-    "raw-loader": "^4.0.2",
-    "@nuxt/image": "^1.2.0"
+    "raw-loader": "^4.0.2"
   }
 }

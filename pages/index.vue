@@ -14,14 +14,19 @@
           :key="index"
         >
           <b-card
-            :img-src="product.product_images"
-            :img-alt="product.product_name"
             img-top
             tag="article"
             style="max-width: 20rem"
             class="mb-2"
             loading="lazy"
           >
+            <img
+              :src="getOptimizedImage(product.product_images)"
+              :alt="product.product_name"
+              width="200"
+              height="200"
+            />
+
             <h5>{{ product.product_name }}</h5>
             <span>
               {{ formatPrice(product.product_pricenow) }}
@@ -53,7 +58,10 @@
           >Previous</b-button
         >
         <!-- <span>{{ currentPage }}</span> -->
-        <b-button variant="success" :disabled="endIndex >= guides.length" @click="nextPage"
+        <b-button
+          variant="success"
+          :disabled="endIndex >= guides.length"
+          @click="nextPage"
           >Next</b-button
         >
       </div>
@@ -159,6 +167,10 @@ export default {
     this.calculateTotalPrice();
   },
   methods: {
+    getOptimizedImage(imageUrl) {
+      return this.$image({ src: imageUrl, width: 500, height: 500 });
+    },
+
     async asyncData({ store }) {
       await store.dispatch("fetchCartData");
 

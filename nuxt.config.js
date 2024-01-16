@@ -167,6 +167,8 @@ export default {
   },
 
   image: {
-    // Options
-  }
+    serverMiddleware: {
+      '/_ipx': '~/server/middleware/ipx.js'
+    },
+  },
 }
