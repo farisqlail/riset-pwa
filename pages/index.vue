@@ -9,14 +9,13 @@
 
       <div class="row mt-3">
         <div class="col-md-4" v-for="(product, index) in guides" :key="index">
-          <b-card
-            :title="product.product_name"
-            :img-src="product.product_images"
-            :img-alt="product.product_name"
-            img-top
-            tag="article"
-            class="mb-2"
-          >
+          <b-card :title="product.product_name" tag="article" class="mb-2">
+            <nuxt-img
+              :src="product.product_images"
+              :alt="product.product_name"
+              img-top
+              loading="lazy"
+            />
             <b-card-text>
               {{ formatPrice(product.product_pricenow) }}
             </b-card-text>
@@ -52,40 +51,48 @@
       </b-toast>
 
       <b-modal v-model="showCartModal" size="lg" title="Shopping Cart">
-        <div class="row-item">
-          <div
-            class="item-cart mb-3"
+        <b-list-group flush>
+          <b-list-group-item
             v-for="(item, index) in cart"
             :key="index"
+            class="d-flex justify-content-between align-items-center"
           >
-            <div>
+            <div class="d-flex align-items-center">
               <img
                 :src="item.image"
                 :alt="item.name"
                 width="50"
                 height="50"
-                class="cart-item-image"
+                class="cart-item-image mr-2"
                 loading="lazy"
               />
-              {{ item.name }} - {{ formatPrice(item.price) }} ({{
-                item.quantity
-              }}
-              pcs)
+              <span
+                >{{ item.name }} - {{ formatPrice(item.price) }} ({{
+                  item.quantity
+                }}
+                pcs)</span
+              >
             </div>
             <div>
-              <b-button @click="decreaseQuantity(index)" variant="info"
+              <b-button
+                @click="decreaseQuantity(index)"
+                variant="info"
+                class="mr-2"
                 >Kurangi</b-button
               >
-              <b-button @click="increaseQuantity(index)" variant="success"
+              <b-button
+                @click="increaseQuantity(index)"
+                variant="success"
+                class="mr-2"
                 >Tambah</b-button
               >
               <b-button @click="removeFromCart(index)" variant="danger"
                 >Hapus</b-button
               >
             </div>
-          </div>
-          <p>Total Harga: {{ formatPrice(totalPrice) }}</p>
-        </div>
+          </b-list-group-item>
+        </b-list-group>
+
         <template #modal-footer>
           <b-button @click="openCheckout" variant="primary">Checkout</b-button>
         </template>
@@ -108,9 +115,9 @@ export default {
     };
   },
 
-  async someFunction() {
-    await this.calculateTotalPrice();
-  },
+  // async someFunction() {
+  //   await this.calculateTotalPrice();
+  // },
   head() {
     return {
       title: "Riset PWA",
@@ -255,6 +262,35 @@ export default {
       this.calculateTotalPrice();
 
       localStorage.setItem("cart", JSON.stringify(this.cart));
+    },
+
+    getOptimizedImage(imagePath) {
+      // Check if the browser supports WebP format
+      const supportsWebP = this.browserSupportsWebP();
+
+      // Modify the imagePath to include the desired optimizations
+      // For example, you can append query parameters for resizing or format
+      let optimizedPath = imagePath;
+
+      // Append query parameters for WebP format if supported
+      if (supportsWebP) {
+        optimizedPath += "?format=webp";
+      }
+
+      return optimizedPath;
+    },
+
+    browserSupportsWebP() {
+      // Check if the browser supports WebP format
+      const elem = document.createElement("canvas");
+
+      if (!!(elem.getContext && elem.getContext("2d"))) {
+        // Was able or not to get WebP representation
+        return elem.toDataURL("image/webp").indexOf("data:image/webp") === 0;
+      }
+
+      // WebGL is not supported
+      return false;
     },
   },
 };

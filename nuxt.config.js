@@ -51,11 +51,11 @@ export default {
   // Modules for dev and build (recommended): https://go.nuxtjs.dev/config-modules
   buildModules: [
     // '@nuxtjs/tailwindcss'
-    '@nuxt/image',
     "@nuxtjs/pwa",
     '@nuxt/http',
     '@nuxtjs/proxy',
     'bootstrap-vue/nuxt',
+    '@nuxt/image',
   ],
 
   snipcart: {
@@ -165,4 +165,8 @@ export default {
       'loadCart',
     ]
   },
+
+  image: {
+    // Options
+  }
 }
