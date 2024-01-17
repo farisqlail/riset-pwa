@@ -18,14 +18,6 @@ export const mutations = {
     state.guides = guides;
   },
 
-  // addToCart(state, product) {
-  //   state.cart.push(product);
-
-  //   if (process.client) {
-  //     localStorage.setItem("cart", JSON.stringify(state.cart));
-  //   }
-  // },
-
   addToCart(state, product) {
     console.log("store", state);
     const existingItem = state.cart.find(item => item.name === product.product_name);
@@ -58,12 +50,6 @@ export const mutations = {
   },
 
   saveCartToCache(state) {
-    // Simpan data ke cache jika berada di sisi klien
-    // if (process.client) {
-    //   caches.open("my-cache-name").then(cache => {
-    //     cache.put("cart", new Response(JSON.stringify(state.cart)));
-    //   });
-    // }
     const filteredCart = state.cart.filter(item => item.quantity !== null && item.quantity !== undefined);
 
     localStorage.setItem("cart", JSON.stringify(filteredCart));
@@ -145,7 +131,14 @@ export const mutations = {
 };
 
 export const actions = {
-  
+
+  // cart section
+  addToCart({ commit }, product) {
+    commit("addToCart", product);
+    commit("saveCartToCache");
+    commit("calculateTotalPrice");
+  },
+
   fetchCartData({ commit }) {
     try {
       if (process.client) {
@@ -160,12 +153,55 @@ export const actions = {
       console.error("Error fetching cart data:", error);
       return [];
     }
+  },
 
+  loadCartFromCache({ commit }) {
+    if (process.client) {
+      caches.open("my-cache-name").then(cache => {
+        cache.match("cart").then(response => {
+          if (response) {
+            response.json().then(data => {
+              commit("setCart", data);
+            });
+          }
+        });
+      });
+
+      const cartData = localStorage.getItem("cart");
+      if (cartData) {
+        commit("setCart", JSON.parse(cartData));
+      }
+    }
+  },
+
+  async saveCartToCache({ state }) {
+    if (process.client) {
+      try {
+        const filteredCart = state.cart.filter(item => item.quantity !== null && item.quantity !== undefined);
+        const cache = await caches.open("my-cache-name");
+        await cache.put("cart", new Response(JSON.stringify(filteredCart)));
+      } catch (error) {
+        console.error("Error saving cart to cache:", error);
+      }
+    }
+  },
+
+  async clearCartCache() {
+    if (process.client) {
+      try {
+        const cache = await caches.open("my-cache-name");
+        await cache.delete("cart");
+      } catch (error) {
+        console.error("Error clearing cart cache:", error);
+      }
+    }
   },
 
   setDataCart({ commit }, cartData) {
     commit("setCartData", cartData);
   },
+
+  // end cart
 
   async fetchData({ commit }) {
     // Lakukan operasi asinkron di sini dan panggil mutasi setelahnya
@@ -183,15 +219,6 @@ export const actions = {
     commit('setInstallPromptVisibility', isVisible);
   },
 
-  // nuxtServerInit({ commit }) {
-  //   if (process.client) {
-  //     const guidesData = localStorage.getItem("guides");
-  //     if (guidesData) {
-  //       const guides = JSON.parse(guidesData);
-  //       commit("setGuides", guides);
-  //     }
-  //   }
-  // },
   async nuxtServerInit({ commit }, { req }) {
     try {
       // Import axios specifically for server-side rendering

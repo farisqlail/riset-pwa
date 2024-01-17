@@ -16,12 +16,7 @@
           v-for="(product, index) in paginatedGuides"
           :key="index"
         >
-          <b-card
-            img-top
-            tag="article"
-            style="max-width: 20rem"
-            class="mb-2"
-          >
+          <b-card img-top tag="article" style="max-width: 20rem" class="mb-2">
             <nuxt-img
               :src="getOptimizedImage(product.product_images)"
               :alt="product.product_name"
@@ -87,13 +82,13 @@
           >
             <div class="d-flex align-items-center">
               <nuxt-img
-              :src="getOptimizedImage(item.image)"
-              :alt="item.name"
-              width="50"
-              height="50"
-              class="mr-2"
-              loading="lazy"
-            />
+                :src="getOptimizedImage(item.image)"
+                :alt="item.name"
+                width="50"
+                height="50"
+                class="mr-2"
+                loading="lazy"
+              />
               <span
                 >{{ item.name }} - {{ formatPrice(item.price) }} ({{
                   item.quantity
@@ -160,6 +155,11 @@ export default {
     paginatedGuides() {
       return this.guides.slice(this.startIndex, this.endIndex);
     },
+    optimizedImagePath() {
+      return this.browserSupportsWebP()
+        ? `${this.imagePath}?format=webp`
+        : this.imagePath;
+    },
   },
   mounted() {
     this.asyncData();
@@ -189,12 +189,12 @@ export default {
 
     async getData() {
       try {
-        // if (localStorage.getItem("guides")) {
-        //   this.guides = JSON.parse(localStorage.getItem("guides") || "[]");
-        //   this.$store.commit("setGuides", this.guides);
+        if (localStorage.getItem("guides")) {
+          this.guides = JSON.parse(localStorage.getItem("guides") || "[]");
+          this.$store.commit("setGuides", this.guides);
 
-        //   return this.guides;
-        // }
+          return this.guides;
+        }
 
         // Fetch data from the API
         if (process.client) {
@@ -203,12 +203,11 @@ export default {
           );
 
           this.guides = response.data.data;
-          // localStorage.setItem("guides", JSON.stringify(this.guides));
-          // this.$store.commit("setGuides", this.guides);
+          localStorage.setItem("guides", JSON.stringify(this.guides));
+          this.$store.commit("setGuides", this.guides);
 
           return this.guides;
         } else {
-
           return [];
         }
       } catch (error) {
@@ -234,28 +233,7 @@ export default {
     },
 
     addToCart(product) {
-      const existingItem = this.cart.find(
-        (item) => item.name === product.product_name
-      );
-      this.$store.commit("addToCart", product);
-
-      if (existingItem) {
-        existingItem.quantity++;
-      } else {
-        this.cart.push({
-          name: product.product_name,
-          price: product.product_pricenow,
-          image: product.product_images,
-          quantity: 1,
-        });
-      }
-
-      // Save directly to localStorage after modifying the cart
-      if (process.client) {
-        localStorage.setItem("cart", JSON.stringify(this.cart));
-      }
-      this.calculateTotalPrice();
-      this.showToast = true;
+      this.$store.dispatch("addToCart", product);
     },
 
     openCheckout() {
@@ -272,7 +250,7 @@ export default {
     },
 
     onToastHidden() {
-      this.showToast = false; 
+      this.showToast = false;
     },
 
     calculateTotalPrice() {
@@ -285,7 +263,7 @@ export default {
               0
             );
             resolve();
-          }, 0); 
+          }, 0);
         }
       });
     },
