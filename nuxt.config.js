@@ -1,4 +1,5 @@
 const LargeLibrary = () => import('large-library');
+const compression = require('compression');
 
 export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
@@ -152,6 +153,16 @@ export default {
       }
     },
 
-    serverMiddleware: ['~/serverMiddleware/compression.js'],
+    serverMiddleware: [
+      '~/serverMiddleware/compression.js',
+      compression(),
+    ],
+
+    render: {
+      http2: {
+        push: true,
+      },
+      compressor: false, // Menonaktifkan kompresi Nuxt.js
+    },
   }
 }

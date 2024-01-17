@@ -74,61 +74,28 @@
         Item berhasil ditambahkan ke keranjang!
       </b-toast>
 
-      <b-modal v-model="showCartModal" size="lg" title="Shopping Cart">
-        <b-list-group flush>
-          <b-list-group-item
-            v-for="(item, index) in cart"
-            :key="index"
-            class="d-flex justify-content-between align-items-center"
-          >
-            <div class="d-flex align-items-center">
-              <nuxt-img
-                :src="getOptimizedImage(item.image)"
-                :alt="item.name"
-                width="50"
-                height="50"
-                class="mr-2"
-                loading="lazy"
-              />
-              <span
-                >{{ item.name }} - {{ formatPrice(item.price) }} ({{
-                  item.quantity
-                }}
-                pcs)</span
-              >
-            </div>
-            <div>
-              <b-button
-                @click="decreaseQuantity(index)"
-                variant="info"
-                class="mr-2"
-                >Kurangi</b-button
-              >
-              <b-button
-                @click="increaseQuantity(index)"
-                variant="success"
-                class="mr-2"
-                >Tambah</b-button
-              >
-              <b-button @click="removeFromCart(index)" variant="danger"
-                >Hapus</b-button
-              >
-            </div>
-          </b-list-group-item>
-        </b-list-group>
-
-        <template #modal-footer>
-          <b-button @click="openCheckout" variant="primary">Checkout</b-button>
-        </template>
-      </b-modal>
+      <b-modal-cart
+        :show-cart-modal="showCartModal"
+        :cart="cart"
+        :format-price="formatPrice"
+        :get-optimized-image="getOptimizedImage"
+        @decrease-quantity="decreaseQuantity"
+        @increase-quantity="increaseQuantity"
+        @remove-from-cart="removeFromCart"
+        @open-checkout="openCheckout"
+      ></b-modal-cart>
     </main>
   </div>
 </template>
 
 <script>
 import axios from "axios";
+import CartModal from "~/components/CartModal.vue";
 
 export default {
+  components: {
+    BModalCart: CartModal,
+  },
   data() {
     return {
       cart: [],
