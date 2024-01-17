@@ -142,14 +142,25 @@ export const actions = {
     commit("calculateTotalPrice");
   },
 
-  async fetchCartData({ commit }) {
+  async fetchCartData({ commit, state }) {
     try {
       if (process.client) {
+        // If running on the client side, use local storage
         const cartData = JSON.parse(localStorage.getItem("cart") || "[]");
         commit("setCartData", cartData);
         return cartData;
+      } else {
+        // If running on the server side, check if cart data is already in state
+        if (state.cart && state.cart.length > 0) {
+          return state.cart;
+        } else {
+          // Fetch data from the server and commit to the store
+          const response = await fetchDataFromApi(); // Replace with your actual API call
+          const cartData = response.data;
+          commit("setCartData", cartData);
+          return cartData;
+        }
       }
-      return [];
     } catch (error) {
       console.error("Error fetching cart data:", error);
       return [];

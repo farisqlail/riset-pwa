@@ -17,7 +17,7 @@
             />
           </div>
           <div class="d-flex align-self-center">
-            <nuxt-link to="/invoice" variant="success">Pilih</nuxt-link>
+            <nuxt-link to="/invoice" class="btn btn-success">Pilih</nuxt-link>
           </div>
         </div>
       </div>
@@ -36,5 +36,6 @@ export default {
       ],
     };
   },
+  
 };
 </script>

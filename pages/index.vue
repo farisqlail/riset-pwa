@@ -134,6 +134,7 @@ export default {
   components: {
     BModalCart: CartModal,
   },
+
   data() {
     return {
       cart: [],
@@ -151,6 +152,12 @@ export default {
       title: "Riset PWA",
     };
   },
+
+  async created() {
+    // Fetch cart data asynchronously when the component is created
+    await this.fetchCartData();
+  },
+
   computed: {
     startIndex() {
       return (this.currentPage - 1) * this.perPage;
@@ -168,7 +175,6 @@ export default {
     },
   },
   mounted() {
-    this.asyncData();
     this.getData();
     this.calculateTotalPrice();
   },
@@ -177,17 +183,24 @@ export default {
       location.reload();
     },
 
-    async asyncData() {
-      try {
-        await this.$store.dispatch("fetchCartData");
-        const cartData = process.client
-          ? JSON.parse(localStorage.getItem("cart") || "[]")
-          : [];
-        return { cart: cartData };
-      } catch (error) {
-        console.error("Error in asyncData:", error);
-        return { cart: [] };
-      }
+    async fetchCartData() {
+      await this.$store.dispatch("fetchCartData");
+      const cartItems = this.$store.state.cart;
+
+      const mergedCart = cartItems.reduce((result, item) => {
+        const existingItem = result.find(
+          (mergedItem) => mergedItem.name === item.name
+        );
+        if (existingItem) {
+          existingItem.quantity += item.quantity;
+        } else {
+          result.push({ ...item });
+        }
+        return result;
+      }, []);
+
+      this.cart = mergedCart;
+      this.calculateTotalPrice();
     },
 
     async getData() {
