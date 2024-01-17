@@ -19,10 +19,11 @@
           <b-card img-top tag="article" style="max-width: 20rem" class="mb-2">
             <nuxt-img
               :src="getOptimizedImage(product.product_images)"
-              :alt="product.product_name"
               width="200"
               height="200"
+              crop="fill"
               loading="lazy"
+              img-top
             />
 
             <h5>{{ product.product_name }}</h5>
@@ -189,22 +190,25 @@ export default {
 
     async getData() {
       try {
-        if (localStorage.getItem("guides")) {
-          this.guides = JSON.parse(localStorage.getItem("guides") || "[]");
-          this.$store.commit("setGuides", this.guides);
-
+        // Check if guides are already in localStorage
+        const localGuides = localStorage.getItem("guides");
+        if (localGuides) {
+          this.guides = JSON.parse(localGuides);
           return this.guides;
         }
 
         // Fetch data from the API
         if (process.client) {
-          const response = await axios.get(
-            "https://cloud.interactive.co.id/myprofit/api/get_product?salt=m4riyAdiH43hhaEh&appid=MP01M51463F20230206169&loc_id=51203"
-          );
+          const apiUrl =
+            "https://cloud.interactive.co.id/myprofit/api/get_product?salt=m4riyAdiH43hhaEh&appid=MP01M51463F20230206169&loc_id=51203";
 
+          const response = await axios.get(apiUrl);
+
+          // Use the response directly
           this.guides = response.data.data;
+
+          // Cache the guides in localStorage
           localStorage.setItem("guides", JSON.stringify(this.guides));
-          this.$store.commit("setGuides", this.guides);
 
           return this.guides;
         } else {
@@ -212,7 +216,6 @@ export default {
         }
       } catch (error) {
         console.error("Error fetching guides:", error);
-
         return [];
       }
     },
@@ -233,7 +236,28 @@ export default {
     },
 
     addToCart(product) {
-      this.$store.dispatch("addToCart", product);
+      const existingItem = this.cart.find(
+        (item) => item.name === product.product_name
+      );
+      this.$store.commit("addToCart", product);
+
+      if (existingItem) {
+        existingItem.quantity++;
+      } else {
+        this.cart.push({
+          name: product.product_name,
+          price: product.product_pricenow,
+          image: product.product_images,
+          quantity: 1,
+        });
+      }
+
+      // if (process.client) {
+      //   localStorage.setItem("cart", JSON.stringify(this.cart));
+      // }
+
+      this.calculateTotalPrice();
+      this.showToast = true;
     },
 
     openCheckout() {

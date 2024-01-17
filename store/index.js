@@ -1,13 +1,40 @@
-// store/index.js
 import axios from "axios";
 
+const CART_CACHE_NAME = "my-cart-cache";
+const GUIDES_CACHE_NAME = "my-guides-cache";
+
 export const state = () => ({
-  // Contoh state untuk PWA
   isOffline: false,
   isInstallPromptVisible: false,
   cart: [],
   guides: [],
 });
+
+const saveToCache = async (cacheName, key, data) => {
+  if (process.client) {
+    try {
+      const cache = await caches.open(cacheName);
+      await cache.put(key, new Response(JSON.stringify(data)));
+    } catch (error) {
+      console.error(`Error saving ${key} to ${cacheName} cache:`, error);
+    }
+  }
+};
+
+const loadFromCache = async (cacheName, key, commit) => {
+  if (process.client) {
+    try {
+      const cache = await caches.open(cacheName);
+      const response = await cache.match(key);
+      if (response) {
+        const data = await response.json();
+        commit(`set${key.charAt(0).toUpperCase() + key.slice(1)}`, data);
+      }
+    } catch (error) {
+      console.error(`Error loading ${key} from ${cacheName} cache:`, error);
+    }
+  }
+};
 
 export const mutations = {
   setOffline(state, value) {
@@ -19,8 +46,7 @@ export const mutations = {
   },
 
   addToCart(state, product) {
-    console.log("store", state);
-    const existingItem = state.cart.find(item => item.name === product.product_name);
+    const existingItem = state.cart.find((item) => item.name === product.product_name);
 
     if (existingItem) {
       existingItem.quantity++;
@@ -33,45 +59,29 @@ export const mutations = {
       });
     }
 
-    // Update state first, then save to cache
     this.commit("saveCartToCache");
   },
 
   removeFromCart(state, index) {
     state.cart.splice(index, 1);
-    // Simpan data keranjang ke cache setelah diupdate
     this.commit("saveCartToCache");
   },
 
   clearCart(state) {
     state.cart = [];
-    // Hapus data keranjang dari cache setelah diupdate
     this.commit("clearCartCache");
   },
 
   saveCartToCache(state) {
-    const filteredCart = state.cart.filter(item => item.quantity !== null && item.quantity !== undefined);
-
-    localStorage.setItem("cart", JSON.stringify(filteredCart));
+    const filteredCart = state.cart.filter((item) => item.quantity !== null && item.quantity !== undefined);
+    saveToCache(CART_CACHE_NAME, "cart", filteredCart);
   },
 
   loadCartFromCache(state) {
-    // Ambil data dari cache jika berada di sisi klien
-    if (process.client) {
-      caches.open("my-cache-name").then(cache => {
-        cache.match("cart").then(response => {
-          if (response) {
-            response.json().then(data => {
-              state.cart = data;
-            });
-          }
-        });
-      });
-
-      const cartData = localStorage.getItem("cart");
-      if (cartData) {
-        state.cart = JSON.parse(cartData);
-      }
+    loadFromCache(CART_CACHE_NAME, "cart", this.commit);
+    const cartData = localStorage.getItem("cart");
+    if (cartData) {
+      state.cart = JSON.parse(cartData);
     }
   },
 
@@ -80,9 +90,8 @@ export const mutations = {
   },
 
   clearCartCache() {
-    // Hapus data dari cache jika berada di sisi klien
     if (process.client) {
-      caches.open("my-cache-name").then(cache => {
+      caches.open(CART_CACHE_NAME).then((cache) => {
         cache.delete("cart");
       });
     }
@@ -90,7 +99,6 @@ export const mutations = {
 
   resetCart(state) {
     state.cart = [];
-
     if (process.client) {
       localStorage.removeItem("cart");
     }
@@ -98,7 +106,6 @@ export const mutations = {
 
   resetCheckout(state) {
     state.cart = [];
-
     if (process.client) {
       localStorage.removeItem("checkoutData");
     }
@@ -111,7 +118,6 @@ export const mutations = {
   loadCartFromLocalStorage(state) {
     if (process.client) {
       const cartData = localStorage.getItem("cart");
-
       if (cartData) {
         state.cart = JSON.parse(cartData);
       }
@@ -119,7 +125,6 @@ export const mutations = {
   },
 
   saveCheckoutToCache(state, checkoutData) {
-    // Simpan data ke cache jika berada di sisi klien
     if (process.client) {
       localStorage.setItem("checkoutData", JSON.stringify(checkoutData));
     }
@@ -131,23 +136,19 @@ export const mutations = {
 };
 
 export const actions = {
-
-  // cart section
-  addToCart({ commit }, product) {
+  async addToCart({ commit }, product) {
     commit("addToCart", product);
     commit("saveCartToCache");
     commit("calculateTotalPrice");
   },
 
-  fetchCartData({ commit }) {
+  async fetchCartData({ commit }) {
     try {
       if (process.client) {
-        // Access localStorage only on the client side
         const cartData = JSON.parse(localStorage.getItem("cart") || "[]");
         commit("setCartData", cartData);
         return cartData;
       }
-      // Handle the case where localStorage is not defined on the server side
       return [];
     } catch (error) {
       console.error("Error fetching cart data:", error);
@@ -155,41 +156,22 @@ export const actions = {
     }
   },
 
-  loadCartFromCache({ commit }) {
-    if (process.client) {
-      caches.open("my-cache-name").then(cache => {
-        cache.match("cart").then(response => {
-          if (response) {
-            response.json().then(data => {
-              commit("setCart", data);
-            });
-          }
-        });
-      });
-
-      const cartData = localStorage.getItem("cart");
-      if (cartData) {
-        commit("setCart", JSON.parse(cartData));
-      }
+  async loadCartFromCache({ commit }) {
+    loadFromCache(CART_CACHE_NAME, "cart", commit);
+    const cartData = localStorage.getItem("cart");
+    if (cartData) {
+      commit("setCart", JSON.parse(cartData));
     }
   },
 
   async saveCartToCache({ state }) {
-    if (process.client) {
-      try {
-        const filteredCart = state.cart.filter(item => item.quantity !== null && item.quantity !== undefined);
-        const cache = await caches.open("my-cache-name");
-        await cache.put("cart", new Response(JSON.stringify(filteredCart)));
-      } catch (error) {
-        console.error("Error saving cart to cache:", error);
-      }
-    }
+    saveToCache(CART_CACHE_NAME, "cart", state.cart);
   },
 
   async clearCartCache() {
     if (process.client) {
       try {
-        const cache = await caches.open("my-cache-name");
+        const cache = await caches.open(CART_CACHE_NAME);
         await cache.delete("cart");
       } catch (error) {
         console.error("Error clearing cart cache:", error);
@@ -197,32 +179,25 @@ export const actions = {
     }
   },
 
-  setDataCart({ commit }, cartData) {
+  async setDataCart({ commit }, cartData) {
     commit("setCartData", cartData);
   },
 
-  // end cart
-
   async fetchData({ commit }) {
-    // Lakukan operasi asinkron di sini dan panggil mutasi setelahnya
     const data = await fetchDataFromApi();
     commit('updateData', data);
   },
 
-  // Contoh action untuk menangani logika ketika offline
   handleOffline({ commit }, isOffline) {
     commit('setOffline', isOffline);
   },
 
-  // Contoh action untuk menangani logika prompt instalasi
   handleInstallPrompt({ commit }, isVisible) {
     commit('setInstallPromptVisibility', isVisible);
   },
 
-  async nuxtServerInit({ commit }, { req }) {
+  async nuxtServerInit({ commit }) {
     try {
-      // Import axios specifically for server-side rendering
-      const axios = require("axios").default;
       const response = await axios.get(
         "https://www.themealdb.com/api/json/v1/1/search.php?f=a"
       );
