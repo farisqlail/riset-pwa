@@ -17,7 +17,7 @@
             />
           </div>
           <div class="d-flex align-self-center">
-            <b-button variant="success" @click="invoice">Pilih</b-button>
+            <nuxt-link to="/invoice" variant="success">Pilih</nuxt-link>
           </div>
         </div>
       </div>
@@ -35,11 +35,6 @@ export default {
         { name: "BCA", image: require("~/assets/images/bca.png") },
       ],
     };
-  },
-  methods: {
-    invoice() {
-      this.$router.push("/invoice");
-    },
   },
 };
 </script>

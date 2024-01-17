@@ -1,0 +1,15 @@
+.cart-item-image {
+    width: 50px; /* Sesuaikan dengan ukuran yang diinginkan */
+    height: auto;
+    margin-right: 10px;
+}
+
+.row-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.row-item .item-cart {
+    display: flex;
+    justify-content: space-between;
+}

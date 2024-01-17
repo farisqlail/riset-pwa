@@ -82,7 +82,6 @@
         @decrease-quantity="decreaseQuantity"
         @increase-quantity="increaseQuantity"
         @remove-from-cart="removeFromCart"
-        @open-checkout="openCheckout"
       ></b-modal-cart>
     </main>
   </div>
@@ -227,10 +226,6 @@ export default {
       this.showToast = true;
     },
 
-    openCheckout() {
-      this.$router.push("/checkout");
-    },
-
     openCartModal() {
       this.showCartModal = true;
     },
@@ -307,21 +302,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-.cart-item-image {
-  width: 50px; /* Sesuaikan dengan ukuran yang diinginkan */
-  height: auto;
-  margin-right: 10px;
-}
-
-.row-item {
-  display: flex;
-  flex-direction: column;
-}
-
-.row-item .item-cart {
-  display: flex;
-  justify-content: space-between;
-}
-</style>
