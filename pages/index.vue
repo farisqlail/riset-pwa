@@ -189,12 +189,12 @@ export default {
 
     async getData() {
       try {
-        if (localStorage.getItem("guides")) {
-          this.guides = JSON.parse(localStorage.getItem("guides") || "[]");
-          this.$store.commit("setGuides", this.guides);
+        // if (localStorage.getItem("guides")) {
+        //   this.guides = JSON.parse(localStorage.getItem("guides") || "[]");
+        //   this.$store.commit("setGuides", this.guides);
 
-          return this.guides;
-        }
+        //   return this.guides;
+        // }
 
         // Fetch data from the API
         if (process.client) {
@@ -203,8 +203,8 @@ export default {
           );
 
           this.guides = response.data.data;
-          localStorage.setItem("guides", JSON.stringify(this.guides));
-          this.$store.commit("setGuides", this.guides);
+          // localStorage.setItem("guides", JSON.stringify(this.guides));
+          // this.$store.commit("setGuides", this.guides);
 
           return this.guides;
         } else {
