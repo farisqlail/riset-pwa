@@ -1,5 +1,4 @@
-import path from 'path'
-import fs from 'fs'
+const LargeLibrary = () => import('large-library');
 
 export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
@@ -30,7 +29,6 @@ export default {
 
   plugins: [
     '~/store/plugins/cache.js',
-    { src: '~/store/plugins/vue-html-to-paper.js', ssr: true },
     { src: '~/store/plugins/workbox-sync.js', ssr: true },
   ],
 
@@ -95,6 +93,27 @@ export default {
 
   build: {
     transpile: ['axios', '@nuxt/image'],
+    splitChunks: {
+      layouts: true,
+      pages: true,
+      commons: true,
+    },
+    terser: {
+      terserOptions: {
+        compress: {
+          drop_console: true,
+        },
+      },
+    },
+    babel: {
+      plugins: [
+        '@babel/plugin-syntax-dynamic-import',
+        '@babel/plugin-transform-runtime',
+      ],
+    },
+    externals: {
+      'large-library': 'LargeLibrary',
+    },
   },
 
   workbox: {

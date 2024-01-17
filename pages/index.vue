@@ -16,7 +16,12 @@
           v-for="(product, index) in paginatedGuides"
           :key="index"
         >
-          <b-card img-top tag="article" style="max-width: 20rem" class="mb-2">
+          <b-card
+            img-top
+            tag="article"
+            style="max-width: 20rem"
+            class="mb-2"
+          >
             <nuxt-img
               :src="getOptimizedImage(product.product_images)"
               :alt="product.product_name"
@@ -82,13 +87,13 @@
           >
             <div class="d-flex align-items-center">
               <nuxt-img
-                :src="getOptimizedImage(item.image)"
-                :alt="item.name"
-                width="50"
-                height="50"
-                class="mr-2"
-                loading="lazy"
-              />
+              :src="getOptimizedImage(item.image)"
+              :alt="item.name"
+              width="50"
+              height="50"
+              class="mr-2"
+              loading="lazy"
+            />
               <span
                 >{{ item.name }} - {{ formatPrice(item.price) }} ({{
                   item.quantity
@@ -166,28 +171,6 @@ export default {
       location.reload();
     },
 
-    getOptimizedImage(imageUrl) {
-      const supportsWebP = this.browserSupportsWebP();
-      let optimizedPath = imageUrl;
-
-      if (supportsWebP) {
-        optimizedPath += "?format=webp";
-      }
-
-      return optimizedPath;
-    },
-
-    browserSupportsWebP() {
-      const elem = document.createElement("canvas");
-
-      if (!!(elem.getContext && elem.getContext("2d"))) {
-        return elem.toDataURL("image/webp").indexOf("data:image/webp") === 0;
-      }
-
-      // WebGL is not supported
-      return false;
-    },
-
     async asyncData() {
       try {
         await this.$store.dispatch("fetchCartData");
@@ -225,7 +208,6 @@ export default {
 
           return this.guides;
         } else {
-          console.error("Error fetching guides: Client not available");
 
           return [];
         }
@@ -277,11 +259,6 @@ export default {
     },
 
     openCheckout() {
-      console.log("Data sent to checkout:", {
-        customerName: this.customerName,
-        cart: this.cart,
-        totalPrice: this.totalPrice,
-      });
       this.$router.push("/checkout");
     },
 
@@ -291,12 +268,11 @@ export default {
 
     removeFromCart(index) {
       this.cart.splice(index, 1);
-
       localStorage.setItem("cart", JSON.stringify(this.cart));
     },
 
     onToastHidden() {
-      this.showToast = false; // Menyembunyikan toast setelah ditutup
+      this.showToast = false; 
     },
 
     calculateTotalPrice() {
@@ -309,7 +285,7 @@ export default {
               0
             );
             resolve();
-          }, 0); // Adjust the timeout as needed
+          }, 0); 
         }
       });
     },
@@ -340,14 +316,9 @@ export default {
     },
 
     getOptimizedImage(imagePath) {
-      // Check if the browser supports WebP format
       const supportsWebP = this.browserSupportsWebP();
-
-      // Modify the imagePath to include the desired optimizations
-      // For example, you can append query parameters for resizing or format
       let optimizedPath = imagePath;
 
-      // Append query parameters for WebP format if supported
       if (supportsWebP) {
         optimizedPath += "?format=webp";
       }
@@ -356,15 +327,12 @@ export default {
     },
 
     browserSupportsWebP() {
-      // Check if the browser supports WebP format
       const elem = document.createElement("canvas");
 
       if (!!(elem.getContext && elem.getContext("2d"))) {
-        // Was able or not to get WebP representation
         return elem.toDataURL("image/webp").indexOf("data:image/webp") === 0;
       }
 
-      // WebGL is not supported
       return false;
     },
   },
