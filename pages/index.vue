@@ -28,6 +28,7 @@
               :alt="product.product_name"
               width="200"
               height="200"
+              loading="lazy"
             />
 
             <h5>{{ product.product_name }}</h5>
@@ -86,14 +87,14 @@
             class="d-flex justify-content-between align-items-center"
           >
             <div class="d-flex align-items-center">
-              <img
-                :src="item.image"
-                :alt="item.name"
-                width="50"
-                height="50"
-                class="cart-item-image mr-2"
-                loading="lazy"
-              />
+              <nuxt-img
+              :src="getOptimizedImage(item.image)"
+              :alt="item.name"
+              width="50"
+              height="50"
+              class="mr-2"
+              loading="lazy"
+            />
               <span
                 >{{ item.name }} - {{ formatPrice(item.price) }} ({{
                   item.quantity
@@ -178,15 +179,20 @@ export default {
       return this.$image({ src: imageUrl, width: 500, height: 500 });
     },
 
-    async asyncData({ store }) {
-      await store.dispatch("fetchCartData");
+    async asyncData() {
+      try {
+        await this.$store.dispatch("fetchCartData");
 
-      // Check if running on the client side
-      const cartData = process.client
-        ? JSON.parse(localStorage.getItem("cart") || "[]")
-        : [];
+        // Check if running on the client side
+        const cartData = process.client
+          ? JSON.parse(localStorage.getItem("cart") || "[]")
+          : [];
 
-      return { cart: cartData };
+        return { cart: cartData };
+      } catch (error) {
+        console.error("Error in asyncData:", error);
+        return { cart: [] };
+      }
     },
 
     async getData() {
