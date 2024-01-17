@@ -13,21 +13,21 @@
       <div class="row mt-3 mb-5">
         <div
           class="col-md-4"
-          v-for="(product, index) in paginatedGuides"
+          v-for="(product, index) in guides"
           :key="index"
         >
           <b-card tag="article" style="max-width: 20rem" class="mb-2">
-            <nuxt-img
-              :src="getOptimizedImage(product.product_images)"
+            <img
+              :src="getOptimizedImage(product.strMealThumb)"
               width="200"
               height="200"
               crop="fill"
               loading="lazy"
             />
 
-            <h5>{{ product.product_name }}</h5>
+            <h5>{{ product.strMeal }}</h5>
             <span>
-              {{ formatPrice(product.product_pricenow) }}
+              {{ formatPrice(20000) }}
             </span>
 
             <b-button
@@ -51,18 +51,17 @@
         </div>
       </div>
 
-      <div class="pagination d-flex justify-content-center mb-5">
+      <!-- <div class="pagination d-flex justify-content-center mb-5">
         <b-button class="mr-3" :disabled="currentPage === 1" @click="prevPage"
           >Previous</b-button
         >
-        <!-- <span>{{ currentPage }}</span> -->
         <b-button
           variant="success"
           :disabled="endIndex >= guides.length"
           @click="nextPage"
           >Next</b-button
         >
-      </div>
+      </div> -->
 
       <b-toast
         v-model="showToast"
@@ -166,7 +165,7 @@ export default {
       return this.currentPage * this.perPage;
     },
     paginatedGuides() {
-      return this.guides.slice(this.startIndex, this.endIndex);
+      // return this.guides.slice(this.startIndex, this.endIndex);
     },
     optimizedImagePath() {
       return this.browserSupportsWebP()
@@ -214,11 +213,13 @@ export default {
 
         // Fetch data from the API
         if (process.client) {
+          // const apiUrl =
+          //   "https://cloud.interactive.co.id/myprofit/api/get_product?salt=m4riyAdiH43hhaEh&appid=MP01M51463F20230206169&loc_id=51203";
           const apiUrl =
-            "https://cloud.interactive.co.id/myprofit/api/get_product?salt=m4riyAdiH43hhaEh&appid=MP01M51463F20230206169&loc_id=51203";
+            "https://www.themealdb.com/api/json/v1/1/search.php?f=a";
 
           const response = await axios.get(apiUrl);
-          this.guides = response.data.data;
+          this.guides = response.data.meals;
 
           localStorage.setItem("guides", JSON.stringify(this.guides));
 
@@ -249,7 +250,7 @@ export default {
 
     addToCart(product) {
       const existingItem = this.cart.find(
-        (item) => item.name === product.product_name
+        (item) => item.name === product.strMeal
       );
       this.$store.commit("addToCart", product);
 
@@ -257,9 +258,9 @@ export default {
         existingItem.quantity++;
       } else {
         this.cart.push({
-          name: product.product_name,
-          price: product.product_pricenow,
-          image: product.product_images,
+          name: product.strMeal,
+          price: 20000,
+          image: product.strMealThumb,
           quantity: 1,
         });
       }
