@@ -64,6 +64,7 @@ export default {
   },
 
   http: {
+    compress: true,
     baseURL: 'https://cloud.interactive.co.id/myprofit', // Replace with your Laravel app's base URL
   },
 

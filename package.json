@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@nuxt/http": "^0.6.4",
+    "@nuxt/image-edge": "^1.2.0-28417792.5fb7d0e",
     "axios": "^1.6.5",
     "bootstrap": "^4.6.2",
     "bootstrap-vue": "^2.22.0",
