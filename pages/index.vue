@@ -5,6 +5,9 @@
         <b-button @click="openCartModal" variant="primary"
           >Lihat Keranjang</b-button
         >
+        <b-button @click="refresh" variant="warning"
+          >Refresh Pembaruan</b-button
+        >
       </div>
 
       <div class="row mt-3 mb-5">
@@ -20,8 +23,8 @@
             class="mb-2"
             loading="lazy"
           >
-            <b-img
-              :src="product.product_images"   
+            <nuxt-img
+              :src="getOptimizedImage(product.product_images)"
               :alt="product.product_name"
               width="200"
               height="200"
@@ -167,6 +170,10 @@ export default {
     this.calculateTotalPrice();
   },
   methods: {
+    refresh() {
+      location.reload();
+    },
+
     getOptimizedImage(imageUrl) {
       return this.$image({ src: imageUrl, width: 500, height: 500 });
     },

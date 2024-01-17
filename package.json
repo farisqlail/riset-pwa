@@ -10,7 +10,6 @@
   },
   "dependencies": {
     "@nuxt/http": "^0.6.4",
-    "@nuxt/image-edge": "^1.2.0-28417792.5fb7d0e",
     "axios": "^1.6.5",
     "bootstrap": "^4.6.2",
     "bootstrap-vue": "^2.22.0",
@@ -30,7 +29,6 @@
   "devDependencies": {
     "@nuxt/image": "^0.7.1",
     "@nuxtjs/pwa": "^3.3.5",
-    "@nuxtjs/snipcart": "^2.0.2",
     "frontmatter-markdown-loader": "^3.7.0",
     "raw-loader": "^4.0.2"
   }

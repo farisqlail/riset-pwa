@@ -22,7 +22,6 @@ export default {
     ],
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
-      { rel: 'stylesheet', href: 'https://cdn.snipcart.com/themes/v3.2.1/default/snipcart.css' },
       { rel: 'preload' }
     ],
   },
@@ -32,8 +31,8 @@ export default {
 
   plugins: [
     '~/store/plugins/cache.js',
-    { src: '~/store/plugins/vue-html-to-paper.js', ssr: false },
-    { src: '~/store/plugins/workbox-sync.js', ssr: false },
+    { src: '~/store/plugins/vue-html-to-paper.js', ssr: true },
+    { src: '~/store/plugins/workbox-sync.js', ssr: true },
   ],
 
   components: true,
@@ -46,14 +45,9 @@ export default {
     '@nuxt/image',
   ],
 
-  snipcart: {
-    publicApiKey: "ODQ1Y2E1MmItOGVkNi00NzliLWIyMGItNWZlYjIzOTBkZGEwNjM4NDAyODU0MTUzODUwNzkw"
-  },
-
   modules: [
     'bootstrap-vue/nuxt',
     "@nuxtjs/pwa",
-    '@nuxtjs/snipcart',
     '@nuxt/http',
     '@nuxtjs/proxy',
     '@nuxt/image',
@@ -94,8 +88,8 @@ export default {
       display: 'standalone',
     },
     icon: {
-      source: "static/icons", 
-      fileName: "icon.png",   
+      source: "static/icons",
+      fileName: "icon.png",
     },
   },
 
@@ -106,6 +100,7 @@ export default {
   workbox: {
     cachingExtensions: '@/store/plugins/workbox-sync.js'
   },
+
   // generates dynamic routes
   generate: {
     fallback: true,
@@ -117,4 +112,25 @@ export default {
       'loadCart',
     ]
   },
+
+  image: {
+    domains: ['https://myprofit.interactiveholic.net'],
+
+    // Specify default image sizes
+    sizes: [320, 480, 720],
+
+    // Specify default image loader
+    loader: 'default',
+
+    // Specify presets for image processing
+    presets: {
+      // Example preset for JPEG images
+      myPreset: {
+        modifiers: {
+          format: 'webp', // Convert to WebP format
+          quality: 80      // Set quality to 80
+        }
+      }
+    }
+  }
 }
