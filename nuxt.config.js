@@ -118,6 +118,13 @@ export default {
     },
   },
 
+  render: {
+    http2: {
+      push: true,
+    },
+    compressor: false, // Menonaktifkan kompresi Nuxt.js
+  },
+
   workbox: {
     cachingExtensions: '@/store/plugins/workbox-sync.js'
   },
@@ -158,12 +165,5 @@ export default {
       '~/serverMiddleware/compression.js',
       compression(),
     ],
-
-    render: {
-      http2: {
-        push: true,
-      },
-      compressor: false, // Menonaktifkan kompresi Nuxt.js
-    },
   }
 }

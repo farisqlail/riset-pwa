@@ -41,7 +41,7 @@
     </b-list-group>
 
     <template #modal-footer>
-      <nuxt-link to="/checkout" variant="primary">Checkout</nuxt-link>
+      <nuxt-link to="/checkout" class="btn btn-success" variant="primary">Checkout</nuxt-link>
     </template>
   </b-modal>
 </template>

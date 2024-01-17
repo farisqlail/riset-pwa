@@ -16,14 +16,13 @@
           v-for="(product, index) in paginatedGuides"
           :key="index"
         >
-          <b-card img-top tag="article" style="max-width: 20rem" class="mb-2">
+          <b-card tag="article" style="max-width: 20rem" class="mb-2">
             <nuxt-img
               :src="getOptimizedImage(product.product_images)"
               width="200"
               height="200"
               crop="fill"
               loading="lazy"
-              img-top
             />
 
             <h5>{{ product.product_name }}</h5>
@@ -74,15 +73,55 @@
         Item berhasil ditambahkan ke keranjang!
       </b-toast>
 
-      <b-modal-cart
-        :show-cart-modal="showCartModal"
-        :cart="cart"
-        :format-price="formatPrice"
-        :get-optimized-image="getOptimizedImage"
-        @decrease-quantity="decreaseQuantity"
-        @increase-quantity="increaseQuantity"
-        @remove-from-cart="removeFromCart"
-      ></b-modal-cart>
+      <b-modal v-model="showCartModal" size="lg" title="Shopping Cart">
+        <b-list-group flush>
+          <b-list-group-item
+            v-for="(item, index) in cart"
+            :key="index"
+            class="d-flex justify-content-between align-items-center"
+          >
+            <div class="d-flex align-items-center">
+              <nuxt-img
+                :src="getOptimizedImage(item.image)"
+                :alt="item.name"
+                width="50"
+                height="50"
+                class="mr-2"
+                loading="lazy"
+              />
+              <span
+                >{{ item.name }} - {{ formatPrice(item.price) }} ({{
+                  item.quantity
+                }}
+                pcs)</span
+              >
+            </div>
+            <div>
+              <b-button
+                @click="decreaseQuantity(index)"
+                variant="info"
+                class="mr-2"
+                >Kurangi</b-button
+              >
+              <b-button
+                @click="increaseQuantity(index)"
+                variant="success"
+                class="mr-2"
+                >Tambah</b-button
+              >
+              <b-button @click="removeFromCart(index)" variant="danger"
+                >Hapus</b-button
+              >
+            </div>
+          </b-list-group-item>
+        </b-list-group>
+
+        <template #modal-footer>
+          <nuxt-link to="/checkout" class="btn btn-success" variant="primary"
+            >Checkout</nuxt-link
+          >
+        </template>
+      </b-modal>
     </main>
   </div>
 </template>
@@ -141,12 +180,9 @@ export default {
     async asyncData() {
       try {
         await this.$store.dispatch("fetchCartData");
-
-        // Check if running on the client side
         const cartData = process.client
           ? JSON.parse(localStorage.getItem("cart") || "[]")
           : [];
-
         return { cart: cartData };
       } catch (error) {
         console.error("Error in asyncData:", error);
@@ -169,11 +205,8 @@ export default {
             "https://cloud.interactive.co.id/myprofit/api/get_product?salt=m4riyAdiH43hhaEh&appid=MP01M51463F20230206169&loc_id=51203";
 
           const response = await axios.get(apiUrl);
-
-          // Use the response directly
           this.guides = response.data.data;
 
-          // Cache the guides in localStorage
           localStorage.setItem("guides", JSON.stringify(this.guides));
 
           return this.guides;
@@ -298,6 +331,13 @@ export default {
       }
 
       return false;
+    },
+
+    nextPage() {
+      if (this.endIndex < this.guides.length) {
+        this.showCartModal = false; // Menutup modal sebelum pindah ke halaman berikutnya
+        this.currentPage++;
+      }
     },
   },
 };
