@@ -16,13 +16,7 @@
           v-for="(product, index) in paginatedGuides"
           :key="index"
         >
-          <b-card
-            img-top
-            tag="article"
-            style="max-width: 20rem"
-            class="mb-2"
-            loading="lazy"
-          >
+          <b-card img-top tag="article" style="max-width: 20rem" class="mb-2">
             <nuxt-img
               :src="getOptimizedImage(product.product_images)"
               :alt="product.product_name"
@@ -88,13 +82,13 @@
           >
             <div class="d-flex align-items-center">
               <nuxt-img
-              :src="getOptimizedImage(item.image)"
-              :alt="item.name"
-              width="50"
-              height="50"
-              class="mr-2"
-              loading="lazy"
-            />
+                :src="getOptimizedImage(item.image)"
+                :alt="item.name"
+                width="50"
+                height="50"
+                class="mr-2"
+                loading="lazy"
+              />
               <span
                 >{{ item.name }} - {{ formatPrice(item.price) }} ({{
                   item.quantity
@@ -146,9 +140,6 @@ export default {
     };
   },
 
-  // async someFunction() {
-  //   await this.calculateTotalPrice();
-  // },
   head() {
     return {
       title: "Riset PWA",
@@ -176,7 +167,25 @@ export default {
     },
 
     getOptimizedImage(imageUrl) {
-      return this.$image({ src: imageUrl, width: 500, height: 500 });
+      const supportsWebP = this.browserSupportsWebP();
+      let optimizedPath = imageUrl;
+
+      if (supportsWebP) {
+        optimizedPath += "?format=webp";
+      }
+
+      return optimizedPath;
+    },
+
+    browserSupportsWebP() {
+      const elem = document.createElement("canvas");
+
+      if (!!(elem.getContext && elem.getContext("2d"))) {
+        return elem.toDataURL("image/webp").indexOf("data:image/webp") === 0;
+      }
+
+      // WebGL is not supported
+      return false;
     },
 
     async asyncData() {

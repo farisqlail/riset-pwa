@@ -17,7 +17,7 @@
             :key="index"
           >
             <div>
-              <img :src="item.image" width="100" alt="" /> {{ item.name }} -
+              <nuxt-img :src="item.image" width="100" :alt="item.name" loading="lazy" /> {{ item.name }} -
               {{ formatPrice(item.price) }} ({{ item.quantity }} pcs)
             </div>
 

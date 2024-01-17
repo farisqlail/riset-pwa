@@ -8,10 +8,11 @@
           class="item-cart mb-3"
         >
           <div class="d-flex align-self-center">
-            <b-img
+            <img
               :src="item.image"
               width="100"
-              alt="payment method"
+              :alt="item.name"
+              format="webp"
               loading="lazy"
             />
           </div>

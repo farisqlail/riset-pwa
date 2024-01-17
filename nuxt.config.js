@@ -22,7 +22,6 @@ export default {
     ],
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
-      { rel: 'preload' }
     ],
   },
 
@@ -132,6 +131,8 @@ export default {
           quality: 80      // Set quality to 80
         }
       }
-    }
+    },
+
+    serverMiddleware: ['~/serverMiddleware/compression.js'],
   }
 }
