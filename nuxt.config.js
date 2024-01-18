@@ -3,6 +3,10 @@ const compression = require('compression');
 
 export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
+  experimental: {
+    watcher: "chokidar",
+  },
+
   target: "static",
 
   ssr: true,
