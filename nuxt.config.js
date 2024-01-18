@@ -101,8 +101,8 @@ export default {
       fileName: "icon.png",
     },
     workbox: {
-      dev: isDev
-    }
+      swSrc: 'sw.js',
+    },
   },
 
   build: {
@@ -137,8 +137,12 @@ export default {
     compressor: false, // Menonaktifkan kompresi Nuxt.js
   },
 
+  publicRuntimeConfig: {
+    apiUrl: process.env.API_URL || 'http://localhost:3000',
+  },
+  
   workbox: {
-    cachingExtensions: '@/store/plugins/workbox-sync.js'
+    cachingExtensions: '@/sw.js'
   },
 
   // generates dynamic routes
