@@ -153,13 +153,14 @@ export const actions = {
         // If running on the server side, check if cart data is already in state
         if (state.cart && state.cart.length > 0) {
           return state.cart;
-        } else {
-          // Fetch data from the server and commit to the store
-          const response = await fetchDataFromApi(); // Replace with your actual API call
-          const cartData = response.data;
-          commit("setCartData", cartData);
-          return cartData;
-        }
+        } 
+        // else {
+        //   // Fetch data from the server and commit to the store
+        //   const response = await fetchDataFromApi(); // Replace with your actual API call
+        //   const cartData = response.data;
+        //   commit("setCartData", cartData);
+        //   return cartData;
+        // }
       }
     } catch (error) {
       console.error("Error fetching cart data:", error);
@@ -194,10 +195,10 @@ export const actions = {
     commit("setCartData", cartData);
   },
 
-  async fetchData({ commit }) {
-    const data = await fetchDataFromApi();
-    commit('updateData', data);
-  },
+  // async fetchData({ commit }) {
+  //   const data = await fetchDataFromApi();
+  //   commit('updateData', data);
+  // },
 
   handleOffline({ commit }, isOffline) {
     commit('setOffline', isOffline);
