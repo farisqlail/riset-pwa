@@ -31,6 +31,7 @@
     "@nuxt/image": "^0.7.1",
     "@nuxtjs/pwa": "^3.3.5",
     "frontmatter-markdown-loader": "^3.7.0",
+    "push-dir": "^0.4.1",
     "raw-loader": "^4.0.2"
   }
 }
