@@ -1,5 +1,6 @@
 const LargeLibrary = () => import('large-library');
 const compression = require('compression');
+const isDev = process.env.NODE_ENV !== 'production'
 
 export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
@@ -99,6 +100,9 @@ export default {
       source: "static/icons",
       fileName: "icon.png",
     },
+    workbox: {
+      dev: isDev
+    }
   },
 
   build: {

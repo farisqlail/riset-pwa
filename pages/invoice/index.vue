@@ -15,11 +15,10 @@
           </b-button>
         </div>
         <div class="col">
-          <nuxt-link to="/" class="btn btn-danger btn-block">
+          <b-button @click="backToMain" class="btn btn-danger btn-block">
             Kembali ke home
-          </nuxt-link>
+          </b-button>
         </div>
-
       </div>
     </div>
     <div id="printerDiv" style="display: none"></div>
@@ -82,6 +81,12 @@ export default {
         currency: "IDR",
         minimumFractionDigits: 0,
       });
+    },
+
+    backToMain() {
+      this.$store.commit("resetCart");
+      this.$store.commit("resetCheckout");
+      this.$router.push("/");
     },
 
     // Your Nuxt.js component
