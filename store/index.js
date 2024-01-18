@@ -111,6 +111,13 @@ export const mutations = {
     }
   },
 
+  resetGuides(state) {
+    state.guides = [];
+    if (process.client) {
+      localStorage.removeItem("guides");
+    }
+  },
+
   setInstallPromptVisibility(state, value) {
     state.isInstallPromptVisible = value;
   },
@@ -132,7 +139,7 @@ export const mutations = {
 
   setCartData(state, cartData) {
     state.cart = cartData;
-  },
+  }, 
 };
 
 export const actions = {

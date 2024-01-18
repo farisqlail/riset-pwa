@@ -180,6 +180,7 @@ export default {
   },
   methods: {
     refresh() {
+      this.$store.commit("resetGuides");
       location.reload();
     },
 
@@ -223,9 +224,7 @@ export default {
           localStorage.setItem("guides", JSON.stringify(this.guides));
 
           return this.guides;
-        } else {
-          return [];
-        }
+        } 
       } catch (error) {
         console.error("Error fetching guides:", error);
         return [];
