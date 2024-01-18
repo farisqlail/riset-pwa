@@ -8,15 +8,16 @@
           class="item-cart mb-3"
         >
           <div class="d-flex align-self-center">
-            <b-img
+            <img
               :src="item.image"
               width="100"
-              alt="payment method"
+              :alt="item.name"
+              format="webp"
               loading="lazy"
             />
           </div>
           <div class="d-flex align-self-center">
-            <b-button variant="success" @click="invoice">Pilih</b-button>
+            <nuxt-link to="/invoice" class="btn btn-success">Pilih</nuxt-link>
           </div>
         </div>
       </div>
@@ -35,10 +36,6 @@ export default {
       ],
     };
   },
-  methods: {
-    invoice() {
-      this.$router.push("/invoice");
-    },
-  },
+  
 };
 </script>

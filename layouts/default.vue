@@ -24,5 +24,11 @@ export default {
   components: {
     Navbar,
   },
+  script: [
+        {
+          src: '../sw.js',
+          body: true,
+        },
+      ],
 };
 </script>

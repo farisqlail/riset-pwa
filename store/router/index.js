@@ -4,7 +4,6 @@ import VueRouter from "vue-router";
 import Home from "../../pages/index.vue";
 import Checkout from "../../pages/checkout/index.vue";
 import Invoice from "../../pages/invoice/index.vue";
-import Nota from "../../pages/invoice/print-with-api.vue";
 import Payments from "../../pages/payments/index.vue";
 
 Vue.use(VueRouter);
@@ -29,11 +28,6 @@ const routes = [
     path: "/payments",
     name: "Payments",
     component: Payments,
-  },
-  {
-    path: "/invoice/nota",
-    name: "nota",
-    component: Nota,
   },
 ];
 

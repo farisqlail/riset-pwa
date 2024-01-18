@@ -10,25 +10,26 @@
   },
   "dependencies": {
     "@nuxt/http": "^0.6.4",
-    "@nuxt/image": "^1.2.0",
     "axios": "^1.6.5",
     "bootstrap": "^4.6.2",
     "bootstrap-vue": "^2.22.0",
+    "compression": "^1.7.4",
     "core-js": "^3.25.3",
-    "escpos": "^3.0.0-alpha.6",
+    "ipx": "^3.0.0",
     "mkcert": "^3.2.0",
     "nuxt": "^2.15.8",
     "vue": "^2.7.10",
-    "vue-html-to-paper": "^2.0.3",
     "vue-server-renderer": "^2.7.16",
     "vue-template-compiler": "^2.7.10",
     "workbox-background-sync": "^7.0.0",
+    "workbox-cdn": "^5.1.4",
     "workbox-routing": "^7.0.0",
-    "workbox-strategies": "^7.0.0"
+    "workbox-strategies": "^7.0.0",
+    "zlib": "^1.0.5"
   },
   "devDependencies": {
+    "@nuxt/image": "^0.7.1",
     "@nuxtjs/pwa": "^3.3.5",
-    "@nuxtjs/snipcart": "^2.0.2",
     "frontmatter-markdown-loader": "^3.7.0",
     "push-dir": "^0.4.1",
     "raw-loader": "^4.0.2"

@@ -5,21 +5,30 @@
         <b-button @click="openCartModal" variant="primary"
           >Lihat Keranjang</b-button
         >
+        <b-button @click="refresh" variant="warning"
+          >Refresh Pembaruan</b-button
+        >
       </div>
 
-      <div class="row mt-3">
-        <div class="col-md-4" v-for="(product, index) in guides" :key="index">
-          <b-card
-            :title="product.product_name"
-            :img-src="product.product_images"
-            :img-alt="product.product_name"
-            img-top
-            tag="article"
-            class="mb-2"
-          >
-            <b-card-text>
+      <div class="row mt-3 mb-5">
+        <div
+          class="col-md-4"
+          v-for="(product, index) in paginatedGuides"
+          :key="index"
+        >
+          <b-card tag="article" style="max-width: 20rem" class="mb-2">
+            <nuxt-img
+              :src="getOptimizedImage(product.product_images)"
+              width="200"
+              height="200"
+              crop="fill"
+              loading="lazy"
+            />
+
+            <h5>{{ product.product_name }}</h5>
+            <span>
               {{ formatPrice(product.product_pricenow) }}
-            </b-card-text>
+            </span>
 
             <b-button
               href="#"
@@ -42,6 +51,19 @@
         </div>
       </div>
 
+      <div class="pagination d-flex justify-content-center mb-5">
+        <b-button class="mr-3" :disabled="currentPage === 1" @click="prevPage"
+          >Previous</b-button
+        >
+        <!-- <span>{{ currentPage }}</span> -->
+        <b-button
+          variant="success"
+          :disabled="endIndex >= guides.length"
+          @click="nextPage"
+          >Next</b-button
+        >
+      </div>
+
       <b-toast
         v-model="showToast"
         auto-hide-delay="2000"
@@ -52,42 +74,52 @@
       </b-toast>
 
       <b-modal v-model="showCartModal" size="lg" title="Shopping Cart">
-        <div class="row-item">
-          <div
-            class="item-cart mb-3"
+        <b-list-group flush>
+          <b-list-group-item
             v-for="(item, index) in cart"
             :key="index"
+            class="d-flex justify-content-between align-items-center"
           >
-            <div>
-              <img
-                :src="item.image"
+            <div class="d-flex align-items-center">
+              <nuxt-img
+                :src="getOptimizedImage(item.image)"
                 :alt="item.name"
                 width="50"
                 height="50"
-                class="cart-item-image"
+                class="mr-2"
                 loading="lazy"
               />
-              {{ item.name }} - {{ formatPrice(item.price) }} ({{
-                item.quantity
-              }}
-              pcs)
+              <span
+                >{{ item.name }} - {{ formatPrice(item.price) }} ({{
+                  item.quantity
+                }}
+                pcs)</span
+              >
             </div>
             <div>
-              <b-button @click="decreaseQuantity(index)" variant="info"
+              <b-button
+                @click="decreaseQuantity(index)"
+                variant="info"
+                class="mr-2"
                 >Kurangi</b-button
               >
-              <b-button @click="increaseQuantity(index)" variant="success"
+              <b-button
+                @click="increaseQuantity(index)"
+                variant="success"
+                class="mr-2"
                 >Tambah</b-button
               >
               <b-button @click="removeFromCart(index)" variant="danger"
                 >Hapus</b-button
               >
             </div>
-          </div>
-          <p>Total Harga: {{ formatPrice(totalPrice) }}</p>
-        </div>
+          </b-list-group-item>
+        </b-list-group>
+
         <template #modal-footer>
-          <b-button @click="openCheckout" variant="primary">Checkout</b-button>
+          <nuxt-link to="/checkout" class="btn btn-success" variant="primary"
+            >Checkout</nuxt-link
+          >
         </template>
       </b-modal>
     </main>
@@ -96,8 +128,13 @@
 
 <script>
 import axios from "axios";
+import CartModal from "~/components/CartModal.vue";
 
 export default {
+  components: {
+    BModalCart: CartModal,
+  },
+
   data() {
     return {
       cart: [],
@@ -105,68 +142,108 @@ export default {
       showToast: false,
       showCartModal: false,
       totalPrice: 0,
+      currentPage: 1,
+      perPage: 6,
     };
   },
 
-  async someFunction() {
-    await this.calculateTotalPrice();
-  },
   head() {
     return {
       title: "Riset PWA",
     };
   },
+
+  async created() {
+    // Fetch cart data asynchronously when the component is created
+    await this.fetchCartData();
+  },
+
+  computed: {
+    startIndex() {
+      return (this.currentPage - 1) * this.perPage;
+    },
+    endIndex() {
+      return this.currentPage * this.perPage;
+    },
+    paginatedGuides() {
+      return this.guides.slice(this.startIndex, this.endIndex);
+    },
+    optimizedImagePath() {
+      return this.browserSupportsWebP()
+        ? `${this.imagePath}?format=webp`
+        : this.imagePath;
+    },
+  },
   mounted() {
-    this.asyncData();
     this.getData();
     this.calculateTotalPrice();
   },
   methods: {
-    async asyncData({ store }) {
-      await store.dispatch("fetchCartData");
+    refresh() {
+      this.$store.commit("resetGuides");
+      location.reload();
+    },
 
-      // Check if running on the client side
-      const cartData = process.client
-        ? JSON.parse(localStorage.getItem("cart") || "[]")
-        : [];
+    async fetchCartData() {
+      await this.$store.dispatch("fetchCartData");
+      const cartItems = this.$store.state.cart;
 
-      return { cart: cartData };
+      const mergedCart = cartItems.reduce((result, item) => {
+        const existingItem = result.find(
+          (mergedItem) => mergedItem.name === item.name
+        );
+        if (existingItem) {
+          existingItem.quantity += item.quantity;
+        } else {
+          result.push({ ...item });
+        }
+        return result;
+      }, []);
+
+      this.cart = mergedCart;
+      this.calculateTotalPrice();
     },
 
     async getData() {
       try {
-        if (localStorage.getItem("guides")) {
-          this.guides = JSON.parse(localStorage.getItem("guides") || "[]");
-          this.$store.commit("setGuides", this.guides);
-
+        // Check if guides are already in localStorage
+        const localGuides = localStorage.getItem("guides");
+        if (localGuides) {
+          this.guides = JSON.parse(localGuides);
           return this.guides;
         }
 
         // Fetch data from the API
         if (process.client) {
-          const response = await axios.get(
-            "https://cloud.interactive.co.id/myprofit/api/get_product?salt=m4riyAdiH43hhaEh&appid=MP01M51463F20230206169&loc_id=51203"
-          );
+          const apiUrl =
+            "https://cloud.interactive.co.id/myprofit/api/get_product?salt=m4riyAdiH43hhaEh&appid=MP01M51463F20230206169&loc_id=51203";
 
+          const response = await axios.get(apiUrl);
           this.guides = response.data.data;
+
           localStorage.setItem("guides", JSON.stringify(this.guides));
-          this.$store.commit("setGuides", this.guides);
 
           return this.guides;
-        } else {
-          console.error("Error fetching guides: Client not available");
-
-          return [];
-        }
+        } 
       } catch (error) {
         console.error("Error fetching guides:", error);
-
         return [];
       }
     },
 
     async updateCartData(newCartData) {
       this.$store.dispatch("setDataCart", newCartData);
+    },
+
+    prevPage() {
+      if (this.currentPage > 1) {
+        this.currentPage--;
+      }
+    },
+    nextPage() {
+      if (this.endIndex < this.guides.length) {
+        this.currentPage++;
+      }
     },
 
     addToCart(product) {
@@ -186,21 +263,12 @@ export default {
         });
       }
 
-      // Save directly to localStorage after modifying the cart
-      if (process.client) {
-        localStorage.setItem("cart", JSON.stringify(this.cart));
-      }
+      // if (process.client) {
+      //   localStorage.setItem("cart", JSON.stringify(this.cart));
+      // }
+
       this.calculateTotalPrice();
       this.showToast = true;
-    },
-
-    openCheckout() {
-      console.log("Data sent to checkout:", {
-        customerName: this.customerName,
-        cart: this.cart,
-        totalPrice: this.totalPrice,
-      });
-      this.$router.push("/checkout");
     },
 
     openCartModal() {
@@ -209,12 +277,11 @@ export default {
 
     removeFromCart(index) {
       this.cart.splice(index, 1);
-
       localStorage.setItem("cart", JSON.stringify(this.cart));
     },
 
     onToastHidden() {
-      this.showToast = false; // Menyembunyikan toast setelah ditutup
+      this.showToast = false;
     },
 
     calculateTotalPrice() {
@@ -227,7 +294,7 @@ export default {
               0
             );
             resolve();
-          }, 0); // Adjust the timeout as needed
+          }, 0);
         }
       });
     },
@@ -256,24 +323,34 @@ export default {
 
       localStorage.setItem("cart", JSON.stringify(this.cart));
     },
+
+    getOptimizedImage(imagePath) {
+      const supportsWebP = this.browserSupportsWebP();
+      let optimizedPath = imagePath;
+
+      if (supportsWebP) {
+        optimizedPath += "?format=webp";
+      }
+
+      return optimizedPath;
+    },
+
+    browserSupportsWebP() {
+      const elem = document.createElement("canvas");
+
+      if (!!(elem.getContext && elem.getContext("2d"))) {
+        return elem.toDataURL("image/webp").indexOf("data:image/webp") === 0;
+      }
+
+      return false;
+    },
+
+    nextPage() {
+      if (this.endIndex < this.guides.length) {
+        this.showCartModal = false; // Menutup modal sebelum pindah ke halaman berikutnya
+        this.currentPage++;
+      }
+    },
   },
 };
 </script>
-
-<style scoped>
-.cart-item-image {
-  width: 50px; /* Sesuaikan dengan ukuran yang diinginkan */
-  height: auto;
-  margin-right: 10px;
-}
-
-.row-item {
-  display: flex;
-  flex-direction: column;
-}
-
-.row-item .item-cart {
-  display: flex;
-  justify-content: space-between;
-}
-</style>
