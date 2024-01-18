@@ -7,6 +7,10 @@ export default {
     watcher: "chokidar",
   },
 
+  server: {
+    host: '127.0.0.1',
+  },
+
   target: "static",
 
   ssr: true,

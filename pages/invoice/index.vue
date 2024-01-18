@@ -8,9 +8,19 @@
         menyelesaikan pembayaran
       </p>
 
-      <b-button block variant="success" @click="printReceipt">
-        Cetak nota
-      </b-button>
+      <div class="row">
+        <div class="col">
+          <b-button block variant="success" @click="printReceipt">
+            Cetak nota
+          </b-button>
+        </div>
+        <div class="col">
+          <nuxt-link to="/" class="btn btn-danger btn-block">
+            Kembali ke home
+          </nuxt-link>
+        </div>
+
+      </div>
     </div>
     <div id="printerDiv" style="display: none"></div>
   </b-card>
