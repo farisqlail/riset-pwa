@@ -154,7 +154,7 @@ export default {
     middleware: [
       'index',
       'loadCart',
-    ]
+    ],
   },
 
   image: {
