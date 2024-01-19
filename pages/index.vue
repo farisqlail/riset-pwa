@@ -366,12 +366,9 @@ export default {
         localStorage.setItem("cart", JSON.stringify(this.cart));
       } else if (this.cart[index].quantity == 1) {
         this.openModalAlertDelete(index);
-
-        // this.cart.splice(index, 1);
-        // localStorage.setItem("cart", JSON.stringify(this.cart));
       }
     },
-    
+
     increaseQuantity(index) {
       this.cart[index].quantity++;
       this.calculateTotalPrice();
