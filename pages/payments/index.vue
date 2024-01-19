@@ -3,7 +3,7 @@
     <div class="row-item">
       <div class="item-cart mb-3">
         <div class="d-flex align-self-center">
-          <img src="~/assets/images/ovo.png" width="100" loading="lazy" />
+          <img src="../../assets/images/ovo.png" width="100" loading="lazy" />
         </div>
         <div class="d-flex align-self-center">
           <nuxt-link to="/invoice" class="btn btn-success">Pilih</nuxt-link>
@@ -11,7 +11,7 @@
       </div>
       <div class="item-cart mb-3">
         <div class="d-flex align-self-center">
-          <img src="~/assets/images/dana.png" width="100" loading="lazy" />
+          <img src="../../assets/images/dana.png" width="100" loading="lazy" />
         </div>
         <div class="d-flex align-self-center">
           <nuxt-link to="/invoice" class="btn btn-success">Pilih</nuxt-link>
@@ -19,7 +19,7 @@
       </div>
       <div class="item-cart mb-3">
         <div class="d-flex align-self-center">
-          <img src="~/assets/images/bca.png" width="100" loading="lazy" />
+          <img src="../../assets/images/bca.png" width="100" loading="lazy" />
         </div>
         <div class="d-flex align-self-center">
           <nuxt-link to="/invoice" class="btn btn-success">Pilih</nuxt-link>
