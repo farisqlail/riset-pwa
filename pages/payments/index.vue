@@ -1,40 +1,36 @@
 <template>
-  <div>
-    <b-card class="mt-4">
-      <div class="row-item">
-        <div
-          v-for="(item, index) in paymentMethods"
-          :key="index"
-          class="item-cart mb-3"
-        >
-          <div class="d-flex align-self-center">
-            <img
-              :src="getOptimizedImage(item.image)"
-              width="100"
-              :alt="item.name"
-              loading="lazy"
-            />
-          </div>
-          <div class="d-flex align-self-center">
-            <nuxt-link to="/invoice" class="btn btn-success">Pilih</nuxt-link>
-          </div>
+  <b-card class="mt-4">
+    <div class="row-item">
+      <div class="item-cart mb-3">
+        <div class="d-flex align-self-center">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/Logo_ovo_purple.svg/2560px-Logo_ovo_purple.svg.png" width="100" loading="lazy" />
+        </div>
+        <div class="d-flex align-self-center">
+          <nuxt-link to="/invoice" class="btn btn-success">Pilih</nuxt-link>
         </div>
       </div>
-    </b-card>
-  </div>
+      <div class="item-cart mb-3">
+        <div class="d-flex align-self-center">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Logo_dana_blue.svg/2560px-Logo_dana_blue.svg.png" width="100" loading="lazy" />
+        </div>
+        <div class="d-flex align-self-center">
+          <nuxt-link to="/invoice" class="btn btn-success">Pilih</nuxt-link>
+        </div>
+      </div>
+      <div class="item-cart mb-3">
+        <div class="d-flex align-self-center">
+          <img src="https://www.bca.co.id/-/media/Feature/Card/List-Card/Tentang-BCA/Brand-Assets/Logo-BCA/Logo-BCA_Biru.png" width="100" loading="lazy" />
+        </div>
+        <div class="d-flex align-self-center">
+          <nuxt-link to="/invoice" class="btn btn-success">Pilih</nuxt-link>
+        </div>
+      </div>
+    </div>
+  </b-card>
 </template>
 
 <script>
 export default {
-  data() {
-    return {
-      paymentMethods: [
-        { name: "OVO", image: require("~/assets/images/ovo.png") },
-        { name: "DANA", image: require("~/assets/images/dana.png") },
-        { name: "BCA", image: require("~/assets/images/bca.png") },
-      ],
-    };
-  },
   methods: {
     getOptimizedImage(imagePath) {
       const supportsWebP = this.browserSupportsWebP();

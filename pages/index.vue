@@ -64,14 +64,12 @@
         >
       </div>
 
-      <b-toast
-        v-model="showToast"
-        auto-hide-delay="2000"
-        variant="success"
-        @hidden="onToastHidden"
-      >
-        Item berhasil ditambahkan ke keranjang!
-      </b-toast>
+      <toast-component
+        :show-toast="showToast"
+        :variant="toastVariant"
+        :message="toastMessage"
+        @toast-hidden="onToastHidden"
+      />
 
       <b-modal v-model="showCartModal" size="lg" title="Shopping Cart">
         <b-list-group flush>
@@ -109,7 +107,7 @@
                 class="mr-2"
                 >Tambah</b-button
               >
-              <b-button @click="removeFromCart(index)" variant="danger"
+              <b-button @click="openModalAlertDelete(index)" variant="danger"
                 >Hapus</b-button
               >
             </div>
@@ -118,7 +116,11 @@
 
         <template #modal-footer>
           <div v-if="cart.length == 0">
-            <b-button to="/checkout" class="btn btn-success" variant="primary" disabled
+            <b-button
+              to="/checkout"
+              class="btn btn-success"
+              variant="primary"
+              disabled
               >Checkout</b-button
             >
           </div>
@@ -129,6 +131,24 @@
           </div>
         </template>
       </b-modal>
+
+      <!-- delete item -->
+      <b-modal
+        v-model="alertDeleteModal"
+        id="alertDeleteModal"
+        title="Hapus item"
+      >
+        <p>Apakah anda yakin untuk menghapus item ini dalam cart ?</p>
+        <template #modal-footer>
+          <b-button variant="dark" @click="alertDeleteModal = false"
+            >Batal</b-button
+          >
+          <b-button @click="removeFromCart(indexItem)" variant="danger"
+            >Hapus</b-button
+          >
+        </template>
+      </b-modal>
+      <!-- end delete item -->
     </main>
   </div>
 </template>
@@ -136,10 +156,12 @@
 <script>
 import axios from "axios";
 import CartModal from "~/components/CartModal.vue";
+import ToastComponent from '~/components/Toast.vue';
 
 export default {
   components: {
     BModalCart: CartModal,
+    'toast-component': ToastComponent,
   },
 
   data() {
@@ -148,9 +170,14 @@ export default {
       guides: [],
       showToast: false,
       showCartModal: false,
+      alertDeleteModal: false,
       totalPrice: 0,
       currentPage: 1,
       perPage: 6,
+      indexItem: 0,
+      showToast: false,
+      toastVariant: "success",
+      toastMessage: "Item berhasil ditambahkan ke keranjang!",
     };
   },
 
@@ -189,6 +216,12 @@ export default {
     refresh() {
       this.$store.commit("resetGuides");
       location.reload();
+    },
+
+    showToastMessage(variant, message) {
+      this.toastVariant = variant;
+      this.toastMessage = message;
+      this.showToast = true;
     },
 
     async fetchCartData() {
@@ -231,7 +264,7 @@ export default {
           localStorage.setItem("guides", JSON.stringify(this.guides));
 
           return this.guides;
-        } 
+        }
       } catch (error) {
         console.error("Error fetching guides:", error);
         return [];
@@ -276,15 +309,25 @@ export default {
 
       this.calculateTotalPrice();
       this.showToast = true;
+      this.showToastMessage('success', 'Item berhasil ditambahkan ke keranjang!');
     },
 
     openCartModal() {
       this.showCartModal = true;
     },
 
+    openModalAlertDelete(index) {
+      this.showCartModal = false;
+      this.alertDeleteModal = true;
+      this.indexItem = index;
+    },
+
     removeFromCart(index) {
       this.cart.splice(index, 1);
       localStorage.setItem("cart", JSON.stringify(this.cart));
+
+      this.alertDeleteModal = false;
+      this.showToastMessage('success', 'Item berhasil dihapus dari keranjang!');
     },
 
     onToastHidden() {
@@ -321,9 +364,14 @@ export default {
         this.calculateTotalPrice();
 
         localStorage.setItem("cart", JSON.stringify(this.cart));
+      } else if (this.cart[index].quantity == 1) {
+        this.openModalAlertDelete(index);
+
+        // this.cart.splice(index, 1);
+        // localStorage.setItem("cart", JSON.stringify(this.cart));
       }
     },
-
+    
     increaseQuantity(index) {
       this.cart[index].quantity++;
       this.calculateTotalPrice();

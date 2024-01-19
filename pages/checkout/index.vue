@@ -44,19 +44,22 @@
         </div>
       </div>
 
-      <b-button
-        type="submit"
-        @click="addMore"
-        variant="success"
-        class="mb-3"
-        block
+      <nuxt-link
+        to="/"
+        class="btn btn-success btn-block mb-3"
       >
         Tambah Pesanan
-      </b-button>
+      </nuxt-link>
 
       <b-card class="mb-3">
         <h5 class="mb-4">Total Harga: {{ formatPrice(totalPrice) }}</h5>
-        <b-button type="submit" @click="submitOrder" variant="danger" block>
+
+        <b-button
+          @click="submitOrder"
+          variant="danger"
+          :disabled="customerName == ''"
+          block
+        >
           Bayar
         </b-button>
       </b-card>
@@ -70,6 +73,7 @@ export default {
     return {
       customerName: "",
       cart: [],
+      totalPrice: 0, 
     };
   },
   async created() {
@@ -98,24 +102,40 @@ export default {
       this.calculateTotalPrice();
     },
 
-    addMore() {
-      this.$router.push("/");
+    saveCheckout() {
+      if (process.client) {
+        // Save checkout information to local storage
+        localStorage.setItem(
+          "checkoutData",
+          JSON.stringify({
+            customerName: this.customerName,
+            items: this.cart,
+          })
+        );
+
+        // You can also save to Vuex store if needed
+        this.$store.commit("saveCheckoutToCache", {
+          customerName: this.customerName,
+          items: this.cart,
+        });
+      }
     },
 
     submitOrder() {
-      this.$store.commit("saveCheckoutToCache", {
-        customerName: this.customerName,
-        items: this.cart,
-      });
+      this.saveCheckout();
 
       this.$router.push("/payments");
     },
 
     calculateTotalPrice() {
-      this.totalPrice = this.cart.reduce(
-        (total, item) => total + item.price * item.quantity,
-        0
-      );
+      if(this.cart.length !== 0) {
+        this.totalPrice = this.cart.reduce(
+          (total, item) => total + item.price * item.quantity,
+          0
+        );
+      } else {
+        this.totalPrice = 0;
+      }
     },
 
     formatPrice(value) {
@@ -133,6 +153,12 @@ export default {
         this.calculateTotalPrice();
 
         localStorage.setItem("cart", JSON.stringify(this.cart));
+      } else if (this.cart[index].quantity == 1) {
+        this.cart.splice(index, 1);
+        localStorage.setItem("cart", JSON.stringify(this.cart));
+        
+
+        this.calculateTotalPrice();
       }
     },
 
