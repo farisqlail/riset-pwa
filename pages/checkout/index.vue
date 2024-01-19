@@ -128,10 +128,14 @@ export default {
     },
 
     calculateTotalPrice() {
-      this.totalPrice = this.cart.reduce(
-        (total, item) => total + item.price * item.quantity,
-        0
-      );
+      if(this.cart.length !== 0) {
+        this.totalPrice = this.cart.reduce(
+          (total, item) => total + item.price * item.quantity,
+          0
+        );
+      } else {
+        this.totalPrice = 0;
+      }
     },
 
     formatPrice(value) {
@@ -149,6 +153,12 @@ export default {
         this.calculateTotalPrice();
 
         localStorage.setItem("cart", JSON.stringify(this.cart));
+      } else if (this.cart[index].quantity == 1) {
+        this.cart.splice(index, 1);
+        localStorage.setItem("cart", JSON.stringify(this.cart));
+        
+
+        this.calculateTotalPrice();
       }
     },
 

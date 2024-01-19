@@ -16,6 +16,7 @@
 
 <script>
 window.csrf_token = "{{ csrf_token() }}";
+document.documentElement.requestFullscreen();
 </script>
 <script>
 import Navbar from "~/components/Navbar.vue";
@@ -24,8 +25,8 @@ export default {
   head: {
     script: [
       {
-        src: '/sw.js',
-        type: 'text/javascript',
+        src: "/sw.js",
+        type: "text/javascript",
         defer: true,
       },
     ],
@@ -34,12 +35,12 @@ export default {
   components: {
     Navbar,
   },
-  
+
   script: [
-        {
-          src: '../sw.js',
-          body: true,
-        },
-      ],
+    {
+      src: "../sw.js",
+      body: true,
+    },
+  ],
 };
 </script>
