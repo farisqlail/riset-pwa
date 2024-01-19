@@ -132,14 +132,19 @@ export const mutations = {
   },
 
   saveCheckoutToCache(state, checkoutData) {
-    if (process.client) {
-      localStorage.setItem("checkoutData", JSON.stringify(checkoutData));
+    try {
+      if (process.client) {
+        localStorage.setItem("checkoutData", JSON.stringify(checkoutData));
+      }
+      // Lakukan sesuatu dengan data yang sudah diambil
+    } catch (error) {
+      console.error("Error parsing or retrieving data from localStorage:", error);
     }
   },
 
   setCartData(state, cartData) {
     state.cart = cartData;
-  }, 
+  },
 };
 
 export const actions = {
@@ -156,11 +161,12 @@ export const actions = {
         const cartData = JSON.parse(localStorage.getItem("cart") || "[]");
         commit("setCartData", cartData);
         return cartData;
+
       } else {
         // If running on the server side, check if cart data is already in state
         if (state.cart && state.cart.length > 0) {
           return state.cart;
-        } 
+        }
         // else {
         //   // Fetch data from the server and commit to the store
         //   const response = await fetchDataFromApi(); // Replace with your actual API call
@@ -202,28 +208,11 @@ export const actions = {
     commit("setCartData", cartData);
   },
 
-  // async fetchData({ commit }) {
-  //   const data = await fetchDataFromApi();
-  //   commit('updateData', data);
-  // },
-
   handleOffline({ commit }, isOffline) {
     commit('setOffline', isOffline);
   },
 
   handleInstallPrompt({ commit }, isVisible) {
     commit('setInstallPromptVisibility', isVisible);
-  },
-
-  async nuxtServerInit({ commit }) {
-    try {
-      const response = await axios.get(
-        "https://www.themealdb.com/api/json/v1/1/search.php?f=a"
-      );
-      const guides = response.data.meals;
-      commit("setGuides", guides);
-    } catch (error) {
-      console.error("Error fetching guides during SSR:", error);
-    }
   },
 };

@@ -1,27 +1,25 @@
 <template>
-  <div>
-    <b-card class="mt-4">
-      <div class="row-item">
-        <div
-          v-for="(item, index) in paymentMethods"
-          :key="index"
-          class="item-cart mb-3"
-        >
-          <div class="d-flex align-self-center">
-            <img
-              :src="getOptimizedImage(item.image)"
-              width="100"
-              :alt="item.name"
-              loading="lazy"
-            />
-          </div>
-          <div class="d-flex align-self-center">
-            <nuxt-link to="/invoice" class="btn btn-success">Pilih</nuxt-link>
-          </div>
+  <b-card class="mt-4">
+    <div class="row-item">
+      <div
+        v-for="(item, index) in paymentMethods"
+        :key="index"
+        class="item-cart mb-3"
+      >
+        <div class="d-flex align-self-center">
+          <img
+            :src="getOptimizedImage(item.image)"
+            width="100"
+            :alt="item.name"
+            loading="lazy"
+          />
+        </div>
+        <div class="d-flex align-self-center">
+          <nuxt-link to="/invoice" class="btn btn-success">Pilih</nuxt-link>
         </div>
       </div>
-    </b-card>
-  </div>
+    </div>
+  </b-card>
 </template>
 
 <script>

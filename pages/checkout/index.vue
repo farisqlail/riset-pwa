@@ -56,7 +56,14 @@
 
       <b-card class="mb-3">
         <h5 class="mb-4">Total Harga: {{ formatPrice(totalPrice) }}</h5>
-        <b-button type="submit" @click="submitOrder" variant="danger" block>
+
+        <b-button
+          type="submit"
+          @click="submitOrder"
+          variant="danger"
+          :disabled="customerName == ''"
+          block
+        >
           Bayar
         </b-button>
       </b-card>
@@ -70,6 +77,7 @@ export default {
     return {
       customerName: "",
       cart: [],
+      totalPrice: 0, 
     };
   },
   async created() {
@@ -102,11 +110,27 @@ export default {
       this.$router.push("/");
     },
 
+    saveCheckout() {
+      if (process.client) {
+        // Save checkout information to local storage
+        localStorage.setItem(
+          "checkoutData",
+          JSON.stringify({
+            customerName: this.customerName,
+            items: this.cart,
+          })
+        );
+
+        // You can also save to Vuex store if needed
+        this.$store.commit("saveCheckoutToCache", {
+          customerName: this.customerName,
+          items: this.cart,
+        });
+      }
+    },
+
     submitOrder() {
-      this.$store.commit("saveCheckoutToCache", {
-        customerName: this.customerName,
-        items: this.cart,
-      });
+      this.saveCheckout();
 
       this.$router.push("/payments");
     },
