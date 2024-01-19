@@ -44,10 +44,7 @@
         </div>
       </div>
 
-      <nuxt-link
-        to="/"
-        class="btn btn-success btn-block mb-3"
-      >
+      <nuxt-link to="/" class="btn btn-success btn-block mb-3">
         Tambah Pesanan
       </nuxt-link>
 
@@ -64,16 +61,41 @@
         </b-button>
       </b-card>
     </b-form>
+
+    <!-- delete item -->
+    <b-modal
+      v-model="alertDeleteModal"
+      id="alertDeleteModal"
+      title="Hapus item"
+    >
+      <p>Apakah anda yakin untuk menghapus item ini dalam cart ?</p>
+      <template #modal-footer>
+        <b-button variant="dark" @click="alertDeleteModal = false"
+          >Batal</b-button
+        >
+        <b-button @click="openModalAlertDelete(indexItem)" variant="danger"
+          >Hapus</b-button
+        >
+      </template>
+    </b-modal>
+    <!-- end delete item -->
   </div>
 </template>
 
 <script>
+import ToastComponent from "~/components/Toast.vue";
+
 export default {
   data() {
     return {
       customerName: "",
       cart: [],
-      totalPrice: 0, 
+      totalPrice: 0,
+      indexItem: 0,
+      showToast: false,
+      toastVariant: "success",
+      toastMessage: "Item berhasil ditambahkan ke keranjang!",
+      alertDeleteModal: false,
     };
   },
   async created() {
@@ -102,6 +124,12 @@ export default {
       this.calculateTotalPrice();
     },
 
+    showToastMessage(variant, message) {
+      this.toastVariant = variant;
+      this.toastMessage = message;
+      this.showToast = true;
+    },
+
     saveCheckout() {
       if (process.client) {
         // Save checkout information to local storage
@@ -128,7 +156,7 @@ export default {
     },
 
     calculateTotalPrice() {
-      if(this.cart.length !== 0) {
+      if (this.cart.length !== 0) {
         this.totalPrice = this.cart.reduce(
           (total, item) => total + item.price * item.quantity,
           0
@@ -154,14 +182,10 @@ export default {
 
         localStorage.setItem("cart", JSON.stringify(this.cart));
       } else if (this.cart[index].quantity == 1) {
-        this.cart.splice(index, 1);
-        localStorage.setItem("cart", JSON.stringify(this.cart));
-        
-
-        this.calculateTotalPrice();
+        this.openModalAlertDelete(index);
       }
     },
-
+    
     increaseQuantity(index) {
       this.cart[index].quantity++;
       this.calculateTotalPrice();
@@ -169,14 +193,21 @@ export default {
       localStorage.setItem("cart", JSON.stringify(this.cart));
     },
 
-    removeFromCart(index) {
-      this.cart.splice(index, 1);
-      this.calculateTotalPrice();
-
-      // Update localStorage
-      localStorage.setItem("cart", JSON.stringify(this.cart));
+    openModalAlertDelete(index) {
+      this.showCartModal = false;
+      this.alertDeleteModal = true;
+      this.indexItem = index;
     },
 
+    removeFromCart(index) {
+      this.cart.splice(index, 1);
+      localStorage.setItem("cart", JSON.stringify(this.cart));
+
+      this.calculateTotalPrice();
+      this.alertDeleteModal = false;
+      this.showToastMessage("success", "Item berhasil dihapus dari keranjang!");
+    },
+    
     getOptimizedImage(imagePath) {
       const supportsWebP = this.browserSupportsWebP();
       let optimizedPath = imagePath;
