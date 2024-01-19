@@ -120,6 +120,15 @@ export default {
       return existingTransactions;
     },
 
+    formatPrice(value) {
+      const price = parseInt(value);
+      return price.toLocaleString("id-ID", {
+        style: "currency",
+        currency: "IDR",
+        minimumFractionDigits: 0,
+      });
+    },
+
     // Your Nuxt.js component
     async printReceipt() {
       const receiptData = {
@@ -137,7 +146,7 @@ export default {
           const matchedItem = receiptData.items.find((i) => i.name === item);
           return `${matchedItem.name} - ${
             matchedItem.quantity
-          } pcs - ${this.formatRupiah(matchedItem.price)}`;
+          } pcs - ${this.formatPrice(matchedItem.price)}`;
         })
         .join("</br>");
 
@@ -149,7 +158,7 @@ export default {
           ${itemsContent}
           </br>
           </br> -------------------------- </br> </br>
-          Total Price: ${this.formatRupiah(receiptData.totalPrice)}
+          Total Price: ${this.formatPrice(receiptData.totalPrice)}
           </br></br>
       `;
 
