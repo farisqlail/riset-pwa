@@ -58,7 +58,6 @@
         <h5 class="mb-4">Total Harga: {{ formatPrice(totalPrice) }}</h5>
 
         <b-button
-          type="submit"
           @click="submitOrder"
           variant="danger"
           :disabled="customerName == ''"
