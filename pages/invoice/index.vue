@@ -34,7 +34,6 @@ export default {
     };
   },
   async created() {
-    // Fetch cart data asynchronously when the component is created
     await this.fetchCartData();
   },
   methods: {
@@ -84,9 +83,41 @@ export default {
     },
 
     backToMain() {
+      const receiptData = {
+        customerName: this.customerName,
+        items: this.cart,
+        totalPrice: this.totalPrice,
+      };
+
+      this.saveTransaction(receiptData);
+
       this.$store.commit("resetCart");
       this.$store.commit("resetCheckout");
       this.$router.push("/");
+    },
+
+    saveTransaction(transactionData) {
+      // Cek apakah sudah ada data transaksi sebelumnya di localStorage
+      const existingTransactions =
+        JSON.parse(localStorage.getItem("transactions")) || [];
+
+      // Tambahkan data transaksi baru
+      existingTransactions.push(transactionData);
+
+      // Simpan kembali data transaksi ke localStorage
+      localStorage.setItem(
+        "transactions",
+        JSON.stringify(existingTransactions)
+      );
+    },
+
+    // Fungsi untuk mendapatkan data transaksi dari localStorage
+    getTransactions() {
+      // Dapatkan data transaksi dari localStorage
+      const existingTransactions =
+        JSON.parse(localStorage.getItem("transactions")) || [];
+
+      return existingTransactions;
     },
 
     // Your Nuxt.js component
@@ -111,16 +142,16 @@ export default {
         .join("</br>");
 
       const printableContent = `
-      <span align="center">invoice</span></br>
-      Customer Name: ${receiptData.customerName}
-      </br> -------------------------- </br>
-      Items:</br></br>
-      ${itemsContent}
-      </br>
-      </br> -------------------------- </br> </br>
-      Total Price: ${this.formatRupiah(receiptData.totalPrice)}
-      </br></br>
-  `;
+          <span align="center">invoice</span></br>
+          Customer Name: ${receiptData.customerName}
+          </br> -------------------------- </br>
+          Items:</br></br>
+          ${itemsContent}
+          </br>
+          </br> -------------------------- </br> </br>
+          Total Price: ${this.formatRupiah(receiptData.totalPrice)}
+          </br></br>
+      `;
 
       const newWindow = window.open("", "_blank");
       newWindow.document.write(printableContent);
@@ -132,6 +163,8 @@ export default {
       };
 
       newWindow.print();
+
+      this.saveTransaction(receiptData);
 
       // Reload after print (adjust the timing as needed)
       setTimeout(() => {

@@ -117,9 +117,16 @@
         </b-list-group>
 
         <template #modal-footer>
-          <nuxt-link to="/checkout" class="btn btn-success" variant="primary"
-            >Checkout</nuxt-link
-          >
+          <div v-if="cart.length == 0">
+            <b-button to="/checkout" class="btn btn-success" variant="primary" disabled
+              >Checkout</b-button
+            >
+          </div>
+          <div v-else>
+            <nuxt-link to="/checkout" class="btn btn-success" variant="primary"
+              >Checkout</nuxt-link
+            >
+          </div>
         </template>
       </b-modal>
     </main>

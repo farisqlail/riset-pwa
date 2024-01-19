@@ -9,10 +9,9 @@
         >
           <div class="d-flex align-self-center">
             <img
-              :src="item.image"
+              :src="getOptimizedImage(item.image)"
               width="100"
               :alt="item.name"
-              format="webp"
               loading="lazy"
             />
           </div>
@@ -36,6 +35,30 @@ export default {
       ],
     };
   },
-  
+  methods: {
+    getOptimizedImage(imagePath) {
+      const supportsWebP = this.browserSupportsWebP();
+      let optimizedPath = imagePath;
+
+      if (supportsWebP) {
+        optimizedPath += "?format=webp";
+      }
+
+      return optimizedPath;
+    },
+
+    browserSupportsWebP() {
+      // Check if running in a browser environment
+      if (process.client) {
+        const elem = document.createElement("canvas");
+
+        if (!!(elem.getContext && elem.getContext("2d"))) {
+          return elem.toDataURL("image/webp").indexOf("data:image/webp") === 0;
+        }
+      }
+
+      return false;
+    },
+  },
 };
 </script>

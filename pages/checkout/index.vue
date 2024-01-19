@@ -17,8 +17,16 @@
             :key="index"
           >
             <div>
-              <nuxt-img :src="item.image" width="100" :alt="item.name" loading="lazy" /> {{ item.name }} -
-              {{ formatPrice(item.price) }} ({{ item.quantity }} pcs)
+              <nuxt-img
+                :src="getOptimizedImage(item.image)"
+                width="100"
+                :alt="item.name"
+                loading="lazy"
+              />
+              {{ item.name }} - {{ formatPrice(item.price) }} ({{
+                item.quantity
+              }}
+              pcs)
             </div>
 
             <div>
@@ -89,17 +97,12 @@ export default {
       this.cart = mergedCart;
       this.calculateTotalPrice();
     },
-    
+
     addMore() {
       this.$router.push("/");
     },
 
     submitOrder() {
-      console.log("Order Submitted:", {
-        customerName: this.customerName,
-        items: this.cart,
-      });
-
       this.$store.commit("saveCheckoutToCache", {
         customerName: this.customerName,
         items: this.cart,
@@ -146,6 +149,30 @@ export default {
 
       // Update localStorage
       localStorage.setItem("cart", JSON.stringify(this.cart));
+    },
+
+    getOptimizedImage(imagePath) {
+      const supportsWebP = this.browserSupportsWebP();
+      let optimizedPath = imagePath;
+
+      if (supportsWebP) {
+        optimizedPath += "?format=webp";
+      }
+
+      return optimizedPath;
+    },
+
+    browserSupportsWebP() {
+      // Check if running in a browser environment
+      if (process.client) {
+        const elem = document.createElement("canvas");
+
+        if (!!(elem.getContext && elem.getContext("2d"))) {
+          return elem.toDataURL("image/webp").indexOf("data:image/webp") === 0;
+        }
+      }
+
+      return false;
     },
   },
 };
