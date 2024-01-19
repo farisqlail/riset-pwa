@@ -44,15 +44,12 @@
         </div>
       </div>
 
-      <b-button
-        type="submit"
-        @click="addMore"
-        variant="success"
-        class="mb-3"
-        block
+      <nuxt-link
+        to="/"
+        class="btn btn-success btn-block mb-3"
       >
         Tambah Pesanan
-      </b-button>
+      </nuxt-link>
 
       <b-card class="mb-3">
         <h5 class="mb-4">Total Harga: {{ formatPrice(totalPrice) }}</h5>
@@ -103,10 +100,6 @@ export default {
 
       this.cart = mergedCart;
       this.calculateTotalPrice();
-    },
-
-    addMore() {
-      this.$router.push("/");
     },
 
     saveCheckout() {

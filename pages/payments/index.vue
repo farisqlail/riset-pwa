@@ -1,18 +1,25 @@
 <template>
   <b-card class="mt-4">
     <div class="row-item">
-      <div
-        v-for="(item, index) in paymentMethods"
-        :key="index"
-        class="item-cart mb-3"
-      >
+      <div class="item-cart mb-3">
         <div class="d-flex align-self-center">
-          <img
-            :src="getOptimizedImage(item.image)"
-            width="100"
-            :alt="item.name"
-            loading="lazy"
-          />
+          <img src="~/assets/images/ovo.png" width="100" loading="lazy" />
+        </div>
+        <div class="d-flex align-self-center">
+          <nuxt-link to="/invoice" class="btn btn-success">Pilih</nuxt-link>
+        </div>
+      </div>
+      <div class="item-cart mb-3">
+        <div class="d-flex align-self-center">
+          <img src="~/assets/images/dana.png" width="100" loading="lazy" />
+        </div>
+        <div class="d-flex align-self-center">
+          <nuxt-link to="/invoice" class="btn btn-success">Pilih</nuxt-link>
+        </div>
+      </div>
+      <div class="item-cart mb-3">
+        <div class="d-flex align-self-center">
+          <img src="~/assets/images/bca.png" width="100" loading="lazy" />
         </div>
         <div class="d-flex align-self-center">
           <nuxt-link to="/invoice" class="btn btn-success">Pilih</nuxt-link>
@@ -24,15 +31,6 @@
 
 <script>
 export default {
-  data() {
-    return {
-      paymentMethods: [
-        { name: "OVO", image: require("~/assets/images/ovo.png") },
-        { name: "DANA", image: require("~/assets/images/dana.png") },
-        { name: "BCA", image: require("~/assets/images/bca.png") },
-      ],
-    };
-  },
   methods: {
     getOptimizedImage(imagePath) {
       const supportsWebP = this.browserSupportsWebP();
