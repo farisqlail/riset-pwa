@@ -21,9 +21,20 @@ window.csrf_token = "{{ csrf_token() }}";
 import Navbar from "~/components/Navbar.vue";
 
 export default {
+  head: {
+    script: [
+      {
+        src: '/sw.js',
+        type: 'text/javascript',
+        defer: true,
+      },
+    ],
+  },
+
   components: {
     Navbar,
   },
+  
   script: [
         {
           src: '../sw.js',
