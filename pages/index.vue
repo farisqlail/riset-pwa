@@ -96,7 +96,7 @@
             </div>
             <div>
               <b-button
-                @click="decreaseQuantity(index)"
+                @click="decreaseQuantity(index, item.name)"
                 variant="info"
                 class="mr-2"
                 >Kurangi</b-button
@@ -107,7 +107,7 @@
                 class="mr-2"
                 >Tambah</b-button
               >
-              <b-button @click="openModalAlertDelete(index)" variant="danger"
+              <b-button @click="openModalAlertDelete(index, item.name)" variant="danger"
                 >Hapus</b-button
               >
             </div>
@@ -138,7 +138,7 @@
         id="alertDeleteModal"
         title="Hapus item"
       >
-        <p>Apakah anda yakin untuk menghapus item ini dalam cart ?</p>
+        <p>Apakah anda yakin untuk menghapus <span class="fw-bolder">{{ nameItem }}</span> ini dalam cart ?</p>
         <template #modal-footer>
           <b-button variant="dark" @click="alertDeleteModal = false"
             >Batal</b-button
@@ -178,6 +178,7 @@ export default {
       showToast: false,
       toastVariant: "success",
       toastMessage: "Item berhasil ditambahkan ke keranjang!",
+      nameItem: "",
     };
   },
 
@@ -316,10 +317,11 @@ export default {
       this.showCartModal = true;
     },
 
-    openModalAlertDelete(index) {
+    openModalAlertDelete(index, name) {
       this.showCartModal = false;
       this.alertDeleteModal = true;
       this.indexItem = index;
+      this.nameItem = name;
     },
 
     removeFromCart(index) {
@@ -358,14 +360,14 @@ export default {
       });
     },
 
-    decreaseQuantity(index) {
+    decreaseQuantity(index, name) {
       if (this.cart[index].quantity > 1) {
         this.cart[index].quantity--;
         this.calculateTotalPrice();
 
         localStorage.setItem("cart", JSON.stringify(this.cart));
       } else if (this.cart[index].quantity == 1) {
-        this.openModalAlertDelete(index);
+        this.openModalAlertDelete(index, name);
       }
     },
 
