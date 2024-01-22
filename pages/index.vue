@@ -79,7 +79,7 @@
             class="d-flex justify-content-between align-items-center"
           >
             <div class="d-flex align-items-center">
-              <nuxt-img
+              <img
                 :src="getOptimizedImage(item.image)"
                 :alt="item.name"
                 width="50"
@@ -188,10 +188,10 @@ export default {
     };
   },
 
-  async created() {
-    // Fetch cart data asynchronously when the component is created
-    await this.fetchCartData();
-  },
+  // async created() {
+  //   // Fetch cart data asynchronously when the component is created
+  //   await this.fetchCartData();
+  // },
 
   computed: {
     startIndex() {
@@ -211,6 +211,7 @@ export default {
   },
   mounted() {
     this.getData();
+    this.fetchCartData();
     this.calculateTotalPrice();
   },
   methods: {
