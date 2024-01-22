@@ -105,7 +105,7 @@ export default {
       fileName: "icon.png",
     },
     workbox: {
-      swSrc: 'sw.js',
+      swSrc: 'static/sw.js',
     },
   },
 

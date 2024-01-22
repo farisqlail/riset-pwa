@@ -25,7 +25,7 @@ export default {
   head: {
     script: [
       {
-        src: "/sw.js",
+        src: "../sw.js",
         type: "text/javascript",
         defer: true,
       },
