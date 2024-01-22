@@ -30,13 +30,13 @@
             </div>
 
             <div>
-              <b-button @click="decreaseQuantity(index)" variant="info"
+              <b-button @click="decreaseQuantity(index, item.name)" variant="info"
                 >Kurangi</b-button
               >
               <b-button @click="increaseQuantity(index)" variant="success"
                 >Tambah</b-button
               >
-              <b-button @click="removeFromCart(index)" variant="danger"
+              <b-button @click="removeFromCart(index, item.name)" variant="danger"
                 >Hapus</b-button
               >
             </div>
@@ -68,7 +68,7 @@
       id="alertDeleteModal"
       title="Hapus item"
     >
-      <p>Apakah anda yakin untuk menghapus item ini dalam cart ?</p>
+      <p>Apakah anda yakin untuk menghapus <span class="fw-bolder">{{ nameItem }}</span> ini dalam cart ?</p>
       <template #modal-footer>
         <b-button variant="dark" @click="alertDeleteModal = false"
           >Batal</b-button
@@ -96,6 +96,7 @@ export default {
       toastVariant: "success",
       toastMessage: "Item berhasil ditambahkan ke keranjang!",
       alertDeleteModal: false,
+      nameItem: "",
     };
   },
   async created() {
@@ -175,14 +176,14 @@ export default {
       });
     },
 
-    decreaseQuantity(index) {
+    decreaseQuantity(index, name) {
       if (this.cart[index].quantity > 1) {
         this.cart[index].quantity--;
         this.calculateTotalPrice();
 
         localStorage.setItem("cart", JSON.stringify(this.cart));
       } else if (this.cart[index].quantity == 1) {
-        this.openModalAlertDelete(index);
+        this.openModalAlertDelete(index, name);
       }
     },
     
@@ -193,10 +194,11 @@ export default {
       localStorage.setItem("cart", JSON.stringify(this.cart));
     },
 
-    openModalAlertDelete(index) {
+    openModalAlertDelete(index, name) {
       this.showCartModal = false;
       this.alertDeleteModal = true;
       this.indexItem = index;
+      this.nameItem = name;
     },
 
     removeFromCart(index) {
@@ -205,6 +207,7 @@ export default {
 
       this.calculateTotalPrice();
       this.alertDeleteModal = false;
+      this.nameItem = "";
       this.showToastMessage("success", "Item berhasil dihapus dari keranjang!");
     },
     
