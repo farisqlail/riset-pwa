@@ -111,6 +111,7 @@ export default {
         {
           urlPattern: 'http://20.2.220.145:3000/.*',
         }
+      ],
     },
   },
 
