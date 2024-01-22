@@ -106,7 +106,11 @@ export default {
     },
     workbox: {
       swSrc: 'static/sw.js',
-      offlinePage: '_nuxt/*'
+      offlinePage: '_nuxt/*',
+      runtimeCaching: [
+        {
+          urlPattern: 'http://20.2.220.145:3000/.*',
+        }
     },
   },
 
