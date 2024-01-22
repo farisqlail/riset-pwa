@@ -106,6 +106,7 @@ export default {
     },
     workbox: {
       swSrc: 'static/sw.js',
+      offlinePage: '_nuxt/*'
     },
   },
 
