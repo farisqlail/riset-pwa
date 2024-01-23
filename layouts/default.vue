@@ -17,6 +17,8 @@
 <script>
 window.csrf_token = "{{ csrf_token() }}";
 document.documentElement.requestFullscreen();
+window.navigator.standalone;
+window.matchMedia("(display-mode: standalone)").matches;
 </script>
 <script>
 import Navbar from "~/components/Navbar.vue";
@@ -42,5 +44,37 @@ export default {
       body: true,
     },
   ],
+
+  mounted() {
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker
+        .register("/sw.js", { scope: "/" })
+        .then((registration) => {
+          console.log(
+            "Service Worker registered with scope:",
+            registration.scope
+          );
+        })
+        .catch((error) => {
+          console.error("Service Worker registration failed:", error);
+        });
+    }
+  },
 };
 </script>
+
+<style>
+.element {
+  height: env(safe-area-inset-top);
+  width: env(safe-area-inset-left);
+  margin: env(safe-area-inset-right);
+  padding: env(safe-area-inset-bottom, 20px);
+}
+
+.h-safe-area-inset-top {
+  height: env(safe-area-inset-top);
+}
+.bg-black {
+  background-color: #444;
+}
+</style>

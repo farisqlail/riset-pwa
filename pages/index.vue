@@ -79,7 +79,7 @@
             class="d-flex justify-content-between align-items-center"
           >
             <div class="d-flex align-items-center">
-              <img
+              <nuxt-img
                 :src="getOptimizedImage(item.image)"
                 :alt="item.name"
                 width="50"
@@ -107,7 +107,9 @@
                 class="mr-2"
                 >Tambah</b-button
               >
-              <b-button @click="openModalAlertDelete(index, item.name)" variant="danger"
+              <b-button
+                @click="openModalAlertDelete(index, item.name)"
+                variant="danger"
                 >Hapus</b-button
               >
             </div>
@@ -138,7 +140,10 @@
         id="alertDeleteModal"
         title="Hapus item"
       >
-        <p>Apakah anda yakin untuk menghapus <span class="fw-bolder">{{ nameItem }}</span> ini dalam cart ?</p>
+        <p>
+          Apakah anda yakin untuk menghapus
+          <span class="fw-bolder">{{ nameItem }}</span> ini dalam cart ?
+        </p>
         <template #modal-footer>
           <b-button variant="dark" @click="alertDeleteModal = false"
             >Batal</b-button
@@ -156,12 +161,12 @@
 <script>
 import axios from "axios";
 import CartModal from "~/components/CartModal.vue";
-import ToastComponent from '~/components/Toast.vue';
+import ToastComponent from "~/components/Toast.vue";
 
 export default {
   components: {
     BModalCart: CartModal,
-    'toast-component': ToastComponent,
+    "toast-component": ToastComponent,
   },
 
   data() {
@@ -179,6 +184,7 @@ export default {
       toastVariant: "success",
       toastMessage: "Item berhasil ditambahkan ke keranjang!",
       nameItem: "",
+      dataGuides: [],
     };
   },
 
@@ -188,10 +194,10 @@ export default {
     };
   },
 
-  // async created() {
-  //   // Fetch cart data asynchronously when the component is created
-  //   await this.fetchCartData();
-  // },
+  async created() {
+    // Fetch cart data asynchronously when the component is created
+    await this.fetchCartData();
+  },
 
   computed: {
     startIndex() {
@@ -250,22 +256,29 @@ export default {
       try {
         // Check if guides are already in localStorage
         const localGuides = localStorage.getItem("guides");
+        console.log("ff", navigator.onLine);
+
         if (localGuides) {
-          this.guides = JSON.parse(localGuides);
-          return this.guides;
-        }
+          const parsedGuides = JSON.parse(localGuides);
 
-        // Fetch data from the API
-        if (process.client) {
-          const apiUrl =
-            "https://cloud.interactive.co.id/myprofit/api/get_product?salt=m4riyAdiH43hhaEh&appid=MP01M51463F20230206169&loc_id=51203";
-
-          const response = await axios.get(apiUrl);
-          this.guides = response.data.data;
-
-          localStorage.setItem("guides", JSON.stringify(this.guides));
+          this.guides = JSON.parse(localStorage.getItem("guides") || "[]");
+          this.$store.commit("setGuides", parsedGuides);
+          this.guides = parsedGuides;
 
           return this.guides;
+        } else {
+          // Fetch data from the API
+          if (process.client) {
+            const apiUrl =
+              "https://cloud.interactive.co.id/myprofit/api/get_product?salt=m4riyAdiH43hhaEh&appid=MP01M51463F20230206169&loc_id=51203";
+
+            const response = await axios.get(apiUrl);
+            this.guides = response.data.data;
+
+            localStorage.setItem("guides", JSON.stringify(this.guides));
+
+            return this.guides;
+          }
         }
       } catch (error) {
         console.error("Error fetching guides:", error);
@@ -311,7 +324,10 @@ export default {
 
       this.calculateTotalPrice();
       this.showToast = true;
-      this.showToastMessage('success', 'Item berhasil ditambahkan ke keranjang!');
+      this.showToastMessage(
+        "success",
+        "Item berhasil ditambahkan ke keranjang!"
+      );
     },
 
     openCartModal() {
@@ -330,7 +346,7 @@ export default {
       localStorage.setItem("cart", JSON.stringify(this.cart));
 
       this.alertDeleteModal = false;
-      this.showToastMessage('success', 'Item berhasil dihapus dari keranjang!');
+      this.showToastMessage("success", "Item berhasil dihapus dari keranjang!");
     },
 
     onToastHidden() {
