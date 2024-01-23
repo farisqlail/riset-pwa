@@ -110,7 +110,7 @@ export default {
       short_name: "RPWA",
       description: "Riset for PWA",
       lang: "en",
-      display: 'standalone',
+      display: 'fullscreen',
       start_url: "/",
     },
     icon: {
