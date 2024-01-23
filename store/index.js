@@ -26,9 +26,11 @@ const loadFromCache = async (cacheName, key, commit) => {
     try {
       const cache = await caches.open(cacheName);
       const response = await cache.match(key);
+
       if (response) {
         const data = await response.json();
         commit(`set${key.charAt(0).toUpperCase() + key.slice(1)}`, data);
+        return data;
       }
     } catch (error) {
       console.error(`Error loading ${key} from ${cacheName} cache:`, error);
@@ -153,6 +155,42 @@ export const actions = {
     commit("saveCartToCache");
     commit("calculateTotalPrice");
   },
+
+
+  async loadGuides({ commit, state }) {
+    try {
+      const cachedGuides = await loadFromCache(GUIDES_CACHE_NAME, "guides", commit);
+
+      if (cachedGuides && Array.isArray(cachedGuides) && cachedGuides.length > 0) {
+        // Guides loaded from cache, commit to state
+        commit("setGuides", cachedGuides);
+      } else {
+        // Guides not found in cache, load from local storage
+        const localGuides = localStorage.getItem("guides");
+
+        if (localGuides) {
+          const parsedGuides = JSON.parse(localGuides);
+          commit("setGuides", parsedGuides);
+        }
+      }
+
+      // Fetch data from the server and commit to the store
+      const response = await fetchDataFromApi(); // Replace with your actual API call
+      const guidesData = response.data;
+
+      // Save guides to cache
+      saveToCache(GUIDES_CACHE_NAME, "guides", guidesData);
+
+      // Commit guides data to the store
+      commit("setGuides", guidesData);
+
+      return guidesData;
+    } catch (error) {
+      console.error("Error loading guides data:", error);
+      return [];
+    }
+  },
+
 
   async fetchCartData({ commit, state }) {
     try {

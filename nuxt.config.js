@@ -1,6 +1,7 @@
 const LargeLibrary = () => import('large-library');
 const compression = require('compression');
-const isDev = process.env.NODE_ENV !== 'production'
+import fs from 'fs';
+import path from 'path';
 
 export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
@@ -9,7 +10,13 @@ export default {
   },
 
   server: {
-    host: '127.0.0.1',
+    host: '0.0.0.0',
+    port: 3000,
+    https: process.env.NODE_ENV === 'production' ? {
+      key: fs.readFileSync(path.resolve('C:/riset-pwa/ssl/private.key')),
+      cert: fs.readFileSync(path.resolve('C:/riset-pwa/ssl/certificate.crt')),
+      ca: fs.readFileSync(path.resolve('C:/riset-pwa/ssl/ca_bundle.crt')),
+    } : null,
   },
 
   target: "static",
@@ -28,9 +35,9 @@ export default {
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
       { hid: 'description', name: 'description', content: '' },
       { name: 'format-detection', content: 'telephone=no' },
-      { name: 'mobile-web-app-capable', content:'yes' },
-      { name: 'apple-mobile-web-app-capable', content:'yes' },
-      { name: 'apple-mobile-web-app-status-bar-style', content:'black-translucent' }
+      { name: 'mobile-web-app-capable', content: 'yes' },
+      { name: 'apple-mobile-web-app-capable', content: 'yes' },
+      { name: 'apple-mobile-web-app-status-bar-style', content: 'black-translucent' }
     ],
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
@@ -43,7 +50,6 @@ export default {
 
   plugins: [
     '~/store/plugins/cache.js',
-    { src: '~/store/plugins/workbox-sync.js', ssr: true },
   ],
 
   components: true,
@@ -54,6 +60,7 @@ export default {
     '@nuxtjs/proxy',
     'bootstrap-vue/nuxt',
     '@nuxt/image',
+    '@nuxtjs/workbox'
   ],
 
   modules: [
@@ -62,7 +69,13 @@ export default {
     '@nuxt/http',
     '@nuxtjs/proxy',
     '@nuxt/image',
+    '@makkarpov/nuxt-service-worker',
+    '@nuxtjs/workbox'
   ],
+
+  serviceWorker: {
+    entryPoint: 'sw.js'
+  },
 
   axios: {
     baseURL: 'https://cloud.interactive.co.id/myprofit', // Adjust the port if needed
@@ -98,19 +111,20 @@ export default {
       description: "Riset for PWA",
       lang: "en",
       display: 'standalone',
-      start_url: "/?standalone=true"
+      start_url: "/",
     },
     icon: {
       source: "static/icons",
       fileName: "icon.png",
     },
     workbox: {
-      swSrc: 'static/sw.js',
-      offlinePage: '_nuxt/*',
+      swSrc: 'sw.js',
+      offlineStrategy: 'StaleWhileRevalidate',
       runtimeCaching: [
         {
-          urlPattern: 'http://20.2.220.145:3000/.*',
-        }
+          urlPattern: '^https://cloud.interactive.co.id/myprofit', // Customize the URL pattern
+          handler: 'NetworkFirst', // Use NetworkFirst strategy for API requests
+        },
       ],
     },
   },
@@ -148,12 +162,12 @@ export default {
   },
 
   publicRuntimeConfig: {
-    apiUrl: process.env.API_URL || 'http://localhost:3000',
+    apiUrl: process.env.API_URL,
   },
-  
-  workbox: {
-    cachingExtensions: '@/sw.js'
-  },
+
+  // workbox: {
+  //   cachingExtensions: 'sw.js'
+  // },
 
   // generates dynamic routes
   generate: {

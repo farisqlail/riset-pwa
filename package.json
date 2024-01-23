@@ -22,13 +22,10 @@
     "vue": "^2.7.10",
     "vue-server-renderer": "^2.7.16",
     "vue-template-compiler": "^2.7.10",
-    "workbox-background-sync": "^7.0.0",
-    "workbox-cdn": "^5.1.4",
-    "workbox-routing": "^7.0.0",
-    "workbox-strategies": "^7.0.0",
     "zlib": "^1.0.5"
   },
   "devDependencies": {
+    "@makkarpov/nuxt-service-worker": "^0.1.2",
     "@nuxt/image": "^0.7.1",
     "@nuxtjs/pwa": "^3.3.5",
     "frontmatter-markdown-loader": "^3.7.0",
