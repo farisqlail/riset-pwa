@@ -3,7 +3,7 @@
     <div class="row-item">
       <div class="item-cart mb-3">
         <div class="d-flex align-self-center">
-          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/Logo_ovo_purple.svg/2560px-Logo_ovo_purple.svg.png" width="100" loading="lazy" />
+          <img src="../../assets/images/ovo.png" width="100" loading="lazy" />
         </div>
         <div class="d-flex align-self-center">
           <nuxt-link to="/invoice" class="btn btn-success">Pilih</nuxt-link>
@@ -11,7 +11,7 @@
       </div>
       <div class="item-cart mb-3">
         <div class="d-flex align-self-center">
-          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Logo_dana_blue.svg/2560px-Logo_dana_blue.svg.png" width="100" loading="lazy" />
+          <img src="../../assets/images/dana.png" width="100" loading="lazy" />
         </div>
         <div class="d-flex align-self-center">
           <nuxt-link to="/invoice" class="btn btn-success">Pilih</nuxt-link>
@@ -19,7 +19,7 @@
       </div>
       <div class="item-cart mb-3">
         <div class="d-flex align-self-center">
-          <img src="https://www.bca.co.id/-/media/Feature/Card/List-Card/Tentang-BCA/Brand-Assets/Logo-BCA/Logo-BCA_Biru.png" width="100" loading="lazy" />
+          <img src="../../assets/images/bca.png" width="100" loading="lazy" />
         </div>
         <div class="d-flex align-self-center">
           <nuxt-link to="/invoice" class="btn btn-success">Pilih</nuxt-link>

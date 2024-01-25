@@ -30,13 +30,17 @@
             </div>
 
             <div>
-              <b-button @click="decreaseQuantity(index, item.name)" variant="info"
+              <b-button
+                @click="decreaseQuantity(index, item.name)"
+                variant="info"
                 >Kurangi</b-button
               >
               <b-button @click="increaseQuantity(index)" variant="success"
                 >Tambah</b-button
               >
-              <b-button @click="removeFromCart(index, item.name)" variant="danger"
+              <b-button
+                @click="openModalAlertDelete(index, item.name)"
+                variant="danger"
                 >Hapus</b-button
               >
             </div>
@@ -68,12 +72,15 @@
       id="alertDeleteModal"
       title="Hapus item"
     >
-      <p>Apakah anda yakin untuk menghapus <span class="fw-bolder">{{ nameItem }}</span> ini dalam cart ?</p>
+      <p>
+        Apakah anda yakin untuk menghapus
+        <span class="fw-bolder">{{ nameItem }}</span> ini dalam cart ?
+      </p>
       <template #modal-footer>
         <b-button variant="dark" @click="alertDeleteModal = false"
           >Batal</b-button
         >
-        <b-button @click="openModalAlertDelete(indexItem)" variant="danger"
+        <b-button @click="removeFromCart(indexItem)" variant="danger"
           >Hapus</b-button
         >
       </template>
@@ -103,7 +110,15 @@ export default {
     // Fetch cart data asynchronously when the component is created
     await this.fetchCartData();
   },
+  mounted(){
+    this.beforeRouteEnter();
+  },
   methods: {
+    beforeRouteEnter() {
+      if (this.cart.length === 0) {
+        this.$router.push("/");
+      }
+    },
     async fetchCartData() {
       await this.$store.dispatch("fetchCartData");
       const cartItems = this.$store.state.cart;
@@ -186,7 +201,7 @@ export default {
         this.openModalAlertDelete(index, name);
       }
     },
-    
+
     increaseQuantity(index) {
       this.cart[index].quantity++;
       this.calculateTotalPrice();
@@ -208,9 +223,10 @@ export default {
       this.calculateTotalPrice();
       this.alertDeleteModal = false;
       this.nameItem = "";
+      this.beforeRouteEnter();
       this.showToastMessage("success", "Item berhasil dihapus dari keranjang!");
     },
-    
+
     getOptimizedImage(imagePath) {
       const supportsWebP = this.browserSupportsWebP();
       let optimizedPath = imagePath;
