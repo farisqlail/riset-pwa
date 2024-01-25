@@ -109,12 +109,10 @@ export default {
   async created() {
     // Fetch cart data asynchronously when the component is created
     await this.fetchCartData();
-  },
-  mounted(){
-    this.beforeRouteEnter();
+    await this.beforeRouteEnter();
   },
   methods: {
-    beforeRouteEnter() {
+    async beforeRouteEnter() {
       if (this.cart.length === 0) {
         this.$router.push("/");
       }
