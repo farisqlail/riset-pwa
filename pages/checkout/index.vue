@@ -95,7 +95,7 @@ import ToastComponent from "~/components/Toast.vue";
 export default {
   data() {
     return {
-      customerName: "",
+      customerName: "user",
       cart: [],
       totalPrice: 0,
       indexItem: 0,
