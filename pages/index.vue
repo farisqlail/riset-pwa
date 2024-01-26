@@ -35,7 +35,7 @@
               variant="success"
               class="float-right"
               @click="addToCart(product)"
-              :id="'addToCartButton_' + product.id"
+              :id="'addToCartButton_' + product.name"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
