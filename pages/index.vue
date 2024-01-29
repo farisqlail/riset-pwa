@@ -231,6 +231,14 @@ export default {
       this.toastVariant = variant;
       this.toastMessage = message;
       this.showToast = true;
+
+      setTimeout(() => {
+        this.hideToast();
+      }, 1000);
+    },
+
+    hideToast() {
+      this.showToast = false;
     },
 
     async fetchCartData() {

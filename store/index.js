@@ -10,25 +10,24 @@ export const state = () => ({
   guides: [],
 });
 
-const saveToCache = async (cacheName, key, data) => {
+const saveToCache = (cacheName, key, data) => {
   if (process.client) {
     try {
-      const cache = await caches.open(cacheName);
-      await cache.put(key, new Response(JSON.stringify(data)));
+      localStorage.setItem(`${cacheName}:${key}`, JSON.stringify(data));
     } catch (error) {
       console.error(`Error saving ${key} to ${cacheName} cache:`, error);
     }
   }
 };
 
-const loadFromCache = async (cacheName, key, commit) => {
+
+const loadFromCache = (cacheName, key, commit) => {
   if (process.client) {
     try {
-      const cache = await caches.open(cacheName);
-      const response = await cache.match(key);
+      const cachedData = localStorage.getItem(`${cacheName}:${key}`);
 
-      if (response) {
-        const data = await response.json();
+      if (cachedData) {
+        const data = JSON.parse(cachedData);
         commit(`set${key.charAt(0).toUpperCase() + key.slice(1)}`, data);
         return data;
       }
@@ -37,6 +36,7 @@ const loadFromCache = async (cacheName, key, commit) => {
     }
   }
 };
+
 
 export const mutations = {
   setOffline(state, value) {
