@@ -6,7 +6,7 @@
           <img src="../../assets/images/ovo.png" width="100" loading="lazy" />
         </div>
         <div class="d-flex align-self-center">
-          <nuxt-link to="/invoice" class="btn btn-success">Pilih</nuxt-link>
+          <b-button @click="toInvoice" class="btn btn-success">Pilih</b-button>
         </div>
       </div>
       <div class="item-cart mb-3">
@@ -14,7 +14,7 @@
           <img src="../../assets/images/dana.png" width="100" loading="lazy" />
         </div>
         <div class="d-flex align-self-center">
-          <nuxt-link to="/invoice" class="btn btn-success">Pilih</nuxt-link>
+          <b-button @click="toInvoice" class="btn btn-success">Pilih</b-button>
         </div>
       </div>
       <div class="item-cart mb-3">
@@ -22,7 +22,7 @@
           <img src="../../assets/images/bca.png" width="100" loading="lazy" />
         </div>
         <div class="d-flex align-self-center">
-          <nuxt-link to="/invoice" class="btn btn-success">Pilih</nuxt-link>
+          <b-button @click="toInvoice" class="btn btn-success">Pilih</b-button>
         </div>
       </div>
     </div>
@@ -32,6 +32,10 @@
 <script>
 export default {
   methods: {
+    toInvoice(){ 
+      this.$router.push("/invoice");
+    },
+
     getOptimizedImage(imagePath) {
       const supportsWebP = this.browserSupportsWebP();
       let optimizedPath = imagePath;

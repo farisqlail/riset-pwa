@@ -128,8 +128,8 @@
             >
           </div>
           <div v-else>
-            <nuxt-link to="/checkout" class="btn btn-success" variant="primary"
-              >Checkout</nuxt-link
+            <b-button @click="toCheckout" class="btn btn-success" variant="primary"
+              >Checkout</b-button
             >
           </div>
         </template>
@@ -225,6 +225,10 @@ export default {
     refresh() {
       this.$store.commit("resetGuides");
       location.reload();
+    },
+
+    toCheckout() {
+      this.$router.push("/checkout");
     },
 
     showToastMessage(variant, message) {
