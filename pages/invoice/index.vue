@@ -184,69 +184,69 @@ export default {
     },
 
     //print bluetooth
-    async printReceipt() {
-      try {
-        const device = await navigator.bluetooth.requestDevice({
-          filters: [{ services: ["e7d2a5c2-301e-0030-76e5-4d5f83000000"] }],
-        });
+    // async printReceipt() {
+    //   try {
+    //     const device = await navigator.bluetooth.requestDevice({
+    //       filters: [{ services: ["e7d2a5c2-301e-0030-76e5-4d5f83000000"] }],
+    //     });
 
-        const server = await device.gatt.connect();
-        const service = await server.getPrimaryService(
-          "e7d2a5c2-301e-0030-76e5-4d5f83000000"
-        );
-        const characteristic = await service.getCharacteristic(
-          "e0cbf06c-cd8b-4647-bb8a-263b43f0f974"
-        );
+    //     const server = await device.gatt.connect();
+    //     const service = await server.getPrimaryService(
+    //       "e7d2a5c2-301e-0030-76e5-4d5f83000000"
+    //     );
+    //     const characteristic = await service.getCharacteristic(
+    //       "e0cbf06c-cd8b-4647-bb8a-263b43f0f974"
+    //     );
 
-        const receiptData = {
-          customerName: this.customerName,
-          items: this.cart,
-          totalPrice: this.totalPrice,
-        };
+    //     const receiptData = {
+    //       customerName: this.customerName,
+    //       items: this.cart,
+    //       totalPrice: this.totalPrice,
+    //     };
 
-        // Create a formatted receipt content
-        const printableContent = `
-      <span align="center">invoice</span></br>
-      Customer Name: ${receiptData.customerName}
-      </br> -------------------------- </br>
-      Items:</br></br>
-      ${receiptData.items
-        .map(
-          (item) =>
-            `${item.name} - ${item.quantity} pcs - ${this.formatPrice(
-              item.price
-            )}`
-        )
-        .join("</br>")}
-      </br>
-      </br> -------------------------- </br> </br>
-      Total Price: ${this.formatPrice(receiptData.totalPrice)}
-      </br></br>
-    `;
+    //     // Create a formatted receipt content
+    //     const printableContent = `
+    //   <span align="center">invoice</span></br>
+    //   Customer Name: ${receiptData.customerName}
+    //   </br> -------------------------- </br>
+    //   Items:</br></br>
+    //   ${receiptData.items
+    //     .map(
+    //       (item) =>
+    //         `${item.name} - ${item.quantity} pcs - ${this.formatPrice(
+    //           item.price
+    //         )}`
+    //     )
+    //     .join("</br>")}
+    //   </br>
+    //   </br> -------------------------- </br> </br>
+    //   Total Price: ${this.formatPrice(receiptData.totalPrice)}
+    //   </br></br>
+    // `;
 
-        // Convert the content to Uint8Array
-        const encoder = new TextEncoder("utf-8");
-        const data = encoder.encode(printableContent);
+    //     // Convert the content to Uint8Array
+    //     const encoder = new TextEncoder("utf-8");
+    //     const data = encoder.encode(printableContent);
 
-        // Write the data to the Bluetooth characteristic
-        await characteristic.writeValue(data);
+    //     // Write the data to the Bluetooth characteristic
+    //     await characteristic.writeValue(data);
 
-        // Handle success or perform additional actions
-        console.log("Print successful");
+    //     // Handle success or perform additional actions
+    //     console.log("Print successful");
 
-        this.saveTransaction(receiptData);
+    //     this.saveTransaction(receiptData);
 
-        // Reload after print (adjust the timing as needed)
-        setTimeout(() => {
-          this.$store.commit("resetCart");
-          this.$store.commit("resetCheckout");
-          this.$router.push("/");
-        }, 1000); // Wait for 1 second before reloading
-      } catch (error) {
-        // Handle errors
-        console.error("Error printing:", error);
-      }
-    },
+    //     // Reload after print (adjust the timing as needed)
+    //     setTimeout(() => {
+    //       this.$store.commit("resetCart");
+    //       this.$store.commit("resetCheckout");
+    //       this.$router.push("/");
+    //     }, 1000); // Wait for 1 second before reloading
+    //   } catch (error) {
+    //     // Handle errors
+    //     console.error("Error printing:", error);
+    //   }
+    // },
   },
 };
 </script>

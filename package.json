@@ -15,7 +15,7 @@
     "bootstrap": "^4.6.2",
     "bootstrap-vue": "^2.22.0",
     "compression": "^1.7.4",
-    "core-js": "^3.25.3",
+    "core-js": "^3.35.1",
     "ipx": "^3.0.0",
     "mkcert": "^3.2.0",
     "nuxt": "^2.15.8",
@@ -28,6 +28,7 @@
     "@makkarpov/nuxt-service-worker": "^0.1.2",
     "@nuxt/image": "^0.7.1",
     "@nuxtjs/pwa": "^3.3.5",
+    "file-loader": "^6.2.0",
     "frontmatter-markdown-loader": "^3.7.0",
     "push-dir": "^0.4.1",
     "raw-loader": "^4.0.2"
