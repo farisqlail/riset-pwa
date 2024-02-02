@@ -162,16 +162,12 @@ export default {
           </br></br>
       `;
 
-      const newWindow = window.open("", "_blank");
-      newWindow.document.write(printableContent);
-      newWindow.document.close(); // Close the document to finalize the writing
-
-      newWindow.onafterprint = () => {
-        newWindow.close(); // Close the new window after printing
-        // Perform additional actions after printing if needed
+      window.document.write(printableContent);
+      window.document.close();
+      window.onafterprint = () => {
+        window.document.close();
       };
-
-      newWindow.print();
+      window.print();
 
       this.saveTransaction(receiptData);
 
