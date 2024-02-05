@@ -10,7 +10,7 @@
 
       <div class="row">
         <div class="col">
-          <b-button block variant="success" @click="printReceipt">
+          <b-button block variant="success" @click="printLocalhost">
             Cetak nota local
           </b-button>
           <b-button block variant="success" @click="printWebpage">
