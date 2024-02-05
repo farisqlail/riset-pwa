@@ -10,8 +10,11 @@
 
       <div class="row">
         <div class="col">
-          <b-button block variant="success" @click="printLocalhost">
-            Cetak nota
+          <b-button block variant="success" @click="printReceipt">
+            Cetak nota local
+          </b-button>
+          <b-button block variant="success" @click="printWebpage">
+            Cetak nota prod
           </b-button>
         </div>
         <div class="col">
@@ -139,7 +142,7 @@ export default {
     printWebpage() {
       const content = this.generatePrintContent();
       this.printContent(
-        "https://www.matetech.in/myfiles/temp/response.php",
+        "https://wpa.interactiveholic.net:3000/",
         content
       );
     },
