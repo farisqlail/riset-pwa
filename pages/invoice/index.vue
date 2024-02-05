@@ -22,6 +22,7 @@
       </div>
     </div>
     <div id="printerDiv" style="display: none"></div>
+    <span>{{err}}</span>
   </b-card>
 </template>
 
@@ -31,10 +32,11 @@ export default {
     return {
       customerName: "",
       cart: [],
+      err: "",
     };
   },
   async created() {
-    await this.fetchCartData();
+    // await this.fetchCartData();
   },
   methods: {
     async fetchCartData() {
@@ -129,192 +131,132 @@ export default {
       });
     },
 
-    async isAppInstalled(packageName) {
+    isAppInstalled(packageName) {
       try {
-        await window.Android.isAppInstalled(packageName);
+        window.Android.isAppInstalled(packageName);
         return true;
       } catch (error) {
         return false;
       }
     },
 
-    // Function to generate a valid barcode value
     generateValidBarcodeValue() {
-      // Implement your logic to generate a valid barcode value
-      return "2132137538472";
+      return "2132137538472"; // Replace with your logic
     },
 
-    // Function to generate a valid QR code value
     generateValidQRCodeValue() {
-      // Implement your logic to generate a valid QR code value
-      return "This is sample";
+      return "This is sample"; // Replace with your logic
     },
 
-    // Function to get the base64 representation of an image
     getBase64(pageWidth, filePath) {
-      // Implement your logic to get the base64 string corresponding to the image
-      // ...
-
-      // Return the base64 string
-      return "base64_string";
+      return "base64_string"; // Replace with your logic
     },
 
-    // Function to get the HTML equivalent
     getHTMLEquivalent(s) {
       return s.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
     },
 
     // Your Nuxt.js component
-    async printReceipt() {
-      const receiptData = {
-        customerName: this.customerName,
-        items: this.cart,
-        totalPrice: this.totalPrice,
-      };
+    printReceipt() {
+      // const receiptData = {
+      //   customerName: this.customerName,
+      //   items: this.cart,
+      //   totalPrice: this.totalPrice,
+      // };
 
-      const uniqueItems = Array.from(
-        new Set(receiptData.items.map((item) => item.name))
+      // Step 1: Create data string
+      let printData = `<113>Mate Technologies<100>Website: www.matetech.in\nEmail: matetusshar@gmail.com`;
+
+      // Step 2: Print text data
+      printData += `<110>test ini print `;
+
+      // Step 3: Print image
+      // const imagePath = "/BluetoothPrint/test.jpg"; // Adjust the path based on your project structure
+      // const imageBase64 = await this.getBase64(48, imagePath);
+      // printData += `<IMAGE>1#${imageBase64}`;
+
+      // Step 4: Print Barcode
+      // const barcodeValue = "2132137538472";
+      // printData += `<BARCODE>0#100#50#${barcodeValue}`;
+
+      // Step 5: Print QR Code
+      // const qrCodeValue = "This is sample";
+      // printData += `<QR>1#40#${qrCodeValue}`;
+
+      // Step 6: Print HTML
+      const htmlCode = this.getHTMLEquivalent(
+        '<div><div style="float:left;"><b>This is left</b></div><div style="float:right;font-size:15px;">This is right</div></div>'
       );
+      printData += `<HTML>${htmlCode}`;
 
-      const itemsContent = uniqueItems
-        .map((item) => {
-          const matchedItem = receiptData.items.find((i) => i.name === item);
-          return `${matchedItem.name} - ${
-            matchedItem.quantity
-          } pcs - ${this.formatPrice(matchedItem.price)}`;
-        })
-        .join("</br>");
+      // Step 7: Check if Bluetooth Print app is installed
+      const appInstalled = this.isAppInstalled("mate.bluetoothprint");
 
-      const printableContent = `
-        <span align="center">invoice</span></br>
-        Customer Name: ${receiptData.customerName}
-        </br> -------------------------- </br>
-        Items:</br></br>
-        ${itemsContent}
-        </br>
-        </br> -------------------------- </br> </br>
-        Total Price: ${this.formatPrice(receiptData.totalPrice)}
-        </br></br>
-      `;
-
-      // Check if running in an Android WebView
-      const isAndroidWebView = window.Android && window.Android.printPage;
-
-      if (isAndroidWebView) {
-        // Handle Android-specific printing logic here
-        window.Android.printPage();
-      } else {
-        // For other platforms, use the standard window.print()
-        window.document.write(printableContent);
-        window.document.close();
-        window.onafterprint = () => {
-          window.document.close("", "_blank");
-        };
-        window.print();
-      }
-
-      // Prepare data for Bluetooth Print app
-      const dataForBluetoothPrint = `
-        <113>Mate Technologies<100>Website: www.matetech.in\nEmail: matetusshar@gmail.com
-        <IMAGE>1#${this.getBase64(48, "path/to/your/image.jpg")}
-        <BARCODE>0#100#50#${generateValidBarcodeValue()}
-        <QR>1#40#${generateValidQRCodeValue()}
-        <HTML>${this.getHTMLEquivalent(
-          '<div><div style="float:left;"><b>This is left</b></div><div style="float:right;font-size:15px;">This is right</div></div>'
-        )}`;
-
-      // Check if Bluetooth Print app is installed
-      const appInstalled = await this.isAppInstalled("mate.bluetoothprint");
-
-      // Open Bluetooth Print app with the prepared data
+      // Step 8: Open Bluetooth Print app with the prepared data
       if (appInstalled) {
         const sendIntent = {
           action: "android.intent.action.SEND",
           packageName: "mate.bluetoothprint",
           type: "text/plain",
           extras: {
-            "android.intent.extra.TEXT": dataForBluetoothPrint,
+            "android.intent.extra.TEXT": printData,
           },
         };
 
         window.Android.startActivity(sendIntent);
       } else {
-        console.error("Bluetooth Print app is not installed.");
+        this.err = "Bluetooth Print app is not installed.";
       }
-
-      this.saveTransaction(receiptData);
-
-      // Reload after print (adjust the timing as needed)
-      setTimeout(() => {
-        this.$store.commit("resetCart");
-        this.$store.commit("resetCheckout");
-        this.$router.push("/");
-      }, 1000); // Wait for 1 second before reloading
     },
 
-    //print bluetooth
+    //old function
     // async printReceipt() {
-    //   try {
-    //     const device = await navigator.bluetooth.requestDevice({
-    //       filters: [{ services: ["e7d2a5c2-301e-0030-76e5-4d5f83000000"] }],
-    //     });
+    //   const receiptData = {
+    //     customerName: this.customerName,
+    //     items: this.cart,
+    //     totalPrice: this.totalPrice,
+    //   };
 
-    //     const server = await device.gatt.connect();
-    //     const service = await server.getPrimaryService(
-    //       "e7d2a5c2-301e-0030-76e5-4d5f83000000"
-    //     );
-    //     const characteristic = await service.getCharacteristic(
-    //       "e0cbf06c-cd8b-4647-bb8a-263b43f0f974"
-    //     );
+    //   const uniqueItems = Array.from(
+    //     new Set(receiptData.items.map((item) => item.name))
+    //   );
 
-    //     const receiptData = {
-    //       customerName: this.customerName,
-    //       items: this.cart,
-    //       totalPrice: this.totalPrice,
-    //     };
+    //   const itemsContent = uniqueItems
+    //     .map((item) => {
+    //       const matchedItem = receiptData.items.find((i) => i.name === item);
+    //       return `${matchedItem.name} - ${
+    //         matchedItem.quantity
+    //       } pcs - ${this.formatPrice(matchedItem.price)}`;
+    //     })
+    //     .join("</br>");
 
-    //     // Create a formatted receipt content
-    //     const printableContent = `
-    //   <span align="center">invoice</span></br>
-    //   Customer Name: ${receiptData.customerName}
-    //   </br> -------------------------- </br>
-    //   Items:</br></br>
-    //   ${receiptData.items
-    //     .map(
-    //       (item) =>
-    //         `${item.name} - ${item.quantity} pcs - ${this.formatPrice(
-    //           item.price
-    //         )}`
-    //     )
-    //     .join("</br>")}
-    //   </br>
-    //   </br> -------------------------- </br> </br>
-    //   Total Price: ${this.formatPrice(receiptData.totalPrice)}
-    //   </br></br>
-    // `;
+    //   const printableContent = `
+    //       <span align="center">invoice</span></br>
+    //       Customer Name: ${receiptData.customerName}
+    //       </br> -------------------------- </br>
+    //       Items:</br></br>
+    //       ${itemsContent}
+    //       </br>
+    //       </br> -------------------------- </br> </br>
+    //       Total Price: ${this.formatPrice(receiptData.totalPrice)}
+    //       </br></br>
+    //   `;
 
-    //     // Convert the content to Uint8Array
-    //     const encoder = new TextEncoder("utf-8");
-    //     const data = encoder.encode(printableContent);
+    //   window.document.write(printableContent);
+    //   window.document.close();
+    //   window.onafterprint = () => {
+    //     window.document.close("", "_blank");
+    //   };
+    //   window.print();
 
-    //     // Write the data to the Bluetooth characteristic
-    //     await characteristic.writeValue(data);
+    //   this.saveTransaction(receiptData);
 
-    //     // Handle success or perform additional actions
-    //     console.log("Print successful");
-
-    //     this.saveTransaction(receiptData);
-
-    //     // Reload after print (adjust the timing as needed)
-    //     setTimeout(() => {
-    //       this.$store.commit("resetCart");
-    //       this.$store.commit("resetCheckout");
-    //       this.$router.push("/");
-    //     }, 1000); // Wait for 1 second before reloading
-    //   } catch (error) {
-    //     // Handle errors
-    //     console.error("Error printing:", error);
-    //   }
+    //   // Reload after print (adjust the timing as needed)
+    //   setTimeout(() => {
+    //     this.$store.commit("resetCart");
+    //     this.$store.commit("resetCheckout");
+    //     this.$router.push("/");
+    //   }, 1000); // Wait for 1 second before reloading
     // },
   },
 };
