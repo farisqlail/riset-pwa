@@ -10,7 +10,7 @@
 
       <div class="row">
         <div class="col">
-          <b-button block variant="success" @click="printReceipt">
+          <b-button block variant="success" @click="printLocalhost">
             Cetak nota
           </b-button>
         </div>
@@ -22,7 +22,7 @@
       </div>
     </div>
     <div id="printerDiv" style="display: none"></div>
-    <span>{{err}}</span>
+    <span>{{ err }}</span>
   </b-card>
 </template>
 
@@ -131,82 +131,92 @@ export default {
       });
     },
 
-    isAppInstalled(packageName) {
-      try {
-        window.Android.isAppInstalled(packageName);
-        return true;
-      } catch (error) {
-        return false;
-      }
+    printLocalhost() {
+      const content = this.generatePrintContent();
+      this.printContent("http://localhost:3000", content);
     },
 
-    generateValidBarcodeValue() {
-      return "2132137538472"; // Replace with your logic
-    },
-
-    generateValidQRCodeValue() {
-      return "This is sample"; // Replace with your logic
-    },
-
-    getBase64(pageWidth, filePath) {
-      return "base64_string"; // Replace with your logic
-    },
-
-    getHTMLEquivalent(s) {
-      return s.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
-    },
-
-    // Your Nuxt.js component
-    printReceipt() {
-      // const receiptData = {
-      //   customerName: this.customerName,
-      //   items: this.cart,
-      //   totalPrice: this.totalPrice,
-      // };
-
-      // Step 1: Create data string
-      let printData = `<113>Mate Technologies<100>Website: www.matetech.in\nEmail: matetusshar@gmail.com`;
-
-      // Step 2: Print text data
-      printData += `<110>test ini print `;
-
-      // Step 3: Print image
-      // const imagePath = "/BluetoothPrint/test.jpg"; // Adjust the path based on your project structure
-      // const imageBase64 = await this.getBase64(48, imagePath);
-      // printData += `<IMAGE>1#${imageBase64}`;
-
-      // Step 4: Print Barcode
-      // const barcodeValue = "2132137538472";
-      // printData += `<BARCODE>0#100#50#${barcodeValue}`;
-
-      // Step 5: Print QR Code
-      // const qrCodeValue = "This is sample";
-      // printData += `<QR>1#40#${qrCodeValue}`;
-
-      // Step 6: Print HTML
-      const htmlCode = this.getHTMLEquivalent(
-        '<div><div style="float:left;"><b>This is left</b></div><div style="float:right;font-size:15px;">This is right</div></div>'
+    printWebpage() {
+      const content = this.generatePrintContent();
+      this.printContent(
+        "https://www.matetech.in/myfiles/temp/response.php",
+        content
       );
-      printData += `<HTML>${htmlCode}`;
+    },
 
-      // Step 7: Check if Bluetooth Print app is installed
-      const appInstalled = this.isAppInstalled("mate.bluetoothprint");
+    generatePrintContent() {
+      const content = [];
 
-      // Step 8: Open Bluetooth Print app with the prepared data
-      if (appInstalled) {
-        const sendIntent = {
-          action: "android.intent.action.SEND",
-          packageName: "mate.bluetoothprint",
-          type: "text/plain",
-          extras: {
-            "android.intent.extra.TEXT": printData,
-          },
-        };
+      // Text entry
+      const textEntry = {
+        type: 0,
+        content: "This text has\n two lines",
+        bold: 0,
+        align: 0,
+      };
+      content.push(textEntry);
 
-        window.Android.startActivity(sendIntent);
-      } else {
-        this.err = "Bluetooth Print app is not installed.";
-      }
+      // Image entry (modify the path accordingly)
+      const imageEntry = {
+        type: 1,
+        path: "https://www.mydomain.com/image.jpg",
+        align: 2,
+      };
+      content.push(imageEntry);
+
+      // Barcode entry
+      const barcodeEntry = {
+        type: 2,
+        value: "1234567890123",
+        width: 100,
+        height: 50,
+        align: 0,
+      };
+      content.push(barcodeEntry);
+
+      // QR code entry
+      const qrEntry = {
+        type: 3,
+        value: "sample qr text",
+        size: 40,
+        align: 2,
+      };
+      content.push(qrEntry);
+
+      // HTML Code entry
+      const htmlCodeEntry = {
+        type: 4,
+        content:
+          '<center><span style="font-weight:bold; font-size:20px;">This is sample text</span></center>',
+      };
+      content.push(htmlCodeEntry);
+
+      // Empty line entry
+      const emptyLineEntry = {
+        type: 0,
+        content: " ",
+        bold: 0,
+        align: 0,
+      };
+      content.push(emptyLineEntry);
+
+      // Multi-line text entry
+      const multiLineTextEntry = {
+        type: 0,
+        content: "This text has\n two lines",
+        bold: 0,
+        align: 0,
+      };
+      content.push(multiLineTextEntry);
+
+      return content;
+    },
+
+    printContent(url, content) {
+      const printUrl = `my.bluetoothprint.scheme://${url}?content=${JSON.stringify(
+        content
+      )}`;
+      window.open(printUrl, "_blank");
     },
 
     //old function
