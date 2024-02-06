@@ -10,11 +10,8 @@
 
       <div class="row">
         <div class="col">
-          <b-button block variant="success" @click="printLocalhost">
+          <b-button block variant="success" @click="printReceipt">
             Cetak nota local
-          </b-button>
-          <b-button block variant="success" @click="printWebpage">
-            Cetak nota prod
           </b-button>
         </div>
         <div class="col">
@@ -25,21 +22,23 @@
       </div>
     </div>
     <div id="printerDiv" style="display: none"></div>
-    <span>{{ err }}</span>
   </b-card>
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   data() {
     return {
       customerName: "",
       cart: [],
       err: "",
+      respon: [],
     };
   },
   async created() {
-    // await this.fetchCartData();
+    await this.fetchCartData();
   },
   methods: {
     async fetchCartData() {
@@ -134,143 +133,79 @@ export default {
       });
     },
 
-    printLocalhost() {
-      const content = this.generatePrintContent();
-      this.printContent("http://localhost:3000", content);
+    async printAndroid() {
+      try {
+        const apiUrl =
+          "https://cloud.interactive.co.id/myprofit/api/get_print_myorder_pwa";
+        const response = await axios.get(apiUrl);
+        const printUrl = `my.bluetoothprint.scheme://${apiUrl}`;
+
+        // Redirect to the print URL
+        window.location.href = printUrl;
+
+        this.respon = response;
+      } catch (error) {
+        console.error("Error fetching print data:", error);
+      }
     },
 
-    printWebpage() {
-      const content = this.generatePrintContent();
-      this.printContent(
-        "https://wpa.interactiveholic.net:3000/",
-        content
-      );
-    },
-
-    generatePrintContent() {
-      const content = [];
-
-      // Text entry
-      const textEntry = {
-        type: 0,
-        content: "This text has\n two lines",
-        bold: 0,
-        align: 0,
+    async printDesktop(receiptData, printableContent) {
+      window.document.write(printableContent);
+      window.document.close();
+      window.onafterprint = () => {
+        window.document.close("", "_blank");
       };
-      content.push(textEntry);
-
-      // Image entry (modify the path accordingly)
-      const imageEntry = {
-        type: 1,
-        path: "https://www.mydomain.com/image.jpg",
-        align: 2,
-      };
-      content.push(imageEntry);
-
-      // Barcode entry
-      const barcodeEntry = {
-        type: 2,
-        value: "1234567890123",
-        width: 100,
-        height: 50,
-        align: 0,
-      };
-      content.push(barcodeEntry);
-
-      // QR code entry
-      const qrEntry = {
-        type: 3,
-        value: "sample qr text",
-        size: 40,
-        align: 2,
-      };
-      content.push(qrEntry);
-
-      // HTML Code entry
-      const htmlCodeEntry = {
-        type: 4,
-        content:
-          '<center><span style="font-weight:bold; font-size:20px;">This is sample text</span></center>',
-      };
-      content.push(htmlCodeEntry);
-
-      // Empty line entry
-      const emptyLineEntry = {
-        type: 0,
-        content: " ",
-        bold: 0,
-        align: 0,
-      };
-      content.push(emptyLineEntry);
-
-      // Multi-line text entry
-      const multiLineTextEntry = {
-        type: 0,
-        content: "This text has\n two lines",
-        bold: 0,
-        align: 0,
-      };
-      content.push(multiLineTextEntry);
-
-      return content;
-    },
-
-    printContent(url, content) {
-      const printUrl = `my.bluetoothprint.scheme://${url}?content=${JSON.stringify(
-        content
-      )}`;
-      window.open(printUrl, "_blank");
+      window.print();
+      this.saveTransaction(receiptData);
+      // Reload after print (adjust the timing as needed)
+      setTimeout(() => {
+        this.$store.commit("resetCart");
+        this.$store.commit("resetCheckout");
+        this.$router.push("/");
+      }, 1000);
     },
 
     //old function
-    // async printReceipt() {
-    //   const receiptData = {
-    //     customerName: this.customerName,
-    //     items: this.cart,
-    //     totalPrice: this.totalPrice,
-    //   };
+    async printReceipt() {
+      const receiptData = {
+        customerName: this.customerName,
+        items: this.cart,
+        totalPrice: this.totalPrice,
+      };
 
-    //   const uniqueItems = Array.from(
-    //     new Set(receiptData.items.map((item) => item.name))
-    //   );
+      const uniqueItems = Array.from(
+        new Set(receiptData.items.map((item) => item.name))
+      );
 
-    //   const itemsContent = uniqueItems
-    //     .map((item) => {
-    //       const matchedItem = receiptData.items.find((i) => i.name === item);
-    //       return `${matchedItem.name} - ${
-    //         matchedItem.quantity
-    //       } pcs - ${this.formatPrice(matchedItem.price)}`;
-    //     })
-    //     .join("</br>");
+      const itemsContent = uniqueItems
+        .map((item) => {
+          const matchedItem = receiptData.items.find((i) => i.name === item);
+          return `${matchedItem.name} - ${
+            matchedItem.quantity
+          } pcs - ${this.formatPrice(matchedItem.price)}`;
+        })
+        .join("</br>");
 
-    //   const printableContent = `
-    //       <span align="center">invoice</span></br>
-    //       Customer Name: ${receiptData.customerName}
-    //       </br> -------------------------- </br>
-    //       Items:</br></br>
-    //       ${itemsContent}
-    //       </br>
-    //       </br> -------------------------- </br> </br>
-    //       Total Price: ${this.formatPrice(receiptData.totalPrice)}
-    //       </br></br>
-    //   `;
+      const printableContent = `
+          <span align="center">invoice</span></br>
+          Customer Name: ${receiptData.customerName}
+          </br> -------------------------- </br>
+          Items:</br></br>
+          ${itemsContent}
+          </br>
+          </br> -------------------------- </br> </br>
+          Total Price: ${this.formatPrice(receiptData.totalPrice)}
+          </br></br>
+      `;
 
-    //   window.document.write(printableContent);
-    //   window.document.close();
-    //   window.onafterprint = () => {
-    //     window.document.close("", "_blank");
-    //   };
-    //   window.print();
+      const isAndroid = navigator.userAgent.toLowerCase().includes("android");
 
-    //   this.saveTransaction(receiptData);
-
-    //   // Reload after print (adjust the timing as needed)
-    //   setTimeout(() => {
-    //     this.$store.commit("resetCart");
-    //     this.$store.commit("resetCheckout");
-    //     this.$router.push("/");
-    //   }, 1000); // Wait for 1 second before reloading
-    // },
+      if (isAndroid) {
+        await this.printAndroid();
+      } else {
+        await this.printDesktop(receiptData, printableContent);
+      }
+    },
   },
 };
 </script>

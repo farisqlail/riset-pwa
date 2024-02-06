@@ -78,7 +78,8 @@ export default {
   },
 
   axios: {
-    baseURL: 'https://cloud.interactive.co.id/myprofit', // Adjust the port if needed
+    // baseURL: 'https://cloud.interactive.co.id/myprofit',
+    baseURL: 'https://cloud.interactive.co.id/restapi/myprofit-sandbox/', // Adjust the port if needed
     debug: true,
     proxy: true,
     headers: {
@@ -89,12 +90,14 @@ export default {
 
   http: {
     compress: true,
-    baseURL: 'https://cloud.interactive.co.id/myprofit', // Replace with your Laravel app's base URL
+    // baseURL: 'https://cloud.interactive.co.id/myprofit',
+    baseURL: 'https://cloud.interactive.co.id/restapi/myprofit-sandbox/', // Replace with your Laravel app's base URL
   },
 
   proxy: {
     '/api/': {
-      target: 'https://cloud.interactive.co.id/myprofit',
+      // target: 'https://cloud.interactive.co.id/myprofit',
+      target: 'https://cloud.interactive.co.id/restapi/myprofit-sandbox/',
       pathRewrite: { '^/api/': '' },
       changeOrigin: true,
       headers: {
