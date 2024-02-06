@@ -13,7 +13,7 @@
       <div class="row mt-3 mb-5">
         <div
           class="col-md-4"
-          v-for="(product, index) in paginatedGuides"
+          v-for="(product, index) in guides"
           :key="index"
         >
           <b-card tag="article" style="max-width: 20rem" class="mb-2">
@@ -52,18 +52,17 @@
         </div>
       </div>
 
-      <div class="pagination d-flex justify-content-center mb-5">
+      <!-- <div class="pagination d-flex justify-content-center mb-5">
         <b-button class="mr-3" :disabled="currentPage === 1" @click="prevPage"
           >Previous</b-button
         >
-        <!-- <span>{{ currentPage }}</span> -->
         <b-button
           variant="success"
           :disabled="endIndex >= guides.length"
           @click="nextPage"
           >Next</b-button
         >
-      </div>
+      </div> -->
 
       <toast-component
         :show-toast="showToast"
@@ -201,15 +200,15 @@ export default {
   },
 
   computed: {
-    startIndex() {
-      return (this.currentPage - 1) * this.perPage;
-    },
-    endIndex() {
-      return this.currentPage * this.perPage;
-    },
-    paginatedGuides() {
-      return this.guides.slice(this.startIndex, this.endIndex);
-    },
+    // startIndex() {
+    //   return (this.currentPage - 1) * this.perPage;
+    // },
+    // endIndex() {
+    //   return this.currentPage * this.perPage;
+    // },
+    // paginatedGuides() {
+    //   return this.guides.slice(this.startIndex, this.endIndex);
+    // },
     optimizedImagePath() {
       return this.browserSupportsWebP()
         ? `${this.imagePath}?format=webp`
