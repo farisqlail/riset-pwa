@@ -11,7 +11,11 @@
       </div>
 
       <div class="row mt-3 mb-5">
-        <div class="col-md-4" v-for="(product, index) in guides" :key="index">
+        <div
+          class="col-md-4"
+          v-for="(product, index) in paginatedGuides"
+          :key="index"
+        >
           <b-card
             tag="article"
             style="max-width: 20rem"
@@ -20,7 +24,6 @@
             :img-alt="product.product_name"
             img-top
           >
-
             <h5>{{ product.product_name }}</h5>
             <span>
               {{ formatPrice(product.product_pricenow) }}
@@ -48,17 +51,19 @@
         </div>
       </div>
 
-      <!-- <div class="pagination d-flex justify-content-center mb-5">
+      <div class="pagination d-flex justify-content-center mb-5">
         <b-button class="mr-3" :disabled="currentPage === 1" @click="prevPage"
           >Previous</b-button
         >
+        <span>Total page {{totalPages}}</span>
         <b-button
+        class="ml-3"
           variant="success"
           :disabled="endIndex >= guides.length"
           @click="nextPage"
           >Next</b-button
         >
-      </div> -->
+      </div>
 
       <toast-component
         :show-toast="showToast"
@@ -75,7 +80,7 @@
             class="d-flex justify-content-between align-items-center"
           >
             <div class="d-flex align-items-center">
-              <nuxt-img
+              <img
                 :src="getOptimizedImage(item.image)"
                 :alt="item.name"
                 width="50"
@@ -199,15 +204,18 @@ export default {
   },
 
   computed: {
-    // startIndex() {
-    //   return (this.currentPage - 1) * this.perPage;
-    // },
-    // endIndex() {
-    //   return this.currentPage * this.perPage;
-    // },
-    // paginatedGuides() {
-    //   return this.guides.slice(this.startIndex, this.endIndex);
-    // },
+    startIndex() {
+      return (this.currentPage - 1) * this.perPage;
+    },
+    endIndex() {
+      return this.currentPage * this.perPage;
+    },
+    totalPages() {
+      return Math.ceil(this.guides.length / this.perPage);
+    },
+    paginatedGuides() {
+      return this.guides.slice(this.startIndex, this.endIndex);
+    },
     optimizedImagePath() {
       return this.browserSupportsWebP()
         ? `${this.imagePath}?format=webp`
@@ -281,10 +289,11 @@ export default {
           // Fetch data from the API
           if (process.client) {
             const apiUrl =
-              "https://cloud.interactive.co.id/myprofit/api/get_product?salt=m4riyAdiH43hhaEh&appid=MP01M51463F20230206169&loc_id=51203";
+              "https://cloud.interactive.co.id/restapi/myprofit/data_product_30k.php";
 
             const response = await axios.get(apiUrl);
-            this.guides = response.data.data;
+            this.guides = response.data.data_product;
+            console.log(this.guides);
 
             localStorage.setItem("guides", JSON.stringify(this.guides));
 

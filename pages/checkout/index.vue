@@ -17,7 +17,7 @@
             :key="index"
           >
             <div>
-              <nuxt-img
+              <img
                 :src="getOptimizedImage(item.image)"
                 width="100"
                 :alt="item.name"
