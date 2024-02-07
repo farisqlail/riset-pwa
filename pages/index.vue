@@ -11,19 +11,15 @@
       </div>
 
       <div class="row mt-3 mb-5">
-        <div
-          class="col-md-4"
-          v-for="(product, index) in guides"
-          :key="index"
-        >
-          <b-card tag="article" style="max-width: 20rem" class="mb-2">
-            <nuxt-img
-              :src="getOptimizedImage(product.product_images)"
-              width="200"
-              height="200"
-              crop="fill"
-              loading="lazy"
-            />
+        <div class="col-md-4" v-for="(product, index) in guides" :key="index">
+          <b-card
+            tag="article"
+            style="max-width: 20rem"
+            class="mb-2"
+            :img-src="getOptimizedImage(product.product_images)"
+            :img-alt="product.product_name"
+            img-top
+          >
 
             <h5>{{ product.product_name }}</h5>
             <span>
@@ -127,7 +123,10 @@
             >
           </div>
           <div v-else>
-            <b-button @click="toCheckout" class="btn btn-success" variant="primary"
+            <b-button
+              @click="toCheckout"
+              class="btn btn-success"
+              variant="primary"
               >Checkout</b-button
             >
           </div>
