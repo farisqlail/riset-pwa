@@ -1,82 +1,42 @@
 <template>
-  <b-card class="mt-4">
-    <div class="text-center">
-      <h4>Terimakasih</h4>
-
-      <p>
+  <div>
+    <Navbar />
+    <div class="container gap-4 mx-auto">
+      <h2 class="text-2xl font-bold my-4 text-center">Terimakasih</h2>
+      <p class="text-center">
         Silakan cetak nota dan lanjutkan ke antrian pemesanan untuk
         menyelesaikan pembayaran
       </p>
 
-      <div class="row">
-        <div class="col">
-          <b-button block variant="success" @click="printReceipt">
-            Cetak nota local
-          </b-button>
-        </div>
-        <div class="col">
-          <b-button @click="backToMain" class="btn btn-danger btn-block">
-            Kembali ke home
-          </b-button>
-        </div>
+      <div class="btn-group flex gap-2 justify-center mt-4">
+        <button class="btn btn-info btn-wide" @click="printReceipt">
+          Cetak Nota
+        </button>
+        <button class="btn btn-error btn-wide">Kembali ke home</button>
       </div>
     </div>
-    <div id="printerDiv" style="display: none"></div>
-  </b-card>
+  </div>
 </template>
 
 <script>
-import axios from "axios";
+import { defineComponent } from "@vue/composition-api";
+import Navbar from "~/components/Navbar.vue";
 
-export default {
+export default defineComponent({
+  components: {
+    Navbar,
+  },
   data() {
     return {
       customerName: "",
-      cart: [],
-      err: "",
-      respon: [],
+      checkout: [],
+      data: [],
     };
   },
-  async created() {
-    await this.fetchCartData();
+  mounted() {
+    this.loadCheckoutFromLocalStorage();
   },
   methods: {
-    async fetchCartData() {
-      await this.$store.dispatch("fetchCartData");
-
-      const cartItems = this.$store.state.cart;
-
-      // Merge items with the same name
-      const mergedCart = cartItems.reduce((result, item) => {
-        const existingItem = result.find(
-          (mergedItem) => mergedItem.name === item.name
-        );
-        if (existingItem) {
-          existingItem.quantity += item.quantity;
-        } else {
-          result.push({ ...item });
-        }
-        return result;
-      }, []);
-
-      // Merge with checkoutData from localStorage
-      const checkoutData = JSON.parse(localStorage.getItem("checkoutData")) || {
-        items: [],
-        customerName: "",
-      };
-      this.cart = mergedCart.concat(checkoutData.items);
-      this.customerName = checkoutData.customerName;
-
-      this.calculateTotalPrice();
-    },
-
-    calculateTotalPrice() {
-      this.totalPrice = this.cart.reduce(
-        (total, item) => total + item.price * item.quantity,
-        0
-      );
-    },
-
     formatPrice(value) {
       const price = parseInt(value);
       return price.toLocaleString("id-ID", {
@@ -86,18 +46,12 @@ export default {
       });
     },
 
-    backToMain() {
-      const receiptData = {
-        customerName: this.customerName,
-        items: this.cart,
-        totalPrice: this.totalPrice,
-      };
-
-      this.saveTransaction(receiptData);
-
-      this.$store.commit("resetCart");
-      this.$store.commit("resetCheckout");
-      this.$router.push("/");
+    loadCheckoutFromLocalStorage() {
+      const checkoutData = localStorage.getItem("checkout");
+      if (checkoutData) {
+        return JSON.parse(checkoutData);
+      }
+      return {}; // Return empty object if no data is found
     },
 
     saveTransaction(transactionData) {
@@ -113,24 +67,6 @@ export default {
         "transactions",
         JSON.stringify(existingTransactions)
       );
-    },
-
-    // Fungsi untuk mendapatkan data transaksi dari localStorage
-    getTransactions() {
-      // Dapatkan data transaksi dari localStorage
-      const existingTransactions =
-        JSON.parse(localStorage.getItem("transactions")) || [];
-
-      return existingTransactions;
-    },
-
-    formatPrice(value) {
-      const price = parseInt(value);
-      return price.toLocaleString("id-ID", {
-        style: "currency",
-        currency: "IDR",
-        minimumFractionDigits: 0,
-      });
     },
 
     async printAndroid() {
@@ -165,12 +101,13 @@ export default {
       }, 1000);
     },
 
-    //old function
     async printReceipt() {
+      const checkoutData = this.loadCheckoutFromLocalStorage(); // Load checkout data from local storage
       const receiptData = {
         customerName: this.customerName,
         items: this.cart,
         totalPrice: this.totalPrice,
+        ...checkoutData, // Include loaded checkout data
       };
 
       const uniqueItems = Array.from(
@@ -207,5 +144,5 @@ export default {
       }
     },
   },
-};
+});
 </script>

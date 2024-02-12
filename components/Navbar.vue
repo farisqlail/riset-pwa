@@ -1,17 +1,24 @@
 <template>
-  <div>
-    <b-navbar toggleable="sm" type="light" variant="light">
-      <div class="container">
-        <b-navbar-toggle target="nav-text-collapse"></b-navbar-toggle>
-
-        <b-navbar-brand>Riset PWA Nuxt Js</b-navbar-brand>
-
-        <b-collapse id="nav-text-collapse" is-nav>
-          <b-navbar-nav>
-            <!-- <b-nav-text>Navbar text</b-nav-text> -->
-          </b-navbar-nav>
-        </b-collapse>
-      </div>
-    </b-navbar>
+  <div class="navbar bg-base-100 px-20">
+    <div class="flex-1">
+      <a class="btn btn-ghost text-xl">Riset PWA</a>
+    </div>
+    <div class="flex-none">
+      <button class="btn btn-square btn-ghost">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          class="inline-block w-5 h-5 stroke-current"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"
+          ></path>
+        </svg>
+      </button>
+    </div>
   </div>
 </template>
