@@ -10,12 +10,12 @@
         <button @click="goToCheckout" class="btn btn-info">Checkout</button>
       </div>
 
-      <div class="grid grid-cols-3 gap-4">
+      <div class="grid grid-cols-5 gap-4">
         <!-- Card -->
         <div
-          v-for="product in products"
+          v-for="(product, index) in displayedProducts"
           :key="product.id"
-          class="card w-96 bg-base-100 shadow-xl"
+          class="card w-56 bg-base-100 shadow-xl"
         >
           <figure>
             <img
@@ -40,6 +40,25 @@
         <!-- End Card -->
       </div>
     </div>
+
+    <!-- Pagination -->
+    <div class="flex justify-center mt-4 mb-4">
+      <button
+        @click="prevPage"
+        :disabled="currentPage === 1"
+        class="btn btn-info mr-2"
+      >
+        Previous
+      </button>
+      <button
+        @click="nextPage"
+        :disabled="currentPage === totalPages"
+        class="btn btn-info"
+      >
+        Next
+      </button>
+    </div>
+    <!-- End Pagination -->
 
     <!-- Cart Modal -->
     <dialog id="cart_modal" class="modal">
@@ -109,7 +128,19 @@ export default defineComponent({
       cart: [],
       showCartModal: false,
       showToast: false,
+      currentPage: 1,
+      itemsPerPage: 10,
     };
+  },
+  computed: {
+    totalPages() {
+      return Math.ceil(this.products.length / this.itemsPerPage);
+    },
+    displayedProducts() {
+      const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+      const endIndex = startIndex + this.itemsPerPage;
+      return this.products.slice(startIndex, endIndex);
+    },
   },
   mounted() {
     this.fetchProducts();
@@ -123,13 +154,30 @@ export default defineComponent({
     async fetchProducts() {
       try {
         const response = await axios.get(
-          "https://cloud.interactive.co.id/myprofit/api/get_product?salt=m4riyAdiH43hhaEh&appid=MP01M51463F20230206169&loc_id=51203"
+          "https://cloud.interactive.co.id/restapi/myprofit/data_product_30k.php"
         );
-        this.products = response.data.data;
+
+        const responseData = response.data.data_product;
+
+        this.products = responseData.slice(0, 3000);
+
+        localStorage.setItem("products", JSON.stringify(this.products));
 
         return this.products;
       } catch (error) {
         console.error("Error fetching products:", error);
+      }
+    },
+
+    prevPage() {
+      if (this.currentPage > 1) {
+        this.currentPage--;
+      }
+    },
+
+    nextPage() {
+      if (this.currentPage < this.totalPages) {
+        this.currentPage++;
       }
     },
 
@@ -190,12 +238,12 @@ export default defineComponent({
 
     incrementQuantity(index) {
       this.cart[index].quantity++;
-       this.updateLocalStorage();
+      this.updateLocalStorage();
     },
 
     removeFromCart(index) {
       this.cart.splice(index, 1);
-       this.updateLocalStorage();
+      this.updateLocalStorage();
     },
 
     updateLocalStorage() {

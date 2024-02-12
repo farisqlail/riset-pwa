@@ -7,8 +7,10 @@
 </template>
 
 <script>
-// import { VitePwaManifest } from "vite-plugin-pwa/pwa/components";
-export default {
+// import { defineComponent } from 'vue';
+// import { VitePwaManifest } from 'vite-plugin-pwa/pwa/components';
+
+export default defineComponent({
   components: {
     // VitePwaManifest,
   },
@@ -25,5 +27,5 @@ export default {
     script.src = "https://cdn.tailwindcss.com";
     document.body.appendChild(script);
   },
-};
+});
 </script>
