@@ -14,15 +14,15 @@
         <button @click="goToCheckout" class="btn btn-info">Checkout</button>
       </div>
 
-      <div class="container gap-4 mx-auto">
+      <div class="container gap-4 p-4 mx-auto">
         <!-- Render skeleton if loading, else render product cards -->
         <div v-if="loading">
-          <div class="grid grid-cols-5 gap-4">
+          <div class="grid lg:grid-cols-5 md:grid-cols-3 sm:grid-cols-2 gap-4">
             <!-- Skeleton loading effect -->
             <div
               v-for="index in 10"
               :key="index"
-              class="card w-56 bg-base-100 shadow-xl"
+              class="card w-full bg-base-100 shadow-xl"
             >
               <div class="skeleton"></div>
               <!-- Add skeleton styling -->
@@ -30,12 +30,12 @@
           </div>
         </div>
         <div v-else>
-          <div class="grid grid-cols-5 gap-4">
+          <div class="grid lg:grid-cols-5 md:grid-cols-3 sm:grid-cols-2 gap-4">
             <!-- Product cards -->
             <div
               v-for="(product, index) in displayedProducts"
               :key="product.id"
-              class="card w-56 bg-base-100 shadow-xl"
+              class="card w-full bg-base-100 shadow-xl"
             >
               <figure>
                 <NuxtImg
