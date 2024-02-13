@@ -61,6 +61,18 @@ import Navbar from "~/components/Navbar.vue";
 import axios from "axios";
 
 export default {
+  head() {
+    return {
+      title: "Checkout",
+      meta: [
+        {
+          hid: "description",
+          name: "description",
+          content: "Your page description",
+        },
+      ],
+    };
+  },
   components: {
     Navbar,
   },

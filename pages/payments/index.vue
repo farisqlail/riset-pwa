@@ -3,18 +3,18 @@
     <Navbar />
     <div class="container gap-4 mx-auto">
       <h2 class="text-2xl font-bold my-4">Pilih pembayaran</h2>
-        <div class="item flex justify-between items-center">
-            <img src="~/assets/images/bca.png" width="100" alt="">
-            <button @click="redirectInvoice" class="btn btn-info">Pilih</button>
-        </div>
-        <div class="item flex justify-between items-center">
-            <img src="~/assets/images/ovo.png" width="100" alt="">
-            <button @click="redirectInvoice" class="btn btn-info">Pilih</button>
-        </div>
-        <div class="item flex justify-between items-center mt-3">
-            <img src="~/assets/images/dana.png" width="100" alt="">
-            <button @click="redirectInvoice" class="btn btn-info">Pilih</button>
-        </div>
+      <div class="item flex justify-between items-center">
+        <img src="~/assets/images/bca.png" width="100" alt="" />
+        <button @click="redirectInvoice" class="btn btn-info">Pilih</button>
+      </div>
+      <div class="item flex justify-between items-center">
+        <img src="~/assets/images/ovo.png" width="100" alt="" />
+        <button @click="redirectInvoice" class="btn btn-info">Pilih</button>
+      </div>
+      <div class="item flex justify-between items-center mt-3">
+        <img src="~/assets/images/dana.png" width="100" alt="" />
+        <button @click="redirectInvoice" class="btn btn-info">Pilih</button>
+      </div>
     </div>
   </div>
 </template>
@@ -24,19 +24,29 @@ import Navbar from "~/components/Navbar.vue";
 import axios from "axios";
 
 export default {
+  head() {
+    return {
+      title: "Payments",
+      meta: [
+        {
+          hid: "description",
+          name: "description",
+          content: "Your page description",
+        },
+      ],
+    };
+  },
   components: {
     Navbar,
   },
   data() {
-    return {
-    };
+    return {};
   },
-  mounted() {
-  },
+  mounted() {},
   methods: {
-    redirectInvoice(){
-        this.$router.push("/invoice");
-    }
+    redirectInvoice() {
+      this.$router.push("/invoice");
+    },
   },
 };
 </script>

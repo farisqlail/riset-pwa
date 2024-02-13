@@ -11,6 +11,11 @@
 // import { VitePwaManifest } from 'vite-plugin-pwa/pwa/components';
 
 export default defineComponent({
+  head(){
+    return {
+      title: 'Riset PWA'
+    }
+  },
   components: {
     // VitePwaManifest,
   },

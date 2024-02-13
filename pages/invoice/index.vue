@@ -25,6 +25,18 @@ import { defineComponent } from "@vue/composition-api";
 import Navbar from "~/components/Navbar.vue";
 
 export default defineComponent({
+  head() {
+    return {
+      title: "Invoice",
+      meta: [
+        {
+          hid: "description",
+          name: "description",
+          content: "Your page description",
+        },
+      ],
+    };
+  },
   components: {
     Navbar,
   },

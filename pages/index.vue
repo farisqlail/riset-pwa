@@ -144,6 +144,18 @@ import ToastComponent from "~/components/Toast.vue";
 import { defineComponent } from "vue";
 
 export default defineComponent({
+  head() {
+    return {
+      title: "Riset PWA",
+      meta: [
+        {
+          hid: "description",
+          name: "description",
+          content: "Your page description",
+        },
+      ],
+    };
+  },
   components: {
     Navbar,
     ToastComponent,
