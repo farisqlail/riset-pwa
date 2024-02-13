@@ -23,6 +23,16 @@ export default defineNuxtConfig({
     ],
   },
 
+  scripts: {
+    build: "nuxt build",
+    dev: "nuxt dev --port=3000", // here
+    generate: "nuxt generate",
+    preview: "nuxt preview"
+  },
+  devDependencies: {
+    "nuxt": "3.0.0-rc.1"
+  },
+
   server: {
     host: '0.0.0.0',
     port: 3000,
@@ -32,6 +42,10 @@ export default defineNuxtConfig({
       ca: fs.readFileSync(path.resolve('C:/riset-pwa/ssl/ca_bundle.crt')),
     } : null,
   },
+
+  target: "static",
+
+  ssr: true,
 
   devtools: { enabled: true },
 
