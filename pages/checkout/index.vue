@@ -24,7 +24,7 @@
               <p>Jumlah: {{ product.quantity }}</p>
             </div>
           </div>
-          <button @click="removeFromCart(index)" class="btn btn-error">
+          <button @click="openDeleteModal(index)" class="btn btn-error">
             Hapus
           </button>
         </div>
@@ -32,10 +32,26 @@
           <p class="font-bold">Total:</p>
           <p>{{ formatPrice(totalPrice) }}</p>
         </div>
-        <button @click="checkout" class="btn btn-primary mt-4">
+        <button @click="checkout" class="btn btn-primary mt-4 mx-auto">
           Proses Checkout
         </button>
       </div>
+
+      <!-- Modal dialog -->
+      <dialog id="deleteModal" class="modal">
+        <div class="modal-box">
+          <h3 class="font-bold text-lg">Konfirmasi Hapus</h3>
+          <p>Apakah Anda yakin ingin menghapus item ini?</p>
+          <div class="mt-2 flex justify-end gap-3">
+            <button @click="closeDeleteModal" class="btn btn-primary">
+              Tidak
+            </button>
+            <button @click="confirmDelete" class="btn btn-error">Ya</button>
+          </div>
+        </div>
+      </dialog>
+      <!-- End Modal dialog -->
+
     </div>
   </div>
 </template>
@@ -51,6 +67,7 @@ export default {
   data() {
     return {
       cart: [],
+      deleteIndex: null,
     };
   },
   computed: {
@@ -61,11 +78,30 @@ export default {
       );
     },
   },
+  async created() {
+    await this.fetchData();
+  },
   mounted() {
-    // Ambil data dari local storage atau API, tergantung implementasi Anda
-    this.cart = JSON.parse(localStorage.getItem("cart")) || [];
+    this.beforeRouteEnter();
   },
   methods: {
+    async fetchData() {
+      if (process.client) {
+        const cartData = localStorage.getItem("cart");
+        if (cartData) {
+          this.cart = JSON.parse(cartData);
+        } else {
+          this.cart = [];
+        }
+      }
+    },
+
+    beforeRouteEnter() {
+      if (this.cart.length === 0) {
+        this.$router.push("/");
+      }
+    },
+
     formatPrice(value) {
       const price = parseInt(value);
       return price.toLocaleString("id-ID", {
@@ -74,21 +110,44 @@ export default {
         minimumFractionDigits: 0,
       });
     },
+
+    openDeleteModal(index) {
+      this.deleteIndex = index;
+      const modal = document.getElementById("deleteModal");
+      modal.showModal();
+    },
+
+    closeDeleteModal() {
+      const modal = document.getElementById("deleteModal");
+      modal.close();
+    },
+
+    confirmDelete() {
+      if (this.deleteIndex !== null) {
+        this.removeFromCart(this.deleteIndex);
+        this.closeDeleteModal();
+      }
+    },
+
     removeFromCart(index) {
       this.cart.splice(index, 1);
-      this.saveCartToLocalStorage();
+      this.beforeRouteEnter();
+
+      localStorage.setItem("cart", JSON.stringify(this.cart));
     },
+
     saveCartToLocalStorage() {
       const dataCheckout = {
         customerName: "Faris",
         cart: this.cart,
-        totalPrice: this.totalPrice
+        totalPrice: this.totalPrice,
       };
+
       localStorage.setItem("checkout", JSON.stringify(dataCheckout));
     },
+
     async checkout() {
       try {
-        // Proses checkout, misalnya mengirim data ke server atau menampilkan pesan berhasil
         this.saveCartToLocalStorage();
         this.$router.push("/payments");
       } catch (error) {

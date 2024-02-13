@@ -2,6 +2,8 @@
 import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineNuxtConfig({
+  
+
   devtools: { enabled: true },
 
   modules: [
@@ -38,8 +40,8 @@ export default defineNuxtConfig({
         },
         includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
         manifest: {
-          name: 'My Awesome App',
-          short_name: 'MyApp',
+          name: 'Riset PWA',
+          short_name: 'RPWA',
           description: 'My Awesome App description',
           theme_color: '#ffffff',
           icons: [

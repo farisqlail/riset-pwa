@@ -12,7 +12,9 @@
         <button class="btn btn-info btn-wide" @click="printReceipt">
           Cetak Nota
         </button>
-        <button class="btn btn-error btn-wide">Kembali ke home</button>
+        <button class="btn btn-error btn-wide" @click="redirectToHome">
+          Kembali ke home
+        </button>
       </div>
     </div>
   </div>
@@ -142,6 +144,19 @@ export default defineComponent({
       } else {
         await this.printDesktop(receiptData, printableContent);
       }
+    },
+
+    redirectToHome() {
+      const checkoutData = this.loadCheckoutFromLocalStorage();
+      const receiptData = {
+        customerName: this.customerName,
+        items: this.cart,
+        totalPrice: this.totalPrice,
+        ...checkoutData,
+      };
+      this.saveTransaction(receiptData);
+      localStorage.removeItem("cart");
+      this.$router.push("/");
     },
   },
 });

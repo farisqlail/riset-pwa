@@ -7,37 +7,59 @@
           Lihat keranjang
         </button>
 
+        <button class="btn btn-warning" @click="sinkronisasi">
+          Sinkronkan
+        </button>
+
         <button @click="goToCheckout" class="btn btn-info">Checkout</button>
       </div>
 
-      <div class="grid grid-cols-5 gap-4">
-        <!-- Card -->
-        <div
-          v-for="(product, index) in displayedProducts"
-          :key="product.id"
-          class="card w-56 bg-base-100 shadow-xl"
-        >
-          <figure>
-            <img
-              :src="product.product_images"
-              :alt="product.product_name"
-              width="384"
-              height="216"
-              layout="responsive"
-              loading="lazy"
-            />
-          </figure>
-          <div class="card-body">
-            <h2 class="card-title">{{ product.product_name }}</h2>
-            <p>{{ formatPrice(product.product_pricenow) }}</p>
-            <div class="card-actions justify-end">
-              <button @click="addToCart(product)" class="btn btn-primary">
-                Beli
-              </button>
+      <div class="container gap-4 mx-auto">
+        <!-- Render skeleton if loading, else render product cards -->
+        <div v-if="loading">
+          <div class="grid grid-cols-5 gap-4">
+            <!-- Skeleton loading effect -->
+            <div
+              v-for="index in 10"
+              :key="index"
+              class="card w-56 bg-base-100 shadow-xl"
+            >
+              <div class="skeleton"></div>
+              <!-- Add skeleton styling -->
             </div>
           </div>
         </div>
-        <!-- End Card -->
+        <div v-else>
+          <div class="grid grid-cols-5 gap-4">
+            <!-- Product cards -->
+            <div
+              v-for="(product, index) in displayedProducts"
+              :key="product.id"
+              class="card w-56 bg-base-100 shadow-xl"
+            >
+              <figure>
+                <NuxtImg
+                  :src="product.product_images"
+                  :alt="product.product_name"
+                  width="384"
+                  height="216"
+                  layout="responsive"
+                  loading="lazy"
+                />
+              </figure>
+              <div class="card-body">
+                <h2 class="card-title">{{ product.product_name }}</h2>
+                <p>{{ formatPrice(product.product_pricenow) }}</p>
+                <div class="card-actions justify-end">
+                  <button @click="addToCart(product)" class="btn btn-primary">
+                    Beli
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- End Product cards -->
+        </div>
       </div>
     </div>
 
@@ -108,6 +130,13 @@
       </div>
     </dialog>
     <!-- End Cart Modal -->
+
+    <!-- Toast component -->
+    <ToastComponent
+      :showToast="showToast"
+      :toastMessage="toastMessage"
+    />
+    <!-- End Toast -->
   </div>
 </template>
 
@@ -120,7 +149,7 @@ import { defineComponent } from "vue";
 export default defineComponent({
   components: {
     Navbar,
-    "toast-component": ToastComponent,
+    ToastComponent,
   },
   data() {
     return {
@@ -128,8 +157,10 @@ export default defineComponent({
       cart: [],
       showCartModal: false,
       showToast: false,
+      toastMessage: "",
       currentPage: 1,
       itemsPerPage: 10,
+      loading: false,
     };
   },
   computed: {
@@ -153,6 +184,7 @@ export default defineComponent({
 
     async fetchProducts() {
       try {
+        this.loading = true; // Set loading state to true
         const response = await axios.get(
           "https://cloud.interactive.co.id/restapi/myprofit/data_product_30k.php"
         );
@@ -166,6 +198,8 @@ export default defineComponent({
         return this.products;
       } catch (error) {
         console.error("Error fetching products:", error);
+      } finally {
+        this.loading = false; // Set loading state back to false
       }
     },
 
@@ -200,6 +234,11 @@ export default defineComponent({
       modal.showModal();
     },
 
+    sinkronisasi() {
+      localStorage.removeItem("products");
+      location.reload();
+    },
+
     addToCart(product) {
       // Cek apakah produk sudah ada dalam keranjang
       const existingProductIndex = this.cart.findIndex(
@@ -220,13 +259,8 @@ export default defineComponent({
       localStorage.setItem("cart", JSON.stringify(this.cart));
 
       this.showToastMessage(
-        "success",
         "Item berhasil ditambahkan ke keranjang!",
-        false
       );
-
-      const modal = document.getElementById("cart_modal");
-      modal.showModal(); // Menampilkan modal
     },
 
     decrementQuantity(index) {
@@ -255,10 +289,9 @@ export default defineComponent({
       modal.close(); // Menutup modal
     },
 
-    showToastMessage(variant, message, status) {
-      this.toastVariant = variant;
+    showToastMessage(message) {
       this.toastMessage = message;
-      this.showToast = status;
+      this.showToast = true;
 
       setTimeout(() => {
         this.hideToast();
@@ -271,3 +304,13 @@ export default defineComponent({
   },
 });
 </script>
+
+<style>
+/* Add styles for the skeleton loading effect */
+.skeleton {
+  background-color: #f0f0f0; /* Adjust as needed */
+  width: 100%;
+  height: 200px; /* Adjust height as needed */
+  border-radius: 8px; /* Adjust border radius as needed */
+}
+</style>
