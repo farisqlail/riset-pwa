@@ -2,7 +2,7 @@
 import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineNuxtConfig({
-  
+
 
   devtools: { enabled: true },
 
@@ -10,7 +10,18 @@ export default defineNuxtConfig({
     '@vite-pwa/nuxt',
     '@nuxtjs/tailwindcss',
     '@nuxt/image',
+    'nuxt-delay-hydration',
+    '@nuxtjs/web-vitals'
   ],
+
+  delayHydration: {
+    debug: process.env.NODE_ENV === 'development'
+  },
+
+  webVitals: {
+    debug: false,
+    disabled: false
+  },
 
   tailwindcss: {
     cssPath: '~/assets/css/tailwind.css',
@@ -46,23 +57,23 @@ export default defineNuxtConfig({
           theme_color: '#ffffff',
           icons: [
             {
-              src: './public/icon.png', // Adjust the filenames here
+              src: '/icon.png', // Adjust the filenames here
               sizes: '192x192',
               type: 'image/png'
             },
             {
-              src: './public/icon.png', // Adjust the filenames here
+              src: '/icon.png', // Adjust the filenames here
               sizes: '512x512',
               type: 'image/png'
             },
             {
-              src: './public/icon.png', // Adjust the filenames here
+              src: '/icon.png', // Adjust the filenames here
               sizes: '512x512',
               type: 'image/png',
               purpose: 'any'
             },
             {
-              src: './public/icon.png', // Adjust the filenames here
+              src: '/icon.png', // Adjust the filenames here
               sizes: '512x512',
               type: 'image/png',
               purpose: 'maskable'

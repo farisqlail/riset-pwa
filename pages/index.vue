@@ -132,10 +132,7 @@
     <!-- End Cart Modal -->
 
     <!-- Toast component -->
-    <ToastComponent
-      :showToast="showToast"
-      :toastMessage="toastMessage"
-    />
+    <ToastComponent :showToast="showToast" :toastMessage="toastMessage" />
     <!-- End Toast -->
   </div>
 </template>
@@ -191,7 +188,7 @@ export default defineComponent({
 
         const responseData = response.data.data_product;
 
-        this.products = responseData.slice(0, 3000);
+        this.products = responseData.slice(0, 5000);
 
         localStorage.setItem("products", JSON.stringify(this.products));
 
@@ -258,9 +255,7 @@ export default defineComponent({
 
       localStorage.setItem("cart", JSON.stringify(this.cart));
 
-      this.showToastMessage(
-        "Item berhasil ditambahkan ke keranjang!",
-      );
+      this.showToastMessage("Item berhasil ditambahkan ke keranjang!");
     },
 
     decrementQuantity(index) {
