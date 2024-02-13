@@ -33,16 +33,6 @@ export default defineNuxtConfig({
     "nuxt": "3.0.0-rc.1"
   },
 
-  server: {
-    host: '0.0.0.0',
-    port: 3000,
-    https: process.env.NODE_ENV === 'production' ? {
-      key: fs.readFileSync(path.resolve('C:/riset-pwa/ssl/private.key')),
-      cert: fs.readFileSync(path.resolve('C:/riset-pwa/ssl/certificate.crt')),
-      ca: fs.readFileSync(path.resolve('C:/riset-pwa/ssl/ca_bundle.crt')),
-    } : null,
-  },
-
   target: "static",
 
   ssr: true,
@@ -83,6 +73,18 @@ export default defineNuxtConfig({
   },
 
   vite: {
+    server: {
+      https: {
+        key: fs.readFileSync(path.resolve('./ssl/private.key')),
+        cert: fs.readFileSync(path.resolve('./ssl/certificate.crt')),
+        ca: fs.readFileSync(path.resolve('./ssl/ca_bundle.crt')),
+      },
+      hmr: {
+        port: 3000,
+        clientPort: 3000,
+        host: '0.0.0.0',
+      }
+    },
     plugins: [
       VitePWA({
         registerType: 'autoUpdate', //change to prompt when production
