@@ -1,5 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 import { VitePWA } from 'vite-plugin-pwa'
+import fs from 'fs';
+import path from 'path';
 
 export default defineNuxtConfig({
   head: {
@@ -19,6 +21,16 @@ export default defineNuxtConfig({
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
     ],
+  },
+
+  server: {
+    host: '0.0.0.0',
+    port: 3000,
+    https: process.env.NODE_ENV === 'production' ? {
+      key: fs.readFileSync(path.resolve('C:/riset-pwa/ssl/private.key')),
+      cert: fs.readFileSync(path.resolve('C:/riset-pwa/ssl/certificate.crt')),
+      ca: fs.readFileSync(path.resolve('C:/riset-pwa/ssl/ca_bundle.crt')),
+    } : null,
   },
 
   devtools: { enabled: true },
