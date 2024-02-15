@@ -195,7 +195,10 @@ export default defineComponent({
       try {
         this.loading = true; // Set loading state to true
         const response = await axios.get(
-          "https://cloud.interactive.co.id/restapi/myprofit/data_product_30k.php"
+          "https://cloud.interactive.co.id/restapi/myprofit/data_product_30k.php",
+          {
+            timeout: 2000, // Timeout set to 5 seconds (adjust as needed)
+          }
         );
 
         const responseData = response.data.data_product;
