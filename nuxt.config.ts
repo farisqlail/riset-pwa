@@ -33,6 +33,14 @@ export default defineNuxtConfig({
     "nuxt": "3.0.0-rc.1"
   },
 
+  devServer: {
+    https: {
+      key: './ssl/private.key',
+      cert: './ssl/certificate.crt',
+      ca: './ssl/ca_bundle.crt'
+    }
+  },
+
   server: {
     host: '0.0.0.0',
     port: 3000,
