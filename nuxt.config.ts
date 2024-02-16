@@ -2,6 +2,11 @@
 import { VitePWA } from 'vite-plugin-pwa'
 import fs from 'fs';
 import path from 'path';
+import dotenv from 'dotenv';
+
+dotenv.config({
+  path: '.env.production'
+});
 
 export default defineNuxtConfig({
   head: {
@@ -23,12 +28,6 @@ export default defineNuxtConfig({
     ],
   },
 
-  scripts: {
-    build: "nuxt build",
-    dev: "nuxt dev --port=3000", // here
-    generate: "nuxt generate",
-    preview: "nuxt preview"
-  },
   devDependencies: {
     "nuxt": "3.0.0-rc.1"
   },
@@ -42,8 +41,8 @@ export default defineNuxtConfig({
   },
 
   server: {
-    host: '0.0.0.0',
-    port: 3000,
+    host: process.env.HOST || '0.0.0.0',
+    port: process.env.PORT || 3000,
     https: process.env.NODE_ENV === 'production' ? {
       key: fs.readFileSync(path.resolve('C:/riset-pwa/ssl/private.key')),
       cert: fs.readFileSync(path.resolve('C:/riset-pwa/ssl/certificate.crt')),
