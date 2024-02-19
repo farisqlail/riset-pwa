@@ -76,7 +76,8 @@ export default defineNuxtConfig({
       VitePWA({
         registerType: 'autoUpdate', // Change to 'prompt' when in production
         devOptions: {
-          enabled: false, // Disable dev options in production
+          navigateFallbackAllowlist: [/^index.html$/],
+          type: 'module',
         },
         workbox: {
           globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
