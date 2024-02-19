@@ -8,7 +8,8 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "start": "nuxt start --ssl-cert ssl/certificate.crt --ssl-key ssl/private.key",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "generate-pwa-assets": "pwa-assets-generator --preset minimal public/icon.png"
   },
   "dependencies": {
     "@nuxt/image": "^1.3.0",

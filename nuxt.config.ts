@@ -59,61 +59,53 @@ export default defineNuxtConfig({
     format: ['webp']
   },
 
-  vite: {
-    server: {
-      https: {
-        key: fs.readFileSync(path.resolve('./ssl/private.key')),
-        cert: fs.readFileSync(path.resolve('./ssl/certificate.crt')),
-        ca: fs.readFileSync(path.resolve('./ssl/ca_bundle.crt')),
-      },
-      hmr: {
-        port: 3000,
-        clientPort: 3000,
-        host: '0.0.0.0',
-      }
+  pwa: {
+    /* PWA options */
+    manifest: {
+      name: "My Nuxt PWA",
+      short_name: "Nuxt PWA",
+      description: "My Awesome Nuxt PWA",
+      theme_color: "#0AB85F",
+      icons: [
+        {
+          src: "/icon.png",
+          sizes: "192x192",
+          type: "image/png",
+        },
+        {
+          src: "/icon.png",
+          sizes: "512x512",
+          type: "image/png",
+        },
+        {
+          src: "/icon.png",
+          sizes: "512x512",
+          type: "image/png",
+          purpose: "any",
+        },
+        {
+          src: "/icon.png",
+          sizes: "512x512",
+          type: "image/png",
+          purpose: "maskable",
+        },
+      ],
     },
-    plugins: [
-      VitePWA({
-        registerType: 'autoUpdate', //change to prompt when production
-        devOptions: {
-          enabled: false
-        },
-        workbox: {
-          globPatterns: ['**/*.{js,css,html,ico,png,svg}']
-        },
-        includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
-        manifest: {
-          name: 'Riset PWA',
-          short_name: 'RPWA',
-          description: 'My Awesome App description',
-          theme_color: '#ffffff',
-          icons: [
-            {
-              src: './public/icon.png', // Adjust the filenames here
-              sizes: '192x192',
-              type: 'image/png'
-            },
-            {
-              src: './public/icon.png', // Adjust the filenames here
-              sizes: '512x512',
-              type: 'image/png'
-            },
-            {
-              src: './public/icon.png', // Adjust the filenames here
-              sizes: '512x512',
-              type: 'image/png',
-              purpose: 'any'
-            },
-            {
-              src: './public/icon.png', // Adjust the filenames here
-              sizes: '512x512',
-              type: 'image/png',
-              purpose: 'maskable'
-            }
-          ]
-        }
-      })
-    ]
-  }
+    workbox: {
+      navigateFallback: "/", // Fallback to index.html
+      globPatterns: [
+        "**/*.{js,css,html,png,jpg,jpeg,svg,woff2,woff,ttf,eot,webmanifest}",
+      ],
+    },
+    client: {
+      installPrompt: true,
+    },
+    registerWebManifestInRouteRules: true,
+    devOptions: {
+      enabled: true,
+      navigateFallbackAllowlist: [/^\/$/],
+    },
+    registerType: "autoUpdate",
+  },
 })
 
