@@ -9,6 +9,7 @@ dotenv.config({
 });
 
 export default defineNuxtConfig({
+
   head: {
     title: 'riset-pwa',
     htmlAttrs: {
@@ -40,17 +41,17 @@ export default defineNuxtConfig({
     }
   },
 
-  server: {
-    host: process.env.HOST || '0.0.0.0',
-    port: process.env.PORT || 3000,
-    https: process.env.NODE_ENV === 'production' ? {
-      key: fs.readFileSync(path.resolve('C:/riset-pwa/ssl/private.key')),
-      cert: fs.readFileSync(path.resolve('C:/riset-pwa/ssl/certificate.crt')),
-      ca: fs.readFileSync(path.resolve('C:/riset-pwa/ssl/ca_bundle.crt')),
-    } : null,
-  },
+  mode: 'universal',
 
-  target: "static",
+  server: {
+    host: '0.0.0.0',
+    port: 3000,
+    https: {
+      key: fs.readFileSync(path.resolve(__dirname, 'ssl/private.key')),
+      cert: fs.readFileSync(path.resolve(__dirname, 'ssl/certificate.crt')),
+      ca: fs.readFileSync(path.resolve(__dirname, 'ssl/ca_bundle.crt')),
+    },
+  },
 
   ssr: true,
 

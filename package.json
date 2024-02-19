@@ -7,6 +7,7 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
+    "start": "nuxt start --ssl-cert ssl/certificate.crt --ssl-key ssl/private.key",
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
