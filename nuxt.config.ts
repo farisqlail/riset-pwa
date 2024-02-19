@@ -76,11 +76,15 @@ export default defineNuxtConfig({
       VitePWA({
         registerType: 'autoUpdate', // Change to 'prompt' when in production
         devOptions: {
-          navigateFallbackAllowlist: [/^index.html$/],
+          enabled: false,
+          navigateFallbackAllowlist: [/^\/$/],
           type: 'module',
         },
         workbox: {
-          globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
+          navigateFallback: "/", // Fallback to index.html
+          globPatterns: [
+            "**/*.{js,css,html,png,jpg,jpeg,svg,woff2,woff,ttf,eot,webmanifest}",
+          ],
         },
         includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
         manifest: {
