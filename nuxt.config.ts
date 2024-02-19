@@ -2,46 +2,15 @@
 import { VitePWA } from 'vite-plugin-pwa'
 import fs from 'fs';
 import path from 'path';
-import dotenv from 'dotenv';
-
-dotenv.config({
-  path: '.env.production'
-});
 
 export default defineNuxtConfig({
-
-  head: {
-    title: 'riset-pwa',
-    htmlAttrs: {
-      lang: 'en'
-    },
-    meta: [
-      { charset: 'utf-8' },
-      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { hid: 'description', name: 'description', content: '' },
-      { name: 'format-detection', content: 'telephone=no' },
-      { name: 'mobile-web-app-capable', content: 'yes' },
-      { name: 'apple-mobile-web-app-capable', content: 'yes' },
-      { name: 'apple-mobile-web-app-status-bar-style', content: 'black-translucent' }
-    ],
-    link: [
-      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
-    ],
-  },
-
-  devDependencies: {
-    "nuxt": "3.0.0-rc.1"
-  },
 
   devServer: {
     https: {
       key: './ssl/private.key',
-      cert: './ssl/certificate.crt',
-      ca: './ssl/ca_bundle.crt'
+      cert: './ssl/certificate.crt'
     }
   },
-
-  mode: 'universal',
 
   server: {
     host: '0.0.0.0',
