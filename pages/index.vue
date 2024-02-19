@@ -33,7 +33,7 @@
           <div class="grid lg:grid-cols-5 md:grid-cols-3 sm:grid-cols-2 gap-4">
             <!-- Product cards -->
             <div
-              v-for="(product, index) in displayedProducts"
+              v-for="(product) in displayedProducts"
               :key="product.id"
               class="card w-full bg-base-100 shadow-xl"
             >
@@ -190,19 +190,26 @@ export default defineComponent({
       const router = useRouter();
       router.push("/checkout");
     },
-  
+
     async fetchProducts() {
       try {
         this.loading = true; // Set loading state to true
-        const response = await axios.get(
-          "https://cloud.interactive.co.id/restapi/myprofit/data_product_30k.php"
-        );
 
-        const responseData = response.data.data_product;
+        // Check if products exist in localStorage
+        const storedProducts = localStorage.getItem("products");
+        if (storedProducts) {
+          this.products = JSON.parse(storedProducts);
+        } else {
+          // Fetch products from the API if not found in localStorage
+          const response = await axios.get(
+            "https://cloud.interactive.co.id/restapi/myprofit/data_product_30k.php"
+          );
+          const responseData = response.data.data_product;
+          this.products = responseData.slice(0, 5000);
 
-        this.products = responseData.slice(0, 5000);
-
-        localStorage.setItem("products", JSON.stringify(this.products));
+          // Store products in localStorage
+          localStorage.setItem("products", JSON.stringify(this.products));
+        }
 
         return this.products;
       } catch (error) {
