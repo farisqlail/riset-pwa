@@ -76,7 +76,7 @@ export default defineNuxtConfig({
       VitePWA({
         registerType: 'autoUpdate', //change to prompt when production
         devOptions: {
-          enabled: true
+          enabled: false
         },
         workbox: {
           globPatterns: ['**/*.{js,css,html,ico,png,svg}']
@@ -89,23 +89,23 @@ export default defineNuxtConfig({
           theme_color: '#ffffff',
           icons: [
             {
-              src: '/icon.png', // Adjust the filenames here
+              src: './public/icon.png', // Adjust the filenames here
               sizes: '192x192',
               type: 'image/png'
             },
             {
-              src: '/icon.png', // Adjust the filenames here
+              src: './public/icon.png', // Adjust the filenames here
               sizes: '512x512',
               type: 'image/png'
             },
             {
-              src: '/icon.png', // Adjust the filenames here
+              src: './public/icon.png', // Adjust the filenames here
               sizes: '512x512',
               type: 'image/png',
               purpose: 'any'
             },
             {
-              src: '/icon.png', // Adjust the filenames here
+              src: './public/icon.png', // Adjust the filenames here
               sizes: '512x512',
               type: 'image/png',
               purpose: 'maskable'
