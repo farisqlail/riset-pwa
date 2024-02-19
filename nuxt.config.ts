@@ -68,23 +68,23 @@ export default defineNuxtConfig({
       theme_color: "#0AB85F",
       icons: [
         {
-          src: "pwa-192x192.png",
+          src: "/icon.png",
           sizes: "192x192",
           type: "image/png",
         },
         {
-          src: "pwa-512x512.png",
+          src: "/icon.png",
           sizes: "512x512",
           type: "image/png",
         },
         {
-          src: "pwa-512x512.png",
+          src: "/icon.png",
           sizes: "512x512",
           type: "image/png",
           purpose: "any",
         },
         {
-          src: "pwa-512x512.png",
+          src: "/icon.png",
           sizes: "512x512",
           type: "image/png",
           purpose: "maskable",
