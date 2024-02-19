@@ -1,5 +1,8 @@
 <template>
   <div>
+    <Head>
+      <title>Riset PWA</title>
+    </Head>
     <!-- Konten aplikasi Anda di sini -->
     <VitePwaManifest />
     <NuxtPage />
