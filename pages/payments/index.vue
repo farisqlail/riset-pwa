@@ -1,59 +1,51 @@
 <template>
-  <b-card class="mt-4">
-    <div class="row-item">
-      <div class="item-cart mb-3">
-        <div class="d-flex align-self-center">
-          <img src="../../assets/images/ovo.png" width="100" loading="lazy" />
-        </div>
-        <div class="d-flex align-self-center">
-          <nuxt-link to="/invoice" class="btn btn-success">Pilih</nuxt-link>
-        </div>
+  <div>
+    <Navbar />
+    <div class="container gap-4 mx-auto">
+      <h2 class="text-2xl font-bold my-4">Pilih pembayaran</h2>
+      <div class="item flex justify-between items-center">
+        <img src="~/assets/images/bca.png" width="100" alt="" />
+        <button @click="redirectInvoice" class="btn btn-info">Pilih</button>
       </div>
-      <div class="item-cart mb-3">
-        <div class="d-flex align-self-center">
-          <img src="../../assets/images/dana.png" width="100" loading="lazy" />
-        </div>
-        <div class="d-flex align-self-center">
-          <nuxt-link to="/invoice" class="btn btn-success">Pilih</nuxt-link>
-        </div>
+      <div class="item flex justify-between items-center">
+        <img src="~/assets/images/ovo.png" width="100" alt="" />
+        <button @click="redirectInvoice" class="btn btn-info">Pilih</button>
       </div>
-      <div class="item-cart mb-3">
-        <div class="d-flex align-self-center">
-          <img src="../../assets/images/bca.png" width="100" loading="lazy" />
-        </div>
-        <div class="d-flex align-self-center">
-          <nuxt-link to="/invoice" class="btn btn-success">Pilih</nuxt-link>
-        </div>
+      <div class="item flex justify-between items-center mt-3">
+        <img src="~/assets/images/dana.png" width="100" alt="" />
+        <button @click="redirectInvoice" class="btn btn-info">Pilih</button>
       </div>
     </div>
-  </b-card>
+  </div>
 </template>
 
 <script>
+import Navbar from "~/components/Navbar.vue";
+import axios from "axios";
+
 export default {
+  head() {
+    return {
+      title: "Payments",
+      meta: [
+        {
+          hid: "description",
+          name: "description",
+          content: "Your page description",
+        },
+      ],
+    };
+  },
+  components: {
+    Navbar,
+  },
+  data() {
+    return {};
+  },
+  mounted() {},
   methods: {
-    getOptimizedImage(imagePath) {
-      const supportsWebP = this.browserSupportsWebP();
-      let optimizedPath = imagePath;
-
-      if (supportsWebP) {
-        optimizedPath += "?format=webp";
-      }
-
-      return optimizedPath;
-    },
-
-    browserSupportsWebP() {
-      // Check if running in a browser environment
-      if (process.client) {
-        const elem = document.createElement("canvas");
-
-        if (!!(elem.getContext && elem.getContext("2d"))) {
-          return elem.toDataURL("image/webp").indexOf("data:image/webp") === 0;
-        }
-      }
-
-      return false;
+    redirectInvoice() {
+      this.$router.push("/invoice");
     },
   },
 };

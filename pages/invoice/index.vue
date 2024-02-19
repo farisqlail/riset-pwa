@@ -1,78 +1,56 @@
 <template>
-  <b-card class="mt-4">
-    <div class="text-center">
-      <h4>Terimakasih</h4>
-
-      <p>
+  <div>
+    <Navbar />
+    <div class="container gap-4 mx-auto">
+      <h2 class="text-2xl font-bold my-4 text-center">Terimakasih</h2>
+      <p class="text-center">
         Silakan cetak nota dan lanjutkan ke antrian pemesanan untuk
         menyelesaikan pembayaran
       </p>
 
-      <div class="row">
-        <div class="col">
-          <b-button block variant="success" @click="printReceipt">
-            Cetak nota
-          </b-button>
-        </div>
-        <div class="col">
-          <b-button @click="backToMain" class="btn btn-danger btn-block">
-            Kembali ke home
-          </b-button>
-        </div>
+      <div class="btn-group flex gap-2 justify-center mt-4">
+        <button class="btn btn-info btn-wide" @click="printReceipt">
+          Cetak Nota
+        </button>
+        <button class="btn btn-error btn-wide" @click="redirectToHome">
+          Kembali ke home
+        </button>
       </div>
     </div>
-    <div id="printerDiv" style="display: none"></div>
-  </b-card>
+  </div>
 </template>
 
 <script>
-export default {
+import { defineComponent } from "@vue/composition-api";
+import Navbar from "~/components/Navbar.vue";
+
+export default defineComponent({
+  head() {
+    return {
+      title: "Invoice",
+      meta: [
+        {
+          hid: "description",
+          name: "description",
+          content: "Your page description",
+        },
+      ],
+    };
+  },
+  components: {
+    Navbar,
+  },
   data() {
     return {
       customerName: "",
-      cart: [],
+      checkout: [],
+      data: [],
     };
   },
-  async created() {
-    await this.fetchCartData();
+  mounted() {
+    this.loadCheckoutFromLocalStorage();
   },
   methods: {
-    async fetchCartData() {
-      await this.$store.dispatch("fetchCartData");
-
-      const cartItems = this.$store.state.cart;
-
-      // Merge items with the same name
-      const mergedCart = cartItems.reduce((result, item) => {
-        const existingItem = result.find(
-          (mergedItem) => mergedItem.name === item.name
-        );
-        if (existingItem) {
-          existingItem.quantity += item.quantity;
-        } else {
-          result.push({ ...item });
-        }
-        return result;
-      }, []);
-
-      // Merge with checkoutData from localStorage
-      const checkoutData = JSON.parse(localStorage.getItem("checkoutData")) || {
-        items: [],
-        customerName: "",
-      };
-      this.cart = mergedCart.concat(checkoutData.items);
-      this.customerName = checkoutData.customerName;
-
-      this.calculateTotalPrice();
-    },
-
-    calculateTotalPrice() {
-      this.totalPrice = this.cart.reduce(
-        (total, item) => total + item.price * item.quantity,
-        0
-      );
-    },
-
     formatPrice(value) {
       const price = parseInt(value);
       return price.toLocaleString("id-ID", {
@@ -82,18 +60,12 @@ export default {
       });
     },
 
-    backToMain() {
-      const receiptData = {
-        customerName: this.customerName,
-        items: this.cart,
-        totalPrice: this.totalPrice,
-      };
-
-      this.saveTransaction(receiptData);
-
-      this.$store.commit("resetCart");
-      this.$store.commit("resetCheckout");
-      this.$router.push("/");
+    loadCheckoutFromLocalStorage() {
+      const checkoutData = localStorage.getItem("checkout");
+      if (checkoutData) {
+        return JSON.parse(checkoutData);
+      }
+      return {}; // Return empty object if no data is found
     },
 
     saveTransaction(transactionData) {
@@ -111,30 +83,45 @@ export default {
       );
     },
 
-    // Fungsi untuk mendapatkan data transaksi dari localStorage
-    getTransactions() {
-      // Dapatkan data transaksi dari localStorage
-      const existingTransactions =
-        JSON.parse(localStorage.getItem("transactions")) || [];
+    async printAndroid() {
+      try {
+        const apiUrl =
+          "https://cloud.interactive.co.id/myprofit/api/get_print_myorder_pwa";
+        const response = await axios.get(apiUrl);
+        const printUrl = `my.bluetoothprint.scheme://${apiUrl}`;
 
-      return existingTransactions;
+        // Redirect to the print URL
+        window.location.href = printUrl;
+
+        this.respon = response;
+      } catch (error) {
+        console.error("Error fetching print data:", error);
+      }
     },
 
-    formatPrice(value) {
-      const price = parseInt(value);
-      return price.toLocaleString("id-ID", {
-        style: "currency",
-        currency: "IDR",
-        minimumFractionDigits: 0,
-      });
+    async printDesktop(receiptData, printableContent) {
+      window.document.write(printableContent);
+      window.document.close();
+      window.onafterprint = () => {
+        window.document.close("", "_blank");
+      };
+      window.print();
+      this.saveTransaction(receiptData);
+      // Reload after print (adjust the timing as needed)
+      setTimeout(() => {
+        this.$store.commit("resetCart");
+        this.$store.commit("resetCheckout");
+        this.$router.push("/");
+      }, 1000);
     },
 
-    // Your Nuxt.js component
     async printReceipt() {
+      const checkoutData = this.loadCheckoutFromLocalStorage(); // Load checkout data from local storage
       const receiptData = {
         customerName: this.customerName,
         items: this.cart,
         totalPrice: this.totalPrice,
+        ...checkoutData, // Include loaded checkout data
       };
 
       const uniqueItems = Array.from(
@@ -162,91 +149,27 @@ export default {
           </br></br>
       `;
 
-      const newWindow = window.open("", "_blank");
-      newWindow.document.write(printableContent);
-      newWindow.document.close(); // Close the document to finalize the writing
+      const isAndroid = navigator.userAgent.toLowerCase().includes("android");
 
-      newWindow.onafterprint = () => {
-        newWindow.close(); // Close the new window after printing
-        // Perform additional actions after printing if needed
-      };
-
-      newWindow.print();
-
-      this.saveTransaction(receiptData);
-
-      // Reload after print (adjust the timing as needed)
-      setTimeout(() => {
-        this.$store.commit("resetCart");
-        this.$store.commit("resetCheckout");
-        this.$router.push("/");
-      }, 1000); // Wait for 1 second before reloading
-    },
-
-    //print bluetooth
-    async printReceipt() {
-      try {
-        const device = await navigator.bluetooth.requestDevice({
-          filters: [{ services: ["e7d2a5c2-301e-0030-76e5-4d5f83000000"] }],
-        });
-
-        const server = await device.gatt.connect();
-        const service = await server.getPrimaryService(
-          "e7d2a5c2-301e-0030-76e5-4d5f83000000"
-        );
-        const characteristic = await service.getCharacteristic(
-          "e0cbf06c-cd8b-4647-bb8a-263b43f0f974"
-        );
-
-        const receiptData = {
-          customerName: this.customerName,
-          items: this.cart,
-          totalPrice: this.totalPrice,
-        };
-
-        // Create a formatted receipt content
-        const printableContent = `
-      <span align="center">invoice</span></br>
-      Customer Name: ${receiptData.customerName}
-      </br> -------------------------- </br>
-      Items:</br></br>
-      ${receiptData.items
-        .map(
-          (item) =>
-            `${item.name} - ${item.quantity} pcs - ${this.formatPrice(
-              item.price
-            )}`
-        )
-        .join("</br>")}
-      </br>
-      </br> -------------------------- </br> </br>
-      Total Price: ${this.formatPrice(receiptData.totalPrice)}
-      </br></br>
-    `;
-
-        // Convert the content to Uint8Array
-        const encoder = new TextEncoder("utf-8");
-        const data = encoder.encode(printableContent);
-
-        // Write the data to the Bluetooth characteristic
-        await characteristic.writeValue(data);
-
-        // Handle success or perform additional actions
-        console.log("Print successful");
-
-        this.saveTransaction(receiptData);
-
-        // Reload after print (adjust the timing as needed)
-        setTimeout(() => {
-          this.$store.commit("resetCart");
-          this.$store.commit("resetCheckout");
-          this.$router.push("/");
-        }, 1000); // Wait for 1 second before reloading
-      } catch (error) {
-        // Handle errors
-        console.error("Error printing:", error);
+      if (isAndroid) {
+        await this.printAndroid();
+      } else {
+        await this.printDesktop(receiptData, printableContent);
       }
     },
+
+    redirectToHome() {
+      const checkoutData = this.loadCheckoutFromLocalStorage();
+      const receiptData = {
+        customerName: this.customerName,
+        items: this.cart,
+        totalPrice: this.totalPrice,
+        ...checkoutData,
+      };
+      this.saveTransaction(receiptData);
+      localStorage.removeItem("cart");
+      this.$router.push("/");
+    },
   },
-};
+});
 </script>

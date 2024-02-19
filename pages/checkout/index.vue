@@ -1,184 +1,116 @@
-<!-- pages/checkouts/index.vue -->
 <template>
-  <div class="container mt-5">
-    <h2>Checkout</h2>
-    <b-form @submit.prevent="submitOrder">
-      <b-form-group label="Nama">
-        <b-form-input v-model="customerName" required></b-form-input>
-      </b-form-group>
-
-      <!-- Tampilkan data keranjang -->
-      <div v-if="cart.length > 0">
-        <h3>Ringkasan Pesanan</h3>
-        <div class="row-item">
-          <div
-            class="item-cart mb-3"
-            v-for="(item, index) in cart"
-            :key="index"
-          >
+  <div>
+    <Navbar />
+    <div class="container gap-4 mx-auto">
+      <h2 class="text-2xl font-bold my-4">Checkout</h2>
+      <div v-if="cart.length === 0" class="text-center text-gray-500">
+        Keranjang belanja kosong.
+      </div>
+      <div v-else>
+        <div
+          v-for="(product, index) in cart"
+          :key="index"
+          class="flex items-center justify-between my-2"
+        >
+          <div class="flex items-center">
+            <img
+              :src="product.image"
+              :alt="product.name"
+              class="w-12 h-12 mr-4"
+            />
             <div>
-              <nuxt-img
-                :src="getOptimizedImage(item.image)"
-                width="100"
-                :alt="item.name"
-                loading="lazy"
-              />
-              {{ item.name }} - {{ formatPrice(item.price) }} ({{
-                item.quantity
-              }}
-              pcs)
-            </div>
-
-            <div>
-              <b-button
-                @click="decreaseQuantity(index, item.name)"
-                variant="info"
-                >Kurangi</b-button
-              >
-              <b-button @click="increaseQuantity(index)" variant="success"
-                >Tambah</b-button
-              >
-              <b-button
-                @click="openModalAlertDelete(index, item.name)"
-                variant="danger"
-                >Hapus</b-button
-              >
+              <p class="font-bold">{{ product.name }}</p>
+              <p>{{ formatPrice(product.price) }}</p>
+              <p>Jumlah: {{ product.quantity }}</p>
             </div>
           </div>
+          <button @click="openDeleteModal(index)" class="btn btn-error">
+            Hapus
+          </button>
         </div>
+        <div class="flex justify-between items-center mt-4">
+          <p class="font-bold">Total:</p>
+          <p>{{ formatPrice(totalPrice) }}</p>
+        </div>
+        <button @click="checkout" class="btn btn-primary mt-4 mx-auto">
+          Proses Checkout
+        </button>
       </div>
 
-      <nuxt-link to="/" class="btn btn-success btn-block mb-3">
-        Tambah Pesanan
-      </nuxt-link>
+      <!-- Modal dialog -->
+      <dialog id="deleteModal" class="modal">
+        <div class="modal-box">
+          <h3 class="font-bold text-lg">Konfirmasi Hapus</h3>
+          <p>Apakah Anda yakin ingin menghapus item ini?</p>
+          <div class="mt-2 flex justify-end gap-3">
+            <button @click="closeDeleteModal" class="btn btn-primary">
+              Tidak
+            </button>
+            <button @click="confirmDelete" class="btn btn-error">Ya</button>
+          </div>
+        </div>
+      </dialog>
+      <!-- End Modal dialog -->
 
-      <b-card class="mb-3">
-        <h5 class="mb-4">Total Harga: {{ formatPrice(totalPrice) }}</h5>
-
-        <b-button
-          @click="submitOrder"
-          variant="danger"
-          :disabled="customerName == ''"
-          block
-        >
-          Bayar
-        </b-button>
-      </b-card>
-    </b-form>
-
-    <!-- delete item -->
-    <b-modal
-      v-model="alertDeleteModal"
-      id="alertDeleteModal"
-      title="Hapus item"
-    >
-      <p>
-        Apakah anda yakin untuk menghapus
-        <span class="fw-bolder">{{ nameItem }}</span> ini dalam cart ?
-      </p>
-      <template #modal-footer>
-        <b-button variant="dark" @click="alertDeleteModal = false"
-          >Batal</b-button
-        >
-        <b-button @click="removeFromCart(indexItem)" variant="danger"
-          >Hapus</b-button
-        >
-      </template>
-    </b-modal>
-    <!-- end delete item -->
+    </div>
   </div>
 </template>
 
 <script>
-import ToastComponent from "~/components/Toast.vue";
+import Navbar from "~/components/Navbar.vue";
+import axios from "axios";
 
 export default {
-  data() {
+  head() {
     return {
-      customerName: "",
-      cart: [],
-      totalPrice: 0,
-      indexItem: 0,
-      showToast: false,
-      toastVariant: "success",
-      toastMessage: "Item berhasil ditambahkan ke keranjang!",
-      alertDeleteModal: false,
-      nameItem: "",
+      title: "Checkout",
+      meta: [
+        {
+          hid: "description",
+          name: "description",
+          content: "Your page description",
+        },
+      ],
     };
   },
-  async created() {
-    // Fetch cart data asynchronously when the component is created
-    await this.fetchCartData();
+  components: {
+    Navbar,
   },
-  mounted(){
+  data() {
+    return {
+      cart: [],
+      deleteIndex: null,
+    };
+  },
+  computed: {
+    totalPrice() {
+      return this.cart.reduce(
+        (total, product) => total + product.price * product.quantity,
+        0
+      );
+    },
+  },
+  async created() {
+    await this.fetchData();
+  },
+  mounted() {
     this.beforeRouteEnter();
   },
   methods: {
+    async fetchData() {
+      if (process.client) {
+        const cartData = localStorage.getItem("cart");
+        if (cartData) {
+          this.cart = JSON.parse(cartData);
+        } else {
+          this.cart = [];
+        }
+      }
+    },
+
     beforeRouteEnter() {
       if (this.cart.length === 0) {
         this.$router.push("/");
-      }
-    },
-    async fetchCartData() {
-      await this.$store.dispatch("fetchCartData");
-      const cartItems = this.$store.state.cart;
-
-      // Merge items with the same name
-      const mergedCart = cartItems.reduce((result, item) => {
-        const existingItem = result.find(
-          (mergedItem) => mergedItem.name === item.name
-        );
-        if (existingItem) {
-          existingItem.quantity += item.quantity;
-        } else {
-          result.push({ ...item });
-        }
-        return result;
-      }, []);
-
-      this.cart = mergedCart;
-      this.calculateTotalPrice();
-    },
-
-    showToastMessage(variant, message) {
-      this.toastVariant = variant;
-      this.toastMessage = message;
-      this.showToast = true;
-    },
-
-    saveCheckout() {
-      if (process.client) {
-        // Save checkout information to local storage
-        localStorage.setItem(
-          "checkoutData",
-          JSON.stringify({
-            customerName: this.customerName,
-            items: this.cart,
-          })
-        );
-
-        // You can also save to Vuex store if needed
-        this.$store.commit("saveCheckoutToCache", {
-          customerName: this.customerName,
-          items: this.cart,
-        });
-      }
-    },
-
-    submitOrder() {
-      this.saveCheckout();
-
-      this.$router.push("/payments");
-    },
-
-    calculateTotalPrice() {
-      if (this.cart.length !== 0) {
-        this.totalPrice = this.cart.reduce(
-          (total, item) => total + item.price * item.quantity,
-          0
-        );
-      } else {
-        this.totalPrice = 0;
       }
     },
 
@@ -191,78 +123,50 @@ export default {
       });
     },
 
-    decreaseQuantity(index, name) {
-      if (this.cart[index].quantity > 1) {
-        this.cart[index].quantity--;
-        this.calculateTotalPrice();
+    openDeleteModal(index) {
+      this.deleteIndex = index;
+      const modal = document.getElementById("deleteModal");
+      modal.showModal();
+    },
 
-        localStorage.setItem("cart", JSON.stringify(this.cart));
-      } else if (this.cart[index].quantity == 1) {
-        this.openModalAlertDelete(index, name);
+    closeDeleteModal() {
+      const modal = document.getElementById("deleteModal");
+      modal.close();
+    },
+
+    confirmDelete() {
+      if (this.deleteIndex !== null) {
+        this.removeFromCart(this.deleteIndex);
+        this.closeDeleteModal();
       }
-    },
-
-    increaseQuantity(index) {
-      this.cart[index].quantity++;
-      this.calculateTotalPrice();
-
-      localStorage.setItem("cart", JSON.stringify(this.cart));
-    },
-
-    openModalAlertDelete(index, name) {
-      this.showCartModal = false;
-      this.alertDeleteModal = true;
-      this.indexItem = index;
-      this.nameItem = name;
     },
 
     removeFromCart(index) {
       this.cart.splice(index, 1);
-      localStorage.setItem("cart", JSON.stringify(this.cart));
-
-      this.calculateTotalPrice();
-      this.alertDeleteModal = false;
-      this.nameItem = "";
       this.beforeRouteEnter();
-      this.showToastMessage("success", "Item berhasil dihapus dari keranjang!");
+
+      localStorage.setItem("cart", JSON.stringify(this.cart));
     },
 
-    getOptimizedImage(imagePath) {
-      const supportsWebP = this.browserSupportsWebP();
-      let optimizedPath = imagePath;
+    saveCartToLocalStorage() {
+      const dataCheckout = {
+        customerName: "Faris",
+        cart: this.cart,
+        totalPrice: this.totalPrice,
+      };
 
-      if (supportsWebP) {
-        optimizedPath += "?format=webp";
-      }
-
-      return optimizedPath;
+      localStorage.setItem("checkout", JSON.stringify(dataCheckout));
     },
 
-    browserSupportsWebP() {
-      // Check if running in a browser environment
-      if (process.client) {
-        const elem = document.createElement("canvas");
-
-        if (!!(elem.getContext && elem.getContext("2d"))) {
-          return elem.toDataURL("image/webp").indexOf("data:image/webp") === 0;
-        }
+    async checkout() {
+      try {
+        this.saveCartToLocalStorage();
+        this.$router.push("/payments");
+      } catch (error) {
+        console.error("Error during checkout:", error);
+        alert("Checkout gagal. Terjadi kesalahan.");
       }
-
-      return false;
     },
   },
 };
 </script>
-
-
-<style>
-.row-item {
-  display: flex;
-  flex-direction: column;
-}
-
-.row-item .item-cart {
-  display: flex;
-  justify-content: space-between;
-}
-</style>
