@@ -15,7 +15,6 @@
       </div>
 
       <div class="container gap-4 p-4 mx-auto">
-        <!-- Render skeleton if loading, else render product cards -->
         <div v-if="loading">
           <div class="grid lg:grid-cols-5 md:grid-cols-3 sm:grid-cols-2 gap-4">
             <!-- Skeleton loading effect -->
@@ -199,7 +198,7 @@ export default defineComponent({
         const storedProducts = localStorage.getItem("products");
 
         if (storedProducts) {
-          this.products = JSON.parse(storedProducts);
+          await this.getDataStorage();
         } else {
           const response = await axios.get(
             "https://cloud.interactive.co.id/restapi/myprofit/data_product_30k.php"
@@ -217,6 +216,22 @@ export default defineComponent({
         console.error("Error fetching products:", error);
       } finally {
         this.loading = false; // Set loading state back to false
+      }
+    },
+
+    async getDataStorage() {
+      try {
+        this.loading = true; // Set loading state to true
+        const storedProducts = localStorage.getItem("products");
+
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+
+        this.products = JSON.parse(storedProducts);
+        return this.products;
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      } finally {
+        this.loading = false; // Set loading state back to false regardless of success or failure
       }
     },
 
