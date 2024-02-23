@@ -25,6 +25,8 @@
               class="card w-full bg-base-100 shadow-xl"
             >
               <div class="skeleton"></div>
+              <div class="skeleton"></div>
+              <div class="skeleton"></div>
               <!-- Add skeleton styling -->
             </div>
           </div>
@@ -182,8 +184,8 @@ export default defineComponent({
       return this.products.slice(startIndex, endIndex);
     },
   },
-  mounted() {
-    this.fetchProducts();
+  async mounted() {
+    await this.fetchProducts();
   },
   methods: {
     goToCheckout() {
@@ -191,35 +193,27 @@ export default defineComponent({
       router.push("/checkout");
     },
 
-    fetchProducts() {
+    async fetchProducts() {
       try {
-        this.loading = true; // Set loading state to true
+        this.loading = true;
+        const storedProducts = localStorage.getItem("products");
 
-        // Check if localStorage is available
-        if (typeof localStorage !== "undefined") {
-          // Check if products exist in localStorage
-          const storedProducts = localStorage.getItem("products");
-          if (storedProducts) {
-            this.products = JSON.parse(storedProducts);
-          } else {
-            // Fetch products from the API if not found in localStorage
-            const response = axios.get(
-              "https://cloud.interactive.co.id/restapi/myprofit/data_product_30k.php"
-            );
-            const responseData = response.data.data_product;
-            this.products = responseData.slice(0, 5000);
-
-            // Store products in localStorage
-            localStorage.setItem("products", JSON.stringify(this.products));
-          }
+        if (storedProducts) {
+          this.products = JSON.parse(storedProducts);
         } else {
-          // Handle the case where localStorage is not available
-          console.error("localStorage is not available.");
-          // You might want to implement an alternative storage mechanism or handle the error differently
+          const response = await axios.get(
+            "https://cloud.interactive.co.id/restapi/myprofit/data_product_30k.php"
+          );
+          const responseData = response.data.data_product;
+          this.products = responseData.slice(0, 5000);
+
+          // Store products in localStorage
+          localStorage.setItem("products", JSON.stringify(this.products));
         }
 
         return this.products;
       } catch (error) {
+        this.loading = false;
         console.error("Error fetching products:", error);
       } finally {
         this.loading = false; // Set loading state back to false
@@ -333,5 +327,6 @@ export default defineComponent({
   width: 100%;
   height: 200px; /* Adjust height as needed */
   border-radius: 8px; /* Adjust border radius as needed */
+  margin-bottom: 10px; /* Adjust margin bottom as needed */
 }
 </style>
