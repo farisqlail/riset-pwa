@@ -191,7 +191,7 @@ export default defineComponent({
       router.push("/checkout");
     },
 
-    async fetchProducts() {
+    fetchProducts() {
       try {
         this.loading = true; // Set loading state to true
 
@@ -203,7 +203,7 @@ export default defineComponent({
             this.products = JSON.parse(storedProducts);
           } else {
             // Fetch products from the API if not found in localStorage
-            const response = await axios.get(
+            const response = axios.get(
               "https://cloud.interactive.co.id/restapi/myprofit/data_product_30k.php"
             );
             const responseData = response.data.data_product;
