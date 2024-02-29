@@ -9,9 +9,7 @@
       </p>
 
       <div class="btn-group flex gap-2 justify-center mt-4">
-        <button class="btn btn-info btn-wide" @click="printReceipt">
-          Cetak Nota
-        </button>
+        <input type="button" class="btn btn-info btn-wide" @click="printAndroid" value="Cetak Nota">
         <button class="btn btn-error btn-wide" @click="redirectToHome">
           Kembali ke home
         </button>
@@ -89,6 +87,7 @@ export default defineComponent({
     printAndroid() {
       var data = "======= data print halo =======";
       Android.showToast(data);
+      this.errors = data;
       // return this.error;
     },
 
@@ -143,15 +142,10 @@ export default defineComponent({
       //     </br></br>
       // `;
 
-//  this.errors = "jalan";
       const isAndroid = navigator.userAgent.toLowerCase().includes("android");
       if (isAndroid) {
         this.printAndroid();
-        
-
-        // return this.error;
       } else {
-          this.error = "dapat";
          this.printDesktop(receiptData, printableContent);
       }
     },
