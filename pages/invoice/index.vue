@@ -95,7 +95,7 @@ export default defineComponent({
 
         // this.respon = response;
         const data = "======= data print halo ======="
-        Android.print(data);
+        Android.showToast(data);
       } catch (error) {
         console.error("Error fetching print data:", error);
       }
