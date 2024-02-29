@@ -85,7 +85,17 @@ export default defineComponent({
     },
 
     printAndroid() {
-      var data = "======= data print halo =======";
+      var data = `
+           <span align="center">invoice</span></br>
+           Customer Name: ucup
+           </br> -------------------------- </br>
+           Items:</br></br>
+           1 barang narkotika
+           </br>
+           </br> -------------------------- </br> </br>
+           Total Price: Rp 2.000.000
+           </br></br>
+       `;
       Android.showToast(data);
       this.errors = data;
       // return this.error;
