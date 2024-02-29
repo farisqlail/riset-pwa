@@ -83,22 +83,10 @@ export default defineComponent({
       );
     },
 
-    async printAndroid() {
-      try {
-        // const apiUrl =
-        //   "https://cloud.interactive.co.id/myprofit/api/get_print_myorder_pwa";
-        // const response = await axios.get(apiUrl);
-        // const printUrl = `my.bluetoothprint.scheme://${apiUrl}`;
-
-        // // Redirect to the print URL
-        // window.location.href = printUrl;
-
-        // this.respon = response;
-        const data = "======= data print halo ======="
-        Android.showToast(data);
-      } catch (error) {
-        console.error("Error fetching print data:", error);
-      }
+    printAndroid() {
+      var data = "======= data print halo =======";
+      Android.showToast(data);
+    
     },
 
     async printDesktop(receiptData, printableContent) {
