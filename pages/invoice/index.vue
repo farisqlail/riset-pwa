@@ -16,6 +16,8 @@
           Kembali ke home
         </button>
       </div>
+      {{errors}}
+
     </div>
   </div>
 </template>
@@ -45,6 +47,7 @@ export default defineComponent({
       customerName: "",
       checkout: [],
       data: [],
+      errors: "",
     };
   },
   mounted() {
@@ -83,22 +86,10 @@ export default defineComponent({
       );
     },
 
-    async printAndroid() {
-      try {
-        // const apiUrl =
-        //   "https://cloud.interactive.co.id/myprofit/api/get_print_myorder_pwa";
-        // const response = await axios.get(apiUrl);
-        // const printUrl = `my.bluetoothprint.scheme://${apiUrl}`;
-
-        // // Redirect to the print URL
-        // window.location.href = printUrl;
-
-        // this.respon = response;
-        const data = "======= data print halo ======="
-        Android.showToast(data);
-      } catch (error) {
-        console.error("Error fetching print data:", error);
-      }
+    printAndroid() {
+      var data = "======= data print halo =======";
+      Android.showToast(data);
+      // return this.error;
     },
 
     async printDesktop(receiptData, printableContent) {
@@ -117,46 +108,51 @@ export default defineComponent({
       }, 1000);
     },
 
-    async printReceipt() {
-      const checkoutData = this.loadCheckoutFromLocalStorage(); // Load checkout data from local storage
-      const receiptData = {
-        customerName: this.customerName,
-        items: this.cart,
-        totalPrice: this.totalPrice,
-        ...checkoutData, // Include loaded checkout data
-      };
+    printReceipt() {
+     
+      // const checkoutData = this.loadCheckoutFromLocalStorage(); // Load checkout data from local storage
+      // const receiptData = {
+      //   customerName: this.customerName,
+      //   items: this.cart,
+      //   totalPrice: this.totalPrice,
+      //   ...checkoutData, // Include loaded checkout data
+      // };
 
-      const uniqueItems = Array.from(
-        new Set(receiptData.items.map((item) => item.name))
-      );
+      // const uniqueItems = Array.from(
+      //   new Set(receiptData.items.map((item) => item.name))
+      // );
 
-      const itemsContent = uniqueItems
-        .map((item) => {
-          const matchedItem = receiptData.items.find((i) => i.name === item);
-          return `${matchedItem.name} - ${
-            matchedItem.quantity
-          } pcs - ${this.formatPrice(matchedItem.price)}`;
-        })
-        .join("</br>");
+      // const itemsContent = uniqueItems
+      //   .map((item) => {
+      //     const matchedItem = receiptData.items.find((i) => i.name === item);
+      //     return `${matchedItem.name} - ${
+      //       matchedItem.quantity
+      //     } pcs - ${this.formatPrice(matchedItem.price)}`;
+      //   })
+      //   .join("</br>");
 
-      const printableContent = `
-          <span align="center">invoice</span></br>
-          Customer Name: ${receiptData.customerName}
-          </br> -------------------------- </br>
-          Items:</br></br>
-          ${itemsContent}
-          </br>
-          </br> -------------------------- </br> </br>
-          Total Price: ${this.formatPrice(receiptData.totalPrice)}
-          </br></br>
-      `;
+      // const printableContent = `
+      //     <span align="center">invoice</span></br>
+      //     Customer Name: ${receiptData.customerName}
+      //     </br> -------------------------- </br>
+      //     Items:</br></br>
+      //     ${itemsContent}
+      //     </br>
+      //     </br> -------------------------- </br> </br>
+      //     Total Price: ${this.formatPrice(receiptData.totalPrice)}
+      //     </br></br>
+      // `;
 
+//  this.errors = "jalan";
       const isAndroid = navigator.userAgent.toLowerCase().includes("android");
-
       if (isAndroid) {
-        await this.printAndroid();
+        this.printAndroid();
+        
+
+        // return this.error;
       } else {
-        await this.printDesktop(receiptData, printableContent);
+          this.error = "dapat";
+         this.printDesktop(receiptData, printableContent);
       }
     },
 
