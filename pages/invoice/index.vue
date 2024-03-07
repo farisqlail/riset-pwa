@@ -20,6 +20,8 @@
         </button>
       </div>
       {{ errors }}
+      {{ errors2 }}
+      {{ errors3 }}
     </div>
   </div>
 </template>
@@ -51,6 +53,8 @@ export default defineComponent({
       data: [],
       isAndroid: "",
       errors: "",
+      errors2: "",
+      errors3: "",
     };
   },
   async mounted() {
@@ -92,15 +96,33 @@ export default defineComponent({
 
     printAndroid() {
       const checkoutData = this.loadCheckoutFromLocalStorage();
-      const cart = Array.from(
-        new Set(checkoutData.cart.map((item) => item.name))
-      ).join(", ");
+      const groupedItems = {};
+      checkoutData.cart.forEach((item) => {
+        if (!groupedItems[item.name]) {
+          groupedItems[item.name] = {
+            name: item.name,
+            price: item.price,
+            quantity: item.quantity,
+          };
+        } else {
+          groupedItems[item.name].quantity += item.quantity;
+        }
+      });
+
+      // Buat string untuk daftar item
+      let cartString = "";
+      const groupedItemsArray = Object.values(groupedItems);
+      groupedItemsArray.forEach((item, index) => {
+        cartString += `${item.name}, ${item.price}, ${item.quantity}`;
+        // Tambahkan koma jika bukan item terakhir
+        if (index !== groupedItemsArray.length - 1) {
+          cartString += ", ";
+        }
+      });
 
       const name = checkoutData.customerName;
       const price = checkoutData.totalPrice;
-
-      this.errors = "success";
-      Android.showToast(name, price, cart);
+      Android.showToast(name, price, cartString);
     },
 
     async printDesktop(receiptData, printableContent) {
