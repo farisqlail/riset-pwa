@@ -113,10 +113,10 @@ export default defineComponent({
       let cartString = "";
       const groupedItemsArray = Object.values(groupedItems);
       groupedItemsArray.forEach((item, index) => {
-        cartString += `${item.name}, ${item.price}, ${item.quantity}`;
+        cartString += `[${item.name}, ${item.price}, ${item.quantity}]`;
         // Tambahkan koma jika bukan item terakhir
         if (index !== groupedItemsArray.length - 1) {
-          cartString += ", ";
+          cartString += " \n"; // Tambahkan baris baru setelah setiap item, kecuali item terakhir
         }
       });
 
