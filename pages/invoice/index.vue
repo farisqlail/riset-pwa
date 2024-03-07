@@ -9,7 +9,7 @@
       </p>
 
       <div class="btn-group flex gap-2 justify-center mt-4">
-        <button
+        <input
           type="button"
           class="btn btn-info btn-wide"
           @click="printAndroid"
@@ -49,10 +49,12 @@ export default defineComponent({
       customerName: "",
       checkout: [],
       data: [],
+      isAndroid: "",
       errors: "",
     };
   },
-  mounted() {
+  async mounted() {
+    // this.isAndroid = navigator.userAgent.toLowerCase().includes("android");
     this.loadCheckoutFromLocalStorage();
   },
   methods: {
@@ -90,49 +92,15 @@ export default defineComponent({
 
     printAndroid() {
       const checkoutData = this.loadCheckoutFromLocalStorage();
-      const uniqueItems = Array.from(
+      const cart = Array.from(
         new Set(checkoutData.cart.map((item) => item.name))
-      );
-      const receiptData = {
-        0: {
-          type: 0,
-          content: "-------------START-------------",
-          bold: 1,
-          align: 2,
-          format: 3,
-        },
-        1: {
-          type: 0,
-          content: "Mie Gacoan Surabaya",
-          bold: 1,
-          align: 2,
-          format: 3,
-        },
-        2: {
-          type: 3,
-          value: "No Nota : HL-93072G-65C12D89B1195",
-          bold: 1,
-          width: 100,
-          height: 50,
-          align: 0,
-        },
-        3: {
-          type: 0,
-          content: "Nama Customer : " + checkoutData.customerName,
-          bold: 1,
-          align: 2,
-          format: 3,
-        },
-        4: {
-          type: 0,
-          content: "Item : " + uniqueItems,
-          bold: 1,
-          align: 2,
-          format: 3,
-        },
-      };
-      this.errors = receiptData;
-      Android.showToast(receiptData);
+      ).join(", ");
+
+      const name = checkoutData.customerName;
+      const price = checkoutData.totalPrice;
+
+      this.errors = "success";
+      Android.showToast(name, price, cart);
     },
 
     async printDesktop(receiptData, printableContent) {
@@ -185,9 +153,9 @@ export default defineComponent({
       //     </br></br>
       // `;
 
-      const isAndroid = navigator.userAgent.toLowerCase().includes("android");
+      this.isAndroid = navigator.userAgent.toLowerCase().includes("android");
 
-      if (isAndroid) {
+      if (this.isAndroid) {
         this.printAndroid(data);
       } else {
         this.printDesktop(receiptData, printableContent);
