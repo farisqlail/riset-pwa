@@ -120,8 +120,6 @@ export default defineComponent({
         }
       });
 
-      this.errors = cartString;
-
       const name = checkoutData.customerName;
       const price = checkoutData.totalPrice;
       Android.showToast(name, price, cartString);
