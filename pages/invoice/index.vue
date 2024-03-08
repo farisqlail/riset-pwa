@@ -94,31 +94,61 @@ export default defineComponent({
       );
     },
 
+    // printAndroid() {
+    //   const checkoutData = this.loadCheckoutFromLocalStorage();
+    //   const groupedItems = {};
+    //   checkoutData.cart.forEach((item) => {
+    //     if (!groupedItems[item.name]) {
+    //       groupedItems[item.name] = {
+    //         name: item.name,
+    //         price: item.price,
+    //         quantity: item.quantity,
+    //       };
+    //     } else {
+    //       groupedItems[item.name].quantity += item.quantity;
+    //     }
+    //   });
+
+    //   // Buat string untuk daftar item
+    //   let cartString = "";
+    //   const groupedItemsArray = Object.values(groupedItems);
+    //   groupedItemsArray.forEach((item, index) => {
+    //     cartString += `[${item.name}, ${item.price}, ${item.quantity}]`;
+    //     // Tambahkan koma jika bukan item terakhir
+    //     if (index !== groupedItemsArray.length - 1) {
+    //       cartString += " \n"; // Tambahkan baris baru setelah setiap item, kecuali item terakhir
+    //     }
+    //   });
+    //   this.errors = cartString;
+
+    //   const name = checkoutData.customerName;
+    //   const price = checkoutData.totalPrice;
+    //   Android.showToast(name, price, cartString);
+    // },
+
     printAndroid() {
       const checkoutData = this.loadCheckoutFromLocalStorage();
       const groupedItems = {};
       checkoutData.cart.forEach((item) => {
-        if (!groupedItems[item.name]) {
-          groupedItems[item.name] = {
+        const key = `${item.name}_${item.price}`; // Buat kunci unik berdasarkan nama dan harga
+        if (!groupedItems[key]) {
+          groupedItems[key] = {
             name: item.name,
             price: item.price,
-            quantity: item.quantity,
+            quantity: parseInt(item.quantity), // Ubah qty menjadi integer
           };
         } else {
-          groupedItems[item.name].quantity += item.quantity;
+          groupedItems[key].quantity += parseInt(item.quantity); // Ubah qty menjadi integer dan tambahkan ke jumlah yang ada
         }
       });
 
-      // Buat string untuk daftar item
-      let cartString = "";
+      // Buat array dari objek yang dihasilkan
       const groupedItemsArray = Object.values(groupedItems);
-      groupedItemsArray.forEach((item, index) => {
-        cartString += `[${item.name}, ${item.price}, ${item.quantity}]`;
-        // Tambahkan koma jika bukan item terakhir
-        if (index !== groupedItemsArray.length - 1) {
-          cartString += " \n"; // Tambahkan baris baru setelah setiap item, kecuali item terakhir
-        }
-      });
+
+      // Buat string untuk daftar item
+      let cartString = JSON.stringify(groupedItemsArray);
+
+      this.errors = cartString;
 
       const name = checkoutData.customerName;
       const price = checkoutData.totalPrice;
