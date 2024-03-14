@@ -39,13 +39,15 @@
               class="card w-full bg-base-100 shadow-xl"
             >
               <figure>
-                <NuxtImg
+                <img
                   :src="product.product_images"
                   :alt="product.product_name"
                   width="384"
                   height="216"
                   layout="responsive"
                   loading="lazy"
+                  style
+                  @error="handleImageError($event, product)"
                 />
               </figure>
               <div class="card-body">
@@ -143,6 +145,7 @@ import axios from "axios";
 import Navbar from "~/components/Navbar.vue";
 import ToastComponent from "~/components/Toast.vue";
 import { defineComponent } from "vue";
+import defaultImage from "~/assets/images/default-image.jpg";
 
 export default defineComponent({
   head() {
@@ -190,6 +193,13 @@ export default defineComponent({
     goToCheckout() {
       const router = useRouter();
       router.push("/checkout");
+    },
+
+    handleImageError(event) {
+      if (event && event.target) {
+        event.target.src = defaultImage;
+        product.product_images = defaultImage; // Update product image URL to default
+      }
     },
 
     async fetchProducts() {
